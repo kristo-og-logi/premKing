@@ -2,8 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 
-import HomeScreen from '../../screens/HomeScreen';
-import LoginScreen from '../../screens/LoginScreen';
+import HomeScreen from '../../routes/LeagueMenu';
+import LoginScreen from '../../routes/SelectedLeague';
 
 const Tab = createBottomTabNavigator();
 
