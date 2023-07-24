@@ -1,13 +1,17 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.whiteText}>Login Screen</Text>
       <View style={{ height: 100, width: 100, backgroundColor: 'red' }}></View>
       <View style={styles.button}>
-        <Button color={'white'} title="this is a button"></Button>
+        <Button
+          color={'white'}
+          title="goto Home"
+          onPress={() => navigation.navigate('Home')}
+        ></Button>
       </View>
     </View>
   );
