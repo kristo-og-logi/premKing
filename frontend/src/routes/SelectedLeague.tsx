@@ -4,7 +4,6 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 const SelectedLeague = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.whiteText}>Login Screen</Text>
       <View style={{ height: 100, width: 100, backgroundColor: 'red' }}></View>
       <View style={styles.button}>
         <Button
@@ -19,6 +18,7 @@ const SelectedLeague = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 16,
     flex: 1,
     backgroundColor: '#072936',
     alignItems: 'center',

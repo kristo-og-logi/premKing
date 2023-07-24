@@ -4,7 +4,6 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 const LeagueMenu = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.whiteText}>My leagues</Text>
       <View style={styles.buttonWrapper}>
         <View style={styles.button}>
           <Button
@@ -36,7 +35,7 @@ const LeagueMenu = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 4,
+    padding: 16,
     backgroundColor: '#072936',
     alignItems: 'center',
   },

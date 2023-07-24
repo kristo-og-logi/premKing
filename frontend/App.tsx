@@ -12,16 +12,20 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#0A475C',
+          },
+          headerTintColor: '#fff',
+        }}
+      >
         <Stack.Screen
           name="LeagueMenu"
           component={LeagueMenu}
           options={{
             title: 'My Leagues',
-            headerStyle: {
-              backgroundColor: '#0A475C',
-            },
-            headerTintColor: '#fff',
           }}
         />
         <Stack.Screen
@@ -29,10 +33,6 @@ const App = () => {
           component={SelectedLeague}
           options={({ route }) => ({
             title: route.params.name,
-            headerStyle: {
-              backgroundColor: '#0A475C',
-            },
-            headerTintColor: '#fff',
           })}
         />
       </Stack.Navigator>
