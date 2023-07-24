@@ -19,6 +19,7 @@ const App = () => {
             backgroundColor: '#0A475C',
           },
           headerTintColor: '#fff',
+          headerBackTitle: '',
         }}
       >
         <Stack.Screen
