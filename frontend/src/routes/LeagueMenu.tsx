@@ -20,6 +20,14 @@ const LeagueMenu = ({ navigation }) => {
             onPress={() => navigation.navigate('SelectedLeague', { name: 'The Saudi Takeover' })}
           ></Button>
         </View>
+        <View style={styles.actionWrapper}>
+          <View style={styles.button}>
+            <Button color={'white'} title="Join League" />
+          </View>
+          <View style={styles.button}>
+            <Button color={'white'} title="Create League" />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -45,6 +53,11 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#0A475C',
     color: 'white',
+  },
+  actionWrapper: {
+    flex: 0,
+    gap: 8,
+    flexDirection: 'row',
   },
 });
 
