@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen({ navigation }) {
+const LeagueMenu = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.whiteText}>Open up App.tsx to start working on your app!</Text>
@@ -9,13 +9,13 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.button}>
         <Button
           color={'white'}
-          title="goto Login"
-          onPress={() => navigation.navigate('Login')}
+          title="goto selected league"
+          onPress={() => navigation.navigate('SelectedLeague')}
         ></Button>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -34,3 +34,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+export default LeagueMenu;

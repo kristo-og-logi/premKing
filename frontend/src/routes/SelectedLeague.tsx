@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
-export default function LoginScreen({ navigation }) {
+const SelectedLeague = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.whiteText}>Login Screen</Text>
@@ -9,13 +9,13 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.button}>
         <Button
           color={'white'}
-          title="goto Home"
-          onPress={() => navigation.navigate('Home')}
+          title="goto League Menu"
+          onPress={() => navigation.navigate('LeagueMenu')}
         ></Button>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -34,3 +34,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+export default SelectedLeague;
