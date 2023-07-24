@@ -4,14 +4,22 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 const LeagueMenu = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.whiteText}>Open up App.tsx to start working on your app!</Text>
-      <View style={{ height: 100, width: 100, backgroundColor: 'orange' }}></View>
-      <View style={styles.button}>
-        <Button
-          color={'white'}
-          title="goto selected league"
-          onPress={() => navigation.navigate('SelectedLeague')}
-        ></Button>
+      <Text style={styles.whiteText}>My leagues</Text>
+      <View style={styles.buttonWrapper}>
+        <View style={styles.button}>
+          <Button
+            color={'white'}
+            title="the best league"
+            onPress={() => navigation.navigate('SelectedLeague', { name: 'the best league' })}
+          ></Button>
+        </View>
+        <View style={styles.button}>
+          <Button
+            color={'white'}
+            title="the saudi takeover"
+            onPress={() => navigation.navigate('SelectedLeague', { name: 'The Saudi Takeover' })}
+          ></Button>
+        </View>
       </View>
     </View>
   );
@@ -20,6 +28,7 @@ const LeagueMenu = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 4,
     backgroundColor: '#072936',
     alignItems: 'center',
   },
@@ -28,6 +37,10 @@ const styles = StyleSheet.create({
   },
   buttonBackground: {
     backgroundColor: '#0A475C',
+  },
+  buttonWrapper: {
+    flex: 0,
+    gap: 20,
   },
   button: {
     backgroundColor: '#0A475C',

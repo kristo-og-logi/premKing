@@ -13,11 +13,27 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="LeagueMenu" component={LeagueMenu} options={{ title: 'My Leagues' }} />
+        <Stack.Screen
+          name="LeagueMenu"
+          component={LeagueMenu}
+          options={{
+            title: 'My Leagues',
+            headerStyle: {
+              backgroundColor: '#0A475C',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
         <Stack.Screen
           name="SelectedLeague"
           component={SelectedLeague}
-          options={{ title: 'Selected League' }}
+          options={({ route }) => ({
+            title: route.params.name,
+            headerStyle: {
+              backgroundColor: '#0A475C',
+            },
+            headerTintColor: '#fff',
+          })}
         />
       </Stack.Navigator>
       {/* <FooterTabs /> */}
