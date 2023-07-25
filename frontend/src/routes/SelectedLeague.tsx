@@ -1,7 +1,11 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
+import { StackParamList } from '../../App';
 
-const SelectedLeague = ({ navigation }) => {
+type Props = NativeStackScreenProps<StackParamList, 'SelectedLeague'>;
+
+const SelectedLeague = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <View style={{ height: 100, width: 100, backgroundColor: 'red' }}></View>

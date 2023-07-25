@@ -1,63 +1,45 @@
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const LeagueMenu = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.buttonWrapper}>
-        <View style={styles.button}>
-          <Button
-            color={'white'}
-            title="the best league"
-            onPress={() => navigation.navigate('SelectedLeague', { name: 'the best league' })}
-          ></Button>
-        </View>
-        <View style={styles.button}>
-          <Button
-            color={'white'}
-            title="the saudi takeover"
-            onPress={() => navigation.navigate('SelectedLeague', { name: 'The Saudi Takeover' })}
-          ></Button>
-        </View>
-        <View style={styles.actionWrapper}>
-          <View style={styles.button}>
-            <Button color={'white'} title="Join League" />
-          </View>
-          <View style={styles.button}>
-            <Button color={'white'} title="Create League" />
-          </View>
-        </View>
-      </View>
-    </View>
-  );
+import JoinLeague from '../components/leagues/JoinLeague';
+import CreateLeague from '../components/leagues/CreateLeague';
+import { StackParamList } from '../../App';
+import LeagueScreen from '../components/leagues/LeagueScreen';
+
+export type LeagueStackParamList = {
+  LeagueScreen: undefined;
+  CreateLeague: { leagues: string[]; setLeagues: (leagues: string[]) => void };
+  JoinLeague: { leagues: string[]; setLeagues: (leagues: string[]) => void };
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#072936',
-    alignItems: 'center',
-  },
-  whiteText: {
-    color: 'white',
-  },
-  buttonBackground: {
-    backgroundColor: '#0A475C',
-  },
-  buttonWrapper: {
-    flex: 0,
-    gap: 20,
-  },
-  button: {
-    backgroundColor: '#0A475C',
-    color: 'white',
-  },
-  actionWrapper: {
-    flex: 0,
-    gap: 8,
-    flexDirection: 'row',
-  },
-});
+const LeagueStack = createNativeStackNavigator<LeagueStackParamList>();
+
+type Props = NativeStackScreenProps<StackParamList, 'LeagueMenu'>;
+
+const LeagueMenu = ({ navigation }: Props) => {
+  return (
+    <LeagueStack.Navigator
+      initialRouteName="LeagueScreen"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#0A475C',
+        },
+        headerTintColor: '#fff',
+        headerBackTitle: '',
+      }}
+    >
+      <LeagueStack.Screen
+        options={{ headerShown: false }}
+        name="LeagueScreen"
+        component={LeagueScreen}
+      />
+      <LeagueStack.Group screenOptions={{ presentation: 'modal' }}>
+        <LeagueStack.Screen name="CreateLeague" component={CreateLeague} />
+        <LeagueStack.Screen name="JoinLeague" component={JoinLeague} />
+      </LeagueStack.Group>
+    </LeagueStack.Navigator>
+  );
+};
 
 export default LeagueMenu;
