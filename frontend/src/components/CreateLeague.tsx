@@ -13,6 +13,7 @@ const CreateLeague = ({ route, navigation }) => {
           onPress={() => {
             const newLeagues = leagues.concat(['created league']);
             setLeagues(newLeagues);
+            navigation.goBack();
           }}
         />
       </View>
