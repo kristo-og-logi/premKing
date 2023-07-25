@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 
 const JoinLeague = ({ route, navigation }) => {
   const { leagues, setLeagues } = route.params;
+
   return (
     <View style={styles.container}>
       <Text style={styles.whiteText}>Join League</Text>
@@ -10,7 +11,7 @@ const JoinLeague = ({ route, navigation }) => {
         <Button
           title="Join league"
           onPress={() => {
-            const newLeagues = leagues.concat(['test league']);
+            const newLeagues = leagues.concat(['joined league']);
             setLeagues(newLeagues);
           }}
         />

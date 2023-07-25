@@ -42,7 +42,12 @@ const LeagueScreen = ({ navigation }) => {
             <Button
               color={'white'}
               title="Create League"
-              onPress={() => navigation.navigate('CreateLeague')}
+              onPress={() =>
+                navigation.navigate('CreateLeague', {
+                  leagues: leagues,
+                  setLeagues: setLeagues,
+                })
+              }
             />
           </View>
         </View>
