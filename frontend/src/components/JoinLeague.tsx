@@ -6,10 +6,10 @@ const JoinLeague = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.whiteText}>Join League</Text>
       <View style={styles.button}>
         <Button
           title="Join league"
+          color={'white'}
           onPress={() => {
             const newLeagues = leagues.concat(['joined league']);
             setLeagues(newLeagues);
