@@ -1,17 +1,21 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, StyleSheet, Button } from 'react-native';
+import { LeagueStackParamList } from '../../routes/LeagueMenu';
 
-const CreateLeague = ({ route, navigation }) => {
+type Props = NativeStackScreenProps<LeagueStackParamList, 'JoinLeague'>;
+
+const JoinLeague = ({ route, navigation }: Props) => {
   const { leagues, setLeagues } = route.params;
 
   return (
     <View style={styles.container}>
       <View style={styles.button}>
         <Button
-          title="Create league"
+          title="Join league"
           color={'white'}
           onPress={() => {
-            const newLeagues = leagues.concat(['created league']);
+            const newLeagues = leagues.concat(['joined league']);
             setLeagues(newLeagues);
             navigation.goBack();
           }}
@@ -49,4 +53,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateLeague;
+export default JoinLeague;

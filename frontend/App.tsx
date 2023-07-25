@@ -7,7 +7,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SelectedLeague from './src/routes/SelectedLeague';
 import LeagueMenu from './src/routes/LeagueMenu';
 
-const Stack = createNativeStackNavigator();
+export type StackParamList = {
+  LeagueMenu: undefined;
+  SelectedLeague: { name: string };
+};
+
+const Stack = createNativeStackNavigator<StackParamList>();
 
 const App = () => {
   return (
