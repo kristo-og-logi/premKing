@@ -13,7 +13,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="LeagueMenu"
         screenOptions={{
           headerStyle: {
             backgroundColor: '#0A475C',
