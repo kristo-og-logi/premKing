@@ -1,35 +1,41 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import JoinLeague from '../components/JoinLeague';
 import CreateLeague from '../components/CreateLeague';
 
 const LeagueStack = createNativeStackNavigator();
 
+const loadLeagues = (leagues: string[], navigation) => {
+  return leagues.map((league) => (
+    <View style={styles.button} key={league}>
+      <Button
+        color={'white'}
+        title={league}
+        onPress={() => navigation.navigate('SelectedLeague', { name: league })}
+      ></Button>
+    </View>
+  ));
+};
+
 const LeagueScreen = ({ navigation }) => {
+  const [leagues, setLeagues] = useState(['the saudi takeover', 'the best league']);
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonWrapper}>
-        <View style={styles.button}>
-          <Button
-            color={'white'}
-            title="the best league"
-            onPress={() => navigation.navigate('SelectedLeague', { name: 'the best league' })}
-          ></Button>
-        </View>
-        <View style={styles.button}>
-          <Button
-            color={'white'}
-            title="the saudi takeover"
-            onPress={() => navigation.navigate('SelectedLeague', { name: 'The Saudi Takeover' })}
-          ></Button>
-        </View>
+        {loadLeagues(leagues, navigation)}
         <View style={styles.actionWrapper}>
           <View style={styles.button}>
             <Button
               color={'white'}
               title="Join League"
-              onPress={() => navigation.navigate('JoinLeague')}
+              onPress={() =>
+                navigation.navigate('JoinLeague', {
+                  leagues: leagues,
+                  setLeagues: setLeagues,
+                })
+              }
             />
           </View>
           <View style={styles.button}>

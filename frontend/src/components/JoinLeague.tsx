@@ -1,10 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
-const JoinLeague = () => {
+const JoinLeague = ({ route, navigation }) => {
+  const { leagues, setLeagues } = route.params;
   return (
     <View style={styles.container}>
       <Text style={styles.whiteText}>Join League</Text>
+      <View style={styles.button}>
+        <Button
+          title="Join league"
+          onPress={() => {
+            const newLeagues = leagues.concat(['test league']);
+            setLeagues(newLeagues);
+          }}
+        />
+      </View>
     </View>
   );
 };
