@@ -1,17 +1,10 @@
 import React from 'react';
-import { Button, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { View, Text } from 'react-native';
 
 const Stats = () => {
   return (
     <View>
-      <Text>My Stats</Text>
-      <Button
-        title="go to my profile"
-        onPress={() => {
-          router.push('/profile');
-        }}
-      />
+      <Text>Some stats</Text>
     </View>
   );
 };
