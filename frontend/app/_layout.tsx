@@ -8,7 +8,6 @@ export default function AppLayout() {
       <Tabs.Screen name="bet" options={{ headerShown: false }} />
       <Tabs.Screen name="stats" options={{ headerShown: false }} />
       <Tabs.Screen name="index" options={{ href: null }} />
-      {/* <Tabs.Screen name="[id]" options={{ href: null }} /> */}
     </Tabs>
   );
 }
