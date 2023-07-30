@@ -3,7 +3,7 @@ const headerStyles = {
 };
 
 export const headerOptions = {
-  headerBackTitle: '',
+  headerBackTitleVisible: false,
   headerTintColor: '#fff',
   headerStyle: headerStyles,
 };
