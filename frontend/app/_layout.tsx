@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
+import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function AppLayout() {
   return (
@@ -11,11 +12,23 @@ export default function AppLayout() {
           borderTopWidth: 0,
         },
         tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#aaa',
       }}
     >
-      <Tabs.Screen name="leagues" />
-      <Tabs.Screen name="bet" />
-      <Tabs.Screen name="stats" />
+      <Tabs.Screen
+        name="leagues"
+        options={{
+          tabBarIcon: () => <MaterialCommunityIcons name="trophy" size={24} color={'#fff'} />,
+        }}
+      />
+      <Tabs.Screen
+        name="bet"
+        options={{ tabBarIcon: () => <Entypo name="ticket" size={24} color={'#fff'} /> }}
+      />
+      <Tabs.Screen
+        name="stats"
+        options={{ tabBarIcon: () => <Ionicons name="stats-chart" size={24} color={'#fff'} /> }}
+      />
       <Tabs.Screen name="index" options={{ href: null }} />
     </Tabs>
   );
