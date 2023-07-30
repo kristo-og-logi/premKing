@@ -4,8 +4,8 @@ import { headerOptions } from '../../styles/styles';
 
 export default function StatsLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerTitle: 'My stats', ...headerOptions }} />
+    <Stack screenOptions={{ ...headerOptions }}>
+      <Stack.Screen name="index" options={{ headerTitle: 'My stats' }} />
     </Stack>
   );
 }
