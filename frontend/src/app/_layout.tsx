@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { registerRootComponent } from 'expo';
 
 export default function AppLayout() {
   return (
@@ -33,3 +34,5 @@ export default function AppLayout() {
     </Tabs>
   );
 }
+
+registerRootComponent(AppLayout);
