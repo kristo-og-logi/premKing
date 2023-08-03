@@ -1,18 +1,17 @@
 import React from 'react';
-import { Button, View, Text } from 'react-native';
+import { Button, View } from 'react-native';
 import { Link, router } from 'expo-router';
-import { styles } from '../../styles/styles';
+import { globalStyles } from '../../styles/styles';
 import PremText from '../../components/basic/PremText';
 
 export default function Page() {
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <Link href="/leagues/testId">Go to league</Link>
-      <Text style={{ fontFamily: 'MusticaPro', color: '#fff', fontSize: 30 }}>
-        The mustica Pro Font
-      </Text>
-      <PremText> Mustica Pro again</PremText>
-      <Text style={{ color: '#fff', fontSize: 30 }}>RegularFont</Text>
+      <PremText order={1}>Title</PremText>
+      <PremText order={2}>Subtitle</PremText>
+      <PremText order={3}>Normal</PremText>
+      <PremText order={4}>Small</PremText>
       <Button
         title="go to updated league"
         onPress={() => {
