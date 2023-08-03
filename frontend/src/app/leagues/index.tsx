@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View, Image } from 'react-native';
+import { Button, View } from 'react-native';
 import { Link, router } from 'expo-router';
 
 import { globalStyles } from '../../styles/styles';
@@ -15,9 +15,11 @@ export default function Page() {
       <PremText order={2}>Subtitle</PremText>
       <PremText order={3}>Normal</PremText>
       <PremText order={4}>Small</PremText>
-      <PremButton>PremButton</PremButton>
+      <PremButton onPress={() => console.log('hello')}>PremButton</PremButton>
 
-      <PremButton fullWidth>fullWidth</PremButton>
+      <PremButton onPress={() => console.log('fullwidth')} fullWidth>
+        fullWidth
+      </PremButton>
       <GoogleButton />
       <Button
         title="go to updated league"

@@ -6,10 +6,11 @@ import PremText from './PremText';
 interface Props {
   fullWidth?: boolean;
   Icon?: JSX.Element;
+  onPress: () => void;
   children: string;
 }
 
-const PremButton = ({ fullWidth = false, Icon, children }: Props) => {
+const PremButton = ({ fullWidth = false, Icon, onPress, children }: Props) => {
   return (
     <TouchableOpacity
       style={[
@@ -17,6 +18,7 @@ const PremButton = ({ fullWidth = false, Icon, children }: Props) => {
         fullWidth ? styles.fullWidth : styles.normalWidth,
         globalStyles.shadow,
       ]}
+      onPress={onPress}
     >
       <PremText>{children}</PremText>
       {Icon}
