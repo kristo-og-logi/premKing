@@ -7,7 +7,7 @@ import PremButton from '../../components/basic/PremButton';
 import { router } from 'expo-router';
 
 const JoinLeague = () => {
-  const [leagueName, setLeagueName] = useState<string>('');
+  const [leagueCode, setLeagueCode] = useState<string>('');
 
   return (
     <View style={globalStyles.container}>
@@ -18,12 +18,12 @@ const JoinLeague = () => {
       <View style={styles.inputWrapper}>
         <PremTextInput
           placeholder="League code here"
-          value={leagueName}
-          onChangeText={(value) => setLeagueName(value)}
+          value={leagueCode}
+          onChangeText={(value) => setLeagueCode(value)}
         />
         <PremButton
           onPress={() => {
-            console.log(`POST /users/me/leagues body: {leagueId: ${leagueName}}`);
+            console.log(`POST /users/me/leagues/join body: {leagueId: ${leagueCode}}`);
             router.back();
           }}
         >
