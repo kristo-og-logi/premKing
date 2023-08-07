@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { globalStyles } from '../../styles/styles';
 import PremButton from '../../components/basic/PremButton';
 import LeagueItem from '../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
+import { useAppSelector } from '../../hooks';
 
 type League = { id: string; name: string; place: number; total: number };
 
@@ -18,6 +19,23 @@ const renderLeagues = (leagues: League[]) => {
 };
 
 export default function Page() {
+  const leagueIds = useAppSelector((state) => state.leagues.items);
+
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      const leagues: League[] = await Promise.all(
+        leagueIds.map(async (id) => {
+          // change this line later
+          return init.find((league) => league.id == id);
+        })
+      );
+      setLeagues(leagues);
+    };
+
+    fetchLeagues();
+    console.log('leagues fetched on redux update');
+  }, [leagueIds]);
+
   const [leagues, setLeagues] = useState<League[]>(init);
 
   return (
