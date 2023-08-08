@@ -5,9 +5,19 @@ import { router } from 'expo-router';
 import PremButton from '../../components/basic/PremButton';
 import PremTextInput from '../../components/basic/PremTextInput';
 import { globalStyles } from '../../styles/styles';
+import { useAppDispatch } from '../../hooks';
+import { add } from '../../reducers/leaguesReducer';
+import { makeLeagueFromName } from '../../types/League';
 
 const CreateLeague = () => {
   const [leagueName, setLeagueName] = useState<string>('');
+  const dispatch = useAppDispatch();
+
+  const createLeague = () => {
+    const league = makeLeagueFromName(leagueName);
+    // add league to backend
+    dispatch(add(league.id));
+  };
 
   return (
     <View style={globalStyles.container}>
@@ -24,6 +34,7 @@ const CreateLeague = () => {
         <PremButton
           onPress={() => {
             console.log(`POST /users/me/leagues body: {leagueName: ${leagueName}}`);
+            createLeague();
             router.back();
           }}
         >

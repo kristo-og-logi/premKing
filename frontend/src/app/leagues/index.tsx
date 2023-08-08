@@ -6,8 +6,7 @@ import PremButton from '../../components/basic/PremButton';
 import LeagueItem from '../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
 import { useAppSelector } from '../../hooks';
-
-type League = { id: string; name: string; place: number; total: number };
+import { League } from '../../types/League';
 
 const init: League[] = [
   { id: 'asdf', name: 'theleague', place: 4, total: 8 },
@@ -23,13 +22,15 @@ export default function Page() {
 
   useEffect(() => {
     const fetchLeagues = async () => {
-      const leagues: League[] = await Promise.all(
+      const leagues: (League | undefined)[] = await Promise.all(
         leagueIds.map(async (id) => {
           // change this line later
-          return init.find((league) => league.id == id);
+          return init.find((league) => league.id === id);
         })
       );
-      setLeagues(leagues);
+
+      const foundLeagues: League[] = leagues.filter((league) => league !== undefined) as League[];
+      setLeagues(foundLeagues);
     };
 
     fetchLeagues();
