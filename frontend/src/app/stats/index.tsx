@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../../styles/styles';
+import { globalStyles } from '../../styles/styles';
 
 const Stats = () => {
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <Text>Some stats</Text>
     </View>
   );
