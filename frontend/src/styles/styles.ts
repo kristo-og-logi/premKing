@@ -25,7 +25,7 @@ export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.charcoal[1],
-    padding: 8,
+    padding: 16,
   },
   premFont: {
     fontFamily: 'MusticaPro',

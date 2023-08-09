@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { globalStyles } from '../../styles/styles';
+import PremText from '../../components/basic/PremText';
 
 const Stats = () => {
   return (
     <View style={globalStyles.container}>
-      <Text>Some stats</Text>
+      <PremText>Some stats</PremText>
     </View>
   );
 };

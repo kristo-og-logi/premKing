@@ -1,12 +1,13 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { globalStyles } from '../../styles/styles';
+import PremText from '../../components/basic/PremText';
 
 const Bet = () => {
   return (
     <View style={globalStyles.container}>
-      <Text>My Bet</Text>
-      <Text>Gameweek 1</Text>
+      <PremText>My Bet</PremText>
+      <PremText>Gameweek 1</PremText>
     </View>
   );
 };

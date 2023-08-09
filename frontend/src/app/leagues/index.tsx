@@ -1,32 +1,76 @@
-import React from 'react';
-import { Button, View } from 'react-native';
-import { Link, router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 import { globalStyles } from '../../styles/styles';
-import PremText from '../../components/basic/PremText';
 import PremButton from '../../components/basic/PremButton';
-import GoogleButton from '../../components/GoogleButton';
+import LeagueItem from '../../components/leagueMenu/LeagueItem';
+import { router } from 'expo-router';
+import { useAppSelector } from '../../hooks';
+import { League } from '../../types/League';
+
+const init: League[] = [
+  { id: 'asdf', name: 'theleague', place: 4, total: 8 },
+  { id: 'ABCD', name: 'league 2', place: 1, total: 3 },
+];
+
+const renderLeagues = (leagues: League[]) => {
+  return leagues.map((league) => <LeagueItem key={league.id} league={league} />);
+};
 
 export default function Page() {
-  return (
-    <View style={globalStyles.container}>
-      <Link href="/leagues/testId">Go to league</Link>
-      <PremText order={1}>Title</PremText>
-      <PremText order={2}>Subtitle</PremText>
-      <PremText order={3}>Normal</PremText>
-      <PremText order={4}>Small</PremText>
-      <PremButton onPress={() => console.log('hello')}>PremButton</PremButton>
+  const leagueIds = useAppSelector((state) => state.leagues.items);
 
-      <PremButton onPress={() => console.log('fullwidth')} fullWidth>
-        fullWidth
-      </PremButton>
-      <GoogleButton />
-      <Button
-        title="go to updated league"
-        onPress={() => {
-          router.push('/leagues/testId2');
-        }}
-      />
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      const leagues: (League | undefined)[] = await Promise.all(
+        leagueIds.map(async (id) => {
+          // change this line later
+          return init.find((league) => league.id === id);
+        })
+      );
+
+      const foundLeagues: League[] = leagues.filter((league) => league !== undefined) as League[];
+      setLeagues(foundLeagues);
+    };
+
+    fetchLeagues();
+    console.log('leagues fetched on redux update');
+  }, [leagueIds]);
+
+  const [leagues, setLeagues] = useState<League[]>(init);
+
+  return (
+    <View style={[styles.leagueList, globalStyles.container]}>
+      {renderLeagues(leagues)}
+      <View style={styles.actionWrapper}>
+        <PremButton
+          onPress={() => {
+            router.push('/leagues/CreateLeague');
+          }}
+        >
+          Create League
+        </PremButton>
+        <PremButton
+          onPress={() => {
+            router.push('/leagues/JoinLeague');
+          }}
+        >
+          Join League
+        </PremButton>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  leagueList: {
+    display: 'flex',
+    gap: 8,
+  },
+
+  actionWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+});

@@ -4,7 +4,7 @@ import { colors } from '../../styles/styles';
 
 type Props = {
   order?: 1 | 2 | 3 | 4;
-  children: string;
+  children: string | number;
 };
 
 const getSize = (order: 1 | 2 | 3 | 4) => {
