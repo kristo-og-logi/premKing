@@ -5,6 +5,11 @@ export const makeLeagueFromName = (name: string) => {
   return { id: 'ABCD', name: name, place: 1, total: 1 };
 };
 
+export const makeLeagueFromCode = (code: string) => {
+  //   return { id: code, name: 'unnamed league', place: 2, total: 2 };
+  return { id: 'asdf', name: 'unnamed league', place: 2, total: 2 };
+};
+
 // made by our friend chatGPT
 // 36 ^ 6 = 2,176,782,336 possible ids. This is good enough for right now.
 const generateShortId = () => {

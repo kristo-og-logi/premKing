@@ -14,6 +14,7 @@ const CreateLeague = () => {
   const dispatch = useAppDispatch();
 
   const createLeague = () => {
+    // POST leagues/
     const league = makeLeagueFromName(leagueName);
     // add league to backend
     dispatch(add(league.id));

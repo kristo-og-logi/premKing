@@ -5,9 +5,19 @@ import { globalStyles } from '../../styles/styles';
 import PremTextInput from '../../components/basic/PremTextInput';
 import PremButton from '../../components/basic/PremButton';
 import { router } from 'expo-router';
+import { useAppDispatch } from '../../hooks';
+import { add } from '../../reducers/leaguesReducer';
+import { League, makeLeagueFromCode } from '../../types/League';
 
 const JoinLeague = () => {
   const [leagueCode, setLeagueCode] = useState<string>('');
+  const dispatch = useAppDispatch();
+
+  const joinLeague = () => {
+    // POST leagues/join/:code
+    const league: League = makeLeagueFromCode(leagueCode);
+    dispatch(add(league.id));
+  };
 
   return (
     <View style={globalStyles.container}>
@@ -23,6 +33,7 @@ const JoinLeague = () => {
         />
         <PremButton
           onPress={() => {
+            joinLeague();
             console.log(`POST /users/me/leagues/join body: {leagueId: ${leagueCode}}`);
             router.back();
           }}
