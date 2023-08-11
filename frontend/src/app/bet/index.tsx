@@ -1,16 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
 import { globalStyles } from '../../styles/styles';
-import PremText from '../../components/basic/PremText';
 import { MatchUp } from '../../components/bet/MatchUp';
+import { Gameweek } from '../../components/bet/Gameweek';
+import { Confirm } from '../../components/bet/Confirm';
 
 const Bet = () => {
   return (
     <View style={globalStyles.container}>
-      <PremText>My Bet</PremText>
-      <PremText>Gameweek 1</PremText>
+      <Gameweek />
       <MatchUp />
       <MatchUp />
+      <Confirm />
     </View>
   );
 };
