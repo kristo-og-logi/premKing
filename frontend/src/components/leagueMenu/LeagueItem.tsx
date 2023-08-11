@@ -1,19 +1,22 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
 
 interface Props {
   league: { id: string; name: string; place: number; total: number };
+  onPress: () => void;
 }
 
-const LeagueItem = ({ league }: Props) => {
+const LeagueItem = ({ league, onPress }: Props) => {
   return (
-    <View style={styles.item}>
-      <PremText>{league.name}</PremText>
-      <PremText>{league.place}</PremText>
-      <PremText>{league.total}</PremText>
-    </View>
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.item}>
+        <PremText>{league.name}</PremText>
+        <PremText>{league.place}</PremText>
+        <PremText>{league.total}</PremText>
+      </View>
+    </TouchableOpacity>
   );
 };
 

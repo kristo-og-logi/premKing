@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { globalStyles } from '../../styles/styles';
@@ -17,7 +17,7 @@ const SelectedLeague = () => {
         setLeague(data);
       })
       .catch((error) => {
-        console.log('fetch league error in [leagueId]');
+        console.log('fetch league error in [leagueId]', error);
       });
   }, [leagueId]);
 
