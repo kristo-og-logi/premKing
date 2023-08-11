@@ -10,6 +10,7 @@ const Bet = () => {
       <PremText>My Bet</PremText>
       <PremText>Gameweek 1</PremText>
       <MatchUp />
+      <MatchUp />
     </View>
   );
 };

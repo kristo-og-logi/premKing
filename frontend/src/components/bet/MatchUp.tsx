@@ -61,20 +61,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.charcoal[2],
     gap: 20,
-    padding: 15,
+    padding: 10,
   },
   draw: {
     flex: 1,
     alignSelf: 'center',
-    padding: 15,
+    padding: 5,
   },
   header: {
     display: 'flex',
     flexDirection: 'column',
   },
   image: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
   },
   text: {
     alignSelf: 'center',
