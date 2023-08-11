@@ -6,28 +6,37 @@ import chelseaImg from '../../../assets/team-logos/chelsea.png';
 
 const TeamLeft = () => {
   return (
-    <TouchableOpacity style={styles.team}>
-      <Text style={styles.text}>1.49</Text>
-      <Image source={liverpoolImg} style={styles.image} />
-    </TouchableOpacity>
+    <View style={styles.header}>
+      <Text style={[styles.text, styles.headerText]}>Liverpool</Text>
+      <TouchableOpacity style={styles.team}>
+        <Text style={styles.text}>1.49</Text>
+        <Image source={liverpoolImg} style={styles.image} />
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const TeamRight = () => {
   return (
-    <TouchableOpacity style={styles.team}>
-      <Image source={chelseaImg} style={styles.image} />
-      <Text style={styles.text}>2.49</Text>
-    </TouchableOpacity>
+    <View style={styles.header}>
+      <Text style={[styles.text, styles.headerText]}>Chelsea</Text>
+      <TouchableOpacity style={styles.team}>
+        <Image source={chelseaImg} style={styles.image} />
+        <Text style={styles.text}>2.49</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const DrawMiddle = () => {
   return (
-    <TouchableOpacity style={styles.draw}>
-      <Text style={styles.text}>Draw</Text>
-      <Text style={styles.text}>1.03</Text>
-    </TouchableOpacity>
+    <View style={styles.header}>
+      <Text style={[styles.text, styles.matchText]}>12. August 13:00</Text>
+      <TouchableOpacity style={styles.draw}>
+        <Text style={styles.text}>Draw</Text>
+        <Text style={styles.text}>1.03</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -52,13 +61,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.charcoal[2],
     gap: 20,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    padding: 15,
   },
   draw: {
-    display: 'flex',
+    flex: 1,
     alignSelf: 'center',
     padding: 15,
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   image: {
     height: 60,
@@ -70,5 +82,12 @@ const styles = StyleSheet.create({
     fontFamily: 'MusticaPro',
     fontSize: 24,
     color: colors.gray[0],
+  },
+  matchText: {
+    fontSize: 12,
+    padding: 12,
+  },
+  headerText: {
+    padding: 4,
   },
 });
