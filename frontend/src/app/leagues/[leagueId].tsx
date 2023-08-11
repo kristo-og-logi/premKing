@@ -6,7 +6,7 @@ import { fetchLeagueById } from '../../utils/fetchLeague';
 import { SelectedLeague } from '../../types/League';
 import PremText from '../../components/basic/PremText';
 
-const SelectedLeague = () => {
+const LeagueView = () => {
   const { leagueId } = useLocalSearchParams();
   const [league, setLeague] = useState<SelectedLeague>();
 
@@ -21,18 +21,22 @@ const SelectedLeague = () => {
       });
   }, [leagueId]);
 
-  if (!league) return <PremText>Loading...</PremText>;
-
   return (
     <View style={globalStyles.container}>
       <Stack.Screen
         options={{ headerTitle: typeof leagueId === 'string' ? leagueId : 'bad error' }} // can we make this not so ugly?
       />
-      <PremText>{'SelectedLeague: ' + leagueId}</PremText>
-      <PremText>{league.name}</PremText>
-      <PremText>{league.players.length + ' players'}</PremText>
+      {!league ? (
+        <PremText>Loading...</PremText>
+      ) : (
+        <>
+          <PremText>{'SelectedLeague: ' + leagueId}</PremText>
+          <PremText>{league.name}</PremText>
+          <PremText>{league.players.length + ' players'}</PremText>
+        </>
+      )}
     </View>
   );
 };
 
-export default SelectedLeague;
+export default LeagueView;
