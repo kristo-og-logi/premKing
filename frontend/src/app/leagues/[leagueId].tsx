@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
@@ -9,12 +9,19 @@ import { SelectedLeague } from '../../types/League';
 import PremText from '../../components/basic/PremText';
 import PlayerScore from '../../components/leagueId/PlayerScore';
 import { Player } from '../../types/Player';
-import { current } from '@reduxjs/toolkit';
+import PremButton from '../../components/basic/PremButton';
 
 const currentGW = 3;
 
 const sortPlayers = (players: Player[]) => {
   return players.sort((a, b) => (a.points >= b.points ? -1 : 1));
+};
+
+const calculateTimeUntilGW = (gwNumber: number, currentGW: number) => {
+  if (gwNumber < currentGW) return 'Finished';
+  if (gwNumber > currentGW) return 'Closed';
+
+  return 'Starts In 3 days, 2 hours';
 };
 
 const Scoreboard = (players: Player[]) => {
@@ -28,7 +35,9 @@ const Scoreboard = (players: Player[]) => {
       <View style={styles.scoreboardHeader}>
         <PremText centered>Scoreboard</PremText>
       </View>
-      {playerItems}
+      <ScrollView style={{ maxHeight: 400 }}>
+        <View style={styles.scoreboardScrollWrapper}>{playerItems}</View>
+      </ScrollView>
     </View>
   );
 };
@@ -81,6 +90,16 @@ const LeagueView = () => {
               }}
             />
           </View>
+          <View style={styles.betWrapper}>
+            <PremText centered>{calculateTimeUntilGW(selectedGW, currentGW)}</PremText>
+            <PremButton
+              onPress={() => {
+                console.log('bet created');
+              }}
+            >
+              Create Bet
+            </PremButton>
+          </View>
           {Scoreboard(league.players)}
           <View style={styles.statsWrapper}>
             <PremText order={4}>{`your position: ${calculateYourPlace(
@@ -97,17 +116,25 @@ const LeagueView = () => {
 
 const styles = StyleSheet.create({
   gameweekSection: {
-    paddingVertical: 20,
+    paddingVertical: 12,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-around',
   },
   scoreboard: {
-    display: 'flex',
-    gap: 8,
     backgroundColor: colors.charcoal[2],
     padding: 2,
+  },
+  betWrapper: {
+    padding: 12,
+    display: 'flex',
+    gap: 4,
+    alignItems: 'center',
+  },
+  scoreboardScrollWrapper: {
+    display: 'flex',
+    gap: 8,
   },
   scoreboardHeader: {
     padding: 4,
