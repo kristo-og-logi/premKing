@@ -17,6 +17,11 @@ const leagues: SelectedLeague[] = [
       { id: 'gggg', name: 'guðrun', points: 200 },
       { id: 'EXAMPLE', name: 'winner', points: 150 },
       { id: 'fbfbfbfb', name: 'hanna', points: 40 },
+      { id: 'fbfbfbfba', name: 'hansy', points: 420 },
+      { id: 'fbfsdfabfbfb', name: 'ronaldo', points: 140 },
+      { id: 'fbfbfbfbasd', name: 'test', points: 10 },
+      { id: 'fbfbfbasdffb', name: 'john doe', points: 100 },
+      { id: 'fAAAbfbfbfb', name: 'anonymous', points: 60 },
     ],
   },
 ];

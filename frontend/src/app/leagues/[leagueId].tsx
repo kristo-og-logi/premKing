@@ -1,12 +1,17 @@
 import { StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
+
 import { colors, globalStyles } from '../../styles/styles';
 import { fetchLeagueById } from '../../utils/fetchLeague';
 import { SelectedLeague } from '../../types/League';
 import PremText from '../../components/basic/PremText';
 import PlayerScore from '../../components/leagueId/PlayerScore';
 import { Player } from '../../types/Player';
+import { current } from '@reduxjs/toolkit';
+
+const currentGW = 3;
 
 const sortPlayers = (players: Player[]) => {
   return players.sort((a, b) => (a.points >= b.points ? -1 : 1));
@@ -35,8 +40,7 @@ const calculateYourPlace = (players: Player[], userId: string) => {
 const LeagueView = () => {
   const { leagueId } = useLocalSearchParams();
   const [league, setLeague] = useState<SelectedLeague>();
-
-  const gameweekNumber = 3;
+  const [selectedGW, setSelectedGW] = useState<number>(currentGW);
 
   useEffect(() => {
     fetchLeagueById(leagueId as string)
@@ -59,7 +63,23 @@ const LeagueView = () => {
       ) : (
         <>
           <View style={styles.gameweekSection}>
-            <PremText order={1} centered>{`Gameweek ${gameweekNumber}`}</PremText>
+            <AntDesign
+              name="left"
+              size={24}
+              color={selectedGW > 1 ? colors.gray[0] : colors.gray[2]}
+              onPress={() => {
+                if (selectedGW > 1) setSelectedGW(selectedGW - 1);
+              }}
+            />
+            <PremText order={1} centered>{`Gameweek ${selectedGW}`}</PremText>
+            <AntDesign
+              name="right"
+              size={24}
+              color={selectedGW < 38 ? colors.gray[0] : colors.gray[2]}
+              onPress={() => {
+                if (selectedGW < 38) setSelectedGW(selectedGW + 1);
+              }}
+            />
           </View>
           {Scoreboard(league.players)}
           <View style={styles.statsWrapper}>
@@ -78,6 +98,10 @@ const LeagueView = () => {
 const styles = StyleSheet.create({
   gameweekSection: {
     paddingVertical: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-around',
   },
   scoreboard: {
     display: 'flex',
