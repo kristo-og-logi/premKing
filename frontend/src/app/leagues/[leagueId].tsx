@@ -82,7 +82,6 @@ const LeagueView = () => {
   useEffect(() => {
     fetchLeagueById(leagueId as string)
       .then((data) => {
-        console.log('league found:', data.players);
         setLeague(data);
         setScoreboardedPlayers(getScoreboardedPlayers(data.players, selectedGW));
       })
