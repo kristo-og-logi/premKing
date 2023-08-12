@@ -2,20 +2,24 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import PremText from '../basic/PremText';
 import { colors } from '../../styles/styles';
-import { Player } from '../../types/Player';
+import { ScoreboardPlayer } from '../../types/Player';
 
 interface Props {
-  player: Player;
+  player: ScoreboardPlayer;
   userId: string;
   position: number;
 }
 
+const printPointChange = (points: number, prevPoints: number) => {
+  return <PremText>{points === prevPoints ? '' : `+${points - prevPoints}`}</PremText>;
+};
+
 const PlayerScore = ({ player, userId, position }: Props) => {
-  console.log('playerScore for: ', player.name);
   return (
     <View style={[styles.container, player.id === userId && styles.myScore]}>
       <PremText>{position}</PremText>
       <PremText>{player.name}</PremText>
+      {printPointChange(player.points, player.prevPoints)}
       <PremText>{player.points}</PremText>
     </View>
   );
