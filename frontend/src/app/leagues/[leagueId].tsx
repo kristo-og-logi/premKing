@@ -11,7 +11,7 @@ import { Player } from '../../types/Player';
 const Scoreboard = (players: Player[]) => {
   const sortedPlayers = players.sort((a, b) => (a.points >= b.points ? -1 : 1));
   const playerItems = sortedPlayers.map((player, index) => (
-    <PlayerScore position={index + 1} player={player} key={player.id} />
+    <PlayerScore position={index + 1} player={player} userId={'EXAMPLE'} key={player.id} />
   ));
 
   return (
@@ -44,16 +44,7 @@ const LeagueView = () => {
       <Stack.Screen
         options={{ headerTitle: league?.name || 'selected league' }} // can we make this not so ugly?
       />
-      {!league ? (
-        <PremText>Loading...</PremText>
-      ) : (
-        <>
-          <PremText>{'SelectedLeague: ' + leagueId}</PremText>
-          <PremText>{league.name}</PremText>
-          <PremText>{league.players.length + ' players'}</PremText>
-          {Scoreboard(league.players)}
-        </>
-      )}
+      {!league ? <PremText>Loading...</PremText> : <>{Scoreboard(league.players)}</>}
     </View>
   );
 };
