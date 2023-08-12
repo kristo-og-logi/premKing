@@ -6,12 +6,14 @@ import { Player } from '../../types/Player';
 
 interface Props {
   player: Player;
+  position: number;
 }
 
-const PlayerScore = ({ player }: Props) => {
+const PlayerScore = ({ player, position }: Props) => {
   console.log('playerScore for: ', player.name);
   return (
     <View style={styles.container}>
+      <PremText>{position}</PremText>
       <PremText>{player.name}</PremText>
       <PremText>{player.points}</PremText>
     </View>

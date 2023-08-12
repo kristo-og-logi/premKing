@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextStyle } from 'react-native';
 import { colors } from '../../styles/styles';
 
 type Props = {
   order?: 1 | 2 | 3 | 4;
+  centered?: boolean;
   children: string | number;
 };
 
@@ -20,12 +21,15 @@ const getSize = (order: 1 | 2 | 3 | 4) => {
   }
 };
 
-const PremText = ({ order = 3, children }: Props) => {
+const PremText = ({ order = 3, centered = false, children }: Props) => {
   const size = getSize(order);
-  return (
-    <Text style={{ fontFamily: 'MusticaPro', fontSize: size, color: colors.gray[0] }}>
-      {children}
-    </Text>
+
+  const styles: TextStyle = { fontFamily: 'MusticaPro', fontSize: size, color: colors.gray[0] };
+
+  return centered ? (
+    <Text style={{ ...styles, textAlign: 'center' }}>{children}</Text>
+  ) : (
+    <Text style={styles}>{children}</Text>
   );
 };
 

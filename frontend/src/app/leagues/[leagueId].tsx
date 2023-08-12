@@ -9,13 +9,15 @@ import PlayerScore from '../../components/leagueId/PlayerScore';
 import { Player } from '../../types/Player';
 
 const Scoreboard = (players: Player[]) => {
-  console.log('players are', players);
-  const playerItems = players.map((player) => <PlayerScore player={player} key={player.id} />);
+  const sortedPlayers = players.sort((a, b) => (a.points >= b.points ? -1 : 1));
+  const playerItems = sortedPlayers.map((player, index) => (
+    <PlayerScore position={index + 1} player={player} key={player.id} />
+  ));
 
   return (
     <View style={styles.scoreboard}>
       <View style={styles.scoreboardHeader}>
-        <PremText>Scoreboard</PremText>
+        <PremText centered>Scoreboard</PremText>
       </View>
       {playerItems}
     </View>
@@ -64,9 +66,10 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   scoreboardHeader: {
-    width: 'auto',
-    display: 'flex',
-    justifyContent: 'center',
+    padding: 4,
+  },
+  centeredText: {
+    textAlign: 'center',
   },
 });
 
