@@ -5,16 +5,16 @@ const leagues: SelectedLeague[] = [
     id: 'asdf',
     name: 'The big league',
     players: [
-      { id: 'abcdabcd', name: 'kristofer' },
-      { id: '12341234', name: 'logi' },
+      { id: 'abcdabcd', name: 'kristofer', points: 123 },
+      { id: '12341234', name: 'logi', points: 83 },
     ],
   },
   {
     id: 'ABCD',
     name: 'LEEEAAGUEEE',
     players: [
-      { id: 'abcdabcd', name: 'kristofer' },
-      { id: '12341234', name: 'logi' },
+      { id: 'fbfbfbfb', name: 'hanna', points: 40 },
+      { id: 'gggg', name: 'guðrun', points: 100 },
     ],
   },
 ];
