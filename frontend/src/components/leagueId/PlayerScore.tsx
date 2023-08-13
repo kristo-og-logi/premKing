@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 import PremText from '../basic/PremText';
-import { colors } from '../../styles/styles';
+import { colors, scoreboardWidths } from '../../styles/styles';
 import { ScoreboardPlayer } from '../../types/Player';
 
 interface Props {
@@ -43,18 +43,23 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
   );
   return (
     <View style={[styles.container, player.id === userId && styles.myScore]}>
-      <View style={[styles.scoreWrapper, styles.leftSide]}>
+      <View style={[styles.scoreWrapper]}>
         <View
           style={[
             styles.scoreWrapper,
             styles.positionWrapper,
-            leagueSize >= 10 ? styles.between10and100WrapperWidth : styles.under10WrapperWidth,
+            // globalStyles.border,
+            leagueSize >= 10
+              ? scoreboardWidths.between10and100WrapperWidth
+              : scoreboardWidths.under10WrapperWidth,
           ]}
         >
           <View
             style={[
               styles.position,
-              leagueSize >= 10 ? styles.between10and100Width : styles.under10Width,
+              leagueSize >= 10
+                ? scoreboardWidths.between10and100Width
+                : scoreboardWidths.under10Width,
             ]}
           >
             <PremText>{position}</PremText>
@@ -65,7 +70,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
         <PremText>{player.name}</PremText>
       </View>
 
-      <View style={[styles.scoreWrapper, styles.rightSide]}>
+      <View style={[styles.scoreWrapper, styles.rightSide, scoreboardWidths.pointsWidth]}>
         {renderPointChange(player.points, player.prevPoints)}
         <PremText>{player.points}</PremText>
       </View>
@@ -98,14 +103,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-end',
   },
-
-  under10Width: {
-    width: 10,
-  },
-  between10and100Width: {
-    width: 25,
-  },
-
   scoreWrapper: {
     display: 'flex',
     flexDirection: 'row',
@@ -114,23 +111,10 @@ const styles = StyleSheet.create({
 
   positionWrapper: {
     justifyContent: 'space-between',
-  },
-
-  under10WrapperWidth: {
-    width: 40,
-  },
-
-  between10and100WrapperWidth: {
-    width: 60,
-  },
-
-  leftSide: {
-    width: 200,
-    gap: 12,
+    paddingRight: 6,
   },
 
   rightSide: {
-    width: 70,
     justifyContent: 'space-between',
   },
 });

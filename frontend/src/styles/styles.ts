@@ -41,4 +41,30 @@ export const globalStyles = StyleSheet.create({
     shadowRadius: 3.05,
     elevation: 4,
   },
+  border: {
+    borderWidth: 1,
+  },
+});
+
+export const scoreboardWidths = StyleSheet.create({
+  pointsWidth: {
+    width: 70,
+  },
+  positionWidth: {
+    width: 65,
+  },
+  under10Width: {
+    width: 10,
+  },
+  between10and100Width: {
+    width: 25,
+  },
+  under10WrapperWidth: {
+    width: 52,
+    marginRight: 8,
+  },
+  between10and100WrapperWidth: {
+    width: 72,
+    marginRight: 8,
+  },
 });

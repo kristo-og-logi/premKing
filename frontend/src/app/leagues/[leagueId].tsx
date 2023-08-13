@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
 
-import { colors, globalStyles } from '../../styles/styles';
+import { colors, globalStyles, scoreboardWidths } from '../../styles/styles';
 import { fetchLeagueById } from '../../utils/fetchLeague';
 import { SelectedLeague } from '../../types/League';
 import PremText from '../../components/basic/PremText';
@@ -69,6 +69,27 @@ const Scoreboard = (players: ScoreboardPlayer[], gw: number) => {
     <View style={styles.scoreboard}>
       <View style={styles.scoreboardHeader}>
         <PremText centered>Scoreboard</PremText>
+      </View>
+      <View style={styles.header}>
+        <View style={[styles.textWrapper]}>
+          <View
+            style={[
+              styles.textWrapper,
+              // globalStyles.border,
+              players.length >= 10
+                ? scoreboardWidths.between10and100WrapperWidth
+                : scoreboardWidths.under10WrapperWidth,
+            ]}
+          >
+            <PremText order={4}>pos</PremText>
+            <PremText order={4}>+/-</PremText>
+          </View>
+          <PremText order={4}>name</PremText>
+        </View>
+        <View style={[styles.textWrapper, scoreboardWidths.pointsWidth]}>
+          <PremText order={4}>{`gw${gw}`}</PremText>
+          <PremText order={4}>points</PremText>
+        </View>
       </View>
       <ScrollView style={{ maxHeight: 400 }}>
         <View style={styles.scoreboardScrollWrapper}>{playerItems}</View>
@@ -189,6 +210,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 4,
+  },
+
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 8,
+  },
+
+  textWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 
