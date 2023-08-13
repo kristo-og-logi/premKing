@@ -11,6 +11,7 @@ import PlayerScore from '../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../types/Player';
 import PremButton from '../../components/basic/PremButton';
 
+// put this into context or redux?
 const currentGW = 3;
 
 const calculatePoints = (points: PlayerPoints[], gw: number) => {
@@ -31,15 +32,15 @@ const getScoreboardedPlayers = (players: Player[], selectedGw: number): Scoreboa
   const copy = scoreboardPlayers.slice();
 
   const finalPlayers = scoreboardPlayers.map((player) => {
-    const prevPos = copy
-      .sort((a, b) => (a.prevPoints >= b.prevPoints ? -1 : 1))
-      .findIndex((p) => p.id === player.id);
+    const prevPos =
+      copy
+        .sort((a, b) => (a.prevPoints >= b.prevPoints ? -1 : 1))
+        .findIndex((p) => p.id === player.id) + 1;
 
-    const currPos = copy
-      .sort((a, b) => (a.points >= b.points ? -1 : 1))
-      .findIndex((p) => p.id === player.id);
+    const currPos =
+      copy.sort((a, b) => (a.points >= b.points ? -1 : 1)).findIndex((p) => p.id === player.id) + 1;
 
-    return { ...player, posChange: currPos - prevPos };
+    return { ...player, position: currPos, prevPosition: prevPos, posChange: prevPos - currPos };
   });
 
   return finalPlayers.sort((a, b) => (a.points >= b.points ? -1 : 1));
@@ -52,9 +53,16 @@ const calculateTimeUntilGW = (gwNumber: number, currentGW: number) => {
   return 'Starts In 3 days, 2 hours';
 };
 
-const Scoreboard = (players: ScoreboardPlayer[]) => {
+const Scoreboard = (players: ScoreboardPlayer[], gw: number) => {
   const playerItems = players.map((player, index) => (
-    <PlayerScore position={index + 1} player={player} userId={'EXAMPLE'} key={player.id} />
+    <PlayerScore
+      position={index + 1}
+      player={player}
+      userId={'EXAMPLE'}
+      key={player.id}
+      gw={gw}
+      leagueSize={players.length}
+    />
   ));
 
   return (
@@ -133,7 +141,7 @@ const LeagueView = () => {
               Create Bet
             </PremButton>
           </View>
-          {Scoreboard(scoreboardedPlayers)}
+          {Scoreboard(scoreboardedPlayers, selectedGW)}
           <View style={styles.statsWrapper}>
             <PremText order={4}>{`your position: ${calculateYourPlace(
               scoreboardedPlayers,

@@ -110,6 +110,24 @@ const leagues: SelectedLeague[] = [
           { gw: 3, points: 13 },
         ],
       },
+      {
+        id: 'fAAA222fbfb',
+        name: 'anotherOne',
+        points: [
+          { gw: 1, points: 0 },
+          { gw: 2, points: 10 },
+          { gw: 3, points: 1000 },
+        ],
+      },
+      {
+        id: '1234',
+        name: 'oneMore',
+        points: [
+          { gw: 1, points: 1000 },
+          { gw: 2, points: 10 },
+          { gw: 3, points: 0 },
+        ],
+      },
     ],
   },
 ];

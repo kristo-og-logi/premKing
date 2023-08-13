@@ -15,4 +15,6 @@ export type ScoreboardPlayer = {
   points: number;
   prevPoints: number;
   posChange: number;
+  position: number;
+  prevPosition: number;
 };
