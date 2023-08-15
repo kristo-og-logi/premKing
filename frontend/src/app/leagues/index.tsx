@@ -14,7 +14,13 @@ const init: League[] = [
 ];
 
 const renderLeagues = (leagues: League[]) => {
-  return leagues.map((league) => <LeagueItem key={league.id} league={league} />);
+  return leagues.map((league) => (
+    <LeagueItem
+      key={league.id}
+      league={league}
+      onPress={() => router.push(`leagues/${league.id}`)}
+    />
+  ));
 };
 
 export default function Page() {
