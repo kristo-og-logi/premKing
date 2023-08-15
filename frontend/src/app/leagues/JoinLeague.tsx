@@ -16,7 +16,7 @@ const JoinLeague = () => {
   const joinLeague = () => {
     // POST leagues/join/:code
     const league: League = makeLeagueFromCode(leagueCode);
-    dispatch(add(league.id));
+    dispatch(add(league));
   };
 
   return (
@@ -25,6 +25,7 @@ const JoinLeague = () => {
         <PremText order={2}>Join League</PremText>
       </View>
       <PremText>League Code</PremText>
+      <PremText centered>Try asdf or ABCD</PremText>
       <View style={styles.inputWrapper}>
         <PremTextInput
           placeholder="League code here"

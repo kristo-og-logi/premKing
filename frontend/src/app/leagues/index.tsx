@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { globalStyles } from '../../styles/styles';
@@ -7,11 +7,6 @@ import LeagueItem from '../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
 import { useAppSelector } from '../../hooks';
 import { League } from '../../types/League';
-
-const init: League[] = [
-  { id: 'asdf', name: 'theleague', place: 4, total: 8 },
-  { id: 'ABCD', name: 'league 2', place: 1, total: 3 },
-];
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
@@ -24,26 +19,22 @@ const renderLeagues = (leagues: League[]) => {
 };
 
 export default function Page() {
-  const leagueIds = useAppSelector((state) => state.leagues.items);
+  const leagues = useAppSelector((state) => state.leagues.items);
 
   useEffect(() => {
     const fetchLeagues = async () => {
-      const leagues: (League | undefined)[] = await Promise.all(
-        leagueIds.map(async (id) => {
-          // change this line later
-          return init.find((league) => league.id === id);
-        })
-      );
-
-      const foundLeagues: League[] = leagues.filter((league) => league !== undefined) as League[];
-      setLeagues(foundLeagues);
+      // const leagues: (League | undefined)[] = await Promise.all(
+      //   leagueIds.map(async (id) => {
+      //     // change this line later
+      //     return init.find((league) => league.id === id);
+      //   })
+      // );
+      // const foundLeagues: League[] = leagues.filter((league) => league !== undefined) as League[];
+      // setLeagues(foundLeagues);
     };
 
     fetchLeagues();
-    console.log('leagues fetched on redux update');
-  }, [leagueIds]);
-
-  const [leagues, setLeagues] = useState<League[]>(init);
+  }, []);
 
   return (
     <View style={[styles.leagueList, globalStyles.container]}>

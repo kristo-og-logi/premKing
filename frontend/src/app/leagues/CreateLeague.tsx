@@ -17,7 +17,7 @@ const CreateLeague = () => {
     // POST leagues/
     const league = makeLeagueFromName(leagueName);
     // add league to backend
-    dispatch(add(league.id));
+    dispatch(add(league));
   };
 
   return (
