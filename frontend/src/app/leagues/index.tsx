@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 import { colors, globalStyles } from '../../styles/styles';
 import PremButton from '../../components/basic/PremButton';
@@ -42,7 +42,7 @@ export default function Page() {
   }, []);
 
   return (
-    <View style={[styles.leagueList, globalStyles.container]}>
+    <View style={[styles.leagueScreen, globalStyles.container]}>
       <View>
         <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
         <View style={[styles.gwScores]}>
@@ -60,21 +60,33 @@ export default function Page() {
           </View>
         </View>
       </View>
-      {renderLeagues(leagues)}
+      {leagues.length !== 0 ? (
+        <View style={{ maxHeight: 320 }}>
+          <ScrollView style={{ flexGrow: 0 }}>
+            <View style={styles.leagueWrapper}>{renderLeagues(leagues)}</View>
+          </ScrollView>
+        </View>
+      ) : (
+        <View style={{ marginBottom: 12 }}>
+          <PremText order={2} centered>
+            Create or join a league
+          </PremText>
+        </View>
+      )}
       <View style={styles.actionWrapper}>
         <PremButton
           onPress={() => {
             router.push('/leagues/CreateLeague');
           }}
         >
-          Create League
+          Create
         </PremButton>
         <PremButton
           onPress={() => {
             router.push('/leagues/JoinLeague');
           }}
         >
-          Join League
+          Join
         </PremButton>
       </View>
     </View>
@@ -109,9 +121,14 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 
-  leagueList: {
+  leagueScreen: {
     display: 'flex',
     gap: 8,
+  },
+
+  leagueWrapper: {
+    marginVertical: 16,
+    gap: 12,
   },
 
   actionWrapper: {
