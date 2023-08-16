@@ -61,7 +61,7 @@ export default function Page() {
         </View>
       </View>
       {leagues.length !== 0 ? (
-        <View style={{ maxHeight: 320 }}>
+        <View style={{ maxHeight: 360 }}>
           <ScrollView style={{ flexGrow: 0 }}>
             <View style={styles.leagueWrapper}>{renderLeagues(leagues)}</View>
           </ScrollView>
