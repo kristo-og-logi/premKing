@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { AntDesign } from '@expo/vector-icons';
 
 import { colors, globalStyles, scoreboardWidths } from '../../styles/styles';
 import { fetchLeagueById } from '../../utils/fetchLeague';
@@ -10,6 +9,7 @@ import PremText from '../../components/basic/PremText';
 import PlayerScore from '../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../types/Player';
 import PremButton from '../../components/basic/PremButton';
+import GameweekShifter from '../../components/leagueId/GameweekShifter';
 
 // put this into context or redux?
 const currentGW = 3;
@@ -133,25 +133,7 @@ const LeagueView = () => {
         <PremText>Loading...</PremText>
       ) : (
         <>
-          <View style={styles.gameweekSection}>
-            <AntDesign
-              name="left"
-              size={24}
-              color={selectedGW > 1 ? colors.gray[0] : colors.gray[2]}
-              onPress={() => {
-                if (selectedGW > 1) setSelectedGW(selectedGW - 1);
-              }}
-            />
-            <PremText order={1} centered>{`Gameweek ${selectedGW}`}</PremText>
-            <AntDesign
-              name="right"
-              size={24}
-              color={selectedGW < 38 ? colors.gray[0] : colors.gray[2]}
-              onPress={() => {
-                if (selectedGW < 38) setSelectedGW(selectedGW + 1);
-              }}
-            />
-          </View>
+          <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
           <View style={styles.betWrapper}>
             <PremText centered>{calculateTimeUntilGW(selectedGW, currentGW)}</PremText>
             <PremButton
@@ -177,13 +159,6 @@ const LeagueView = () => {
 };
 
 const styles = StyleSheet.create({
-  gameweekSection: {
-    paddingVertical: 12,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-around',
-  },
   scoreboard: {
     backgroundColor: colors.charcoal[2],
     padding: 2,

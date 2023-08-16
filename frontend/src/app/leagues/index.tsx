@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { globalStyles } from '../../styles/styles';
+import { colors, globalStyles } from '../../styles/styles';
 import PremButton from '../../components/basic/PremButton';
 import LeagueItem from '../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
 import { useAppSelector } from '../../hooks';
 import { League } from '../../types/League';
+import PremText from '../../components/basic/PremText';
+import GameweekShifter from '../../components/leagueId/GameweekShifter';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
@@ -18,8 +20,11 @@ const renderLeagues = (leagues: League[]) => {
   ));
 };
 
+const currentGW = 3;
+
 export default function Page() {
   const leagues = useAppSelector((state) => state.leagues.items);
+  const [selectedGW, setSelectedGW] = useState<number>(currentGW);
 
   useEffect(() => {
     const fetchLeagues = async () => {
@@ -38,6 +43,23 @@ export default function Page() {
 
   return (
     <View style={[styles.leagueList, globalStyles.container]}>
+      <View>
+        <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+        <View style={[styles.gwScores]}>
+          <View style={[styles.secondaryCard, globalStyles.shadow]}>
+            <PremText order={4}>Avg</PremText>
+            <PremText>x5.12</PremText>
+          </View>
+          <View style={[styles.mainCard, globalStyles.shadow]}>
+            <PremText>My score</PremText>
+            <PremText order={2}>x4.69</PremText>
+          </View>
+          <View style={[styles.secondaryCard, globalStyles.shadow]}>
+            <PremText order={4}>Max</PremText>
+            <PremText order={3}>x12.19</PremText>
+          </View>
+        </View>
+      </View>
       {renderLeagues(leagues)}
       <View style={styles.actionWrapper}>
         <PremButton
@@ -60,6 +82,33 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
+  gwScores: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    marginVertical: 12,
+  },
+  secondaryCard: {
+    height: 60,
+    width: 80,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.charcoal[2],
+    borderRadius: 4,
+  },
+
+  mainCard: {
+    height: 72,
+    width: 108,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.charcoal[3],
+    borderRadius: 4,
+  },
+
   leagueList: {
     display: 'flex',
     gap: 8,
