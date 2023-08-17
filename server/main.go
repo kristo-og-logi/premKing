@@ -56,12 +56,18 @@ func getAlbumByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
 }
 
+func getCurrentGameWeek(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, 2)
+}
+
 func main() {
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 
 	router.POST("/albums", postAlbums)
+
+	router.GET("/gw", getCurrentGameWeek)
 
 	router.Run("localhost:8080")
 }
