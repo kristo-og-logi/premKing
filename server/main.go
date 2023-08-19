@@ -1,11 +1,10 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	"github.com/kristo-og-logi/premKing/server/initializers"
 )
 
 type album struct {
@@ -63,11 +62,7 @@ func getCurrentGameWeek(c *gin.Context) {
 }
 
 func init() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	initializers.LoadEnv()
 }
 
 func main() {
