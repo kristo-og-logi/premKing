@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kristo-og-logi/premKing/server/controllers"
 	"github.com/kristo-og-logi/premKing/server/initializers"
+	"github.com/kristo-og-logi/premKing/server/routes"
 )
 
 type album struct {
@@ -63,15 +65,20 @@ func getCurrentGameWeek(c *gin.Context) {
 
 func init() {
 	initializers.LoadEnv()
+	initializers.ConnectDB()
 }
 
 func main() {
-
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 
 	router.POST("/albums", postAlbums)
+
+	routes.SetupLeagueRoutes(router)
+
+	router.GET("/users", controllers.GetAllUsers)
+	router.POST("/users", controllers.CreateUser)
 
 	router.GET("/gw", getCurrentGameWeek)
 
