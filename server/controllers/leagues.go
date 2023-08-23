@@ -32,3 +32,17 @@ func CreateLeague(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, newLeague)
 }
+
+func GetLeagueById(c *gin.Context) {
+	id := c.Param("id")
+
+	league := models.League{}
+
+	result := initializers.DB.First(&league, "id = ?", id)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, "internal server error")
+	}
+
+	c.JSON(http.StatusOK, league)
+}

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kristo-og-logi/premKing/server/controllers"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/routes"
 )
@@ -69,16 +68,20 @@ func init() {
 }
 
 func main() {
+	version1 := "v1"
+	var api string = "api"
+
+	// create the api route prefix
+	version1Prefix := "/" + api + "/" + version1
+
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
-
 	router.POST("/albums", postAlbums)
 
-	routes.SetupLeagueRoutes(router)
+	routes.SetupLeagueRoutes(router, version1Prefix)
 
-	router.GET("/users", controllers.GetAllUsers)
-	router.POST("/users", controllers.CreateUser)
+	routes.SetupUserRoutes(router, version1Prefix)
 
 	router.GET("/gw", getCurrentGameWeek)
 
