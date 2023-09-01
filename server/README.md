@@ -30,6 +30,59 @@ CompileDaemon -command="./server"
 
 Now you should be up and running!
 
+## Endpoints
+
+### /api/v1
+
+#### /users
+
+##### GET /
+
+get all users
+
+##### POST /
+
+```json
+body: {
+    "name": "string",
+    "username": "string"
+}
+```
+
+create a user
+
+##### GET /:id
+
+get user with id `:id`.
+
+##### GET /:id/leagues
+
+get all leagues from user with id `:id`.
+
+##### POST /:id/leagues
+
+```json
+
+body: {
+    "leagueId": "string"
+}
+```
+
+user joins new league
+
+#### /leagues
+
+##### POST /
+
+```json
+{
+  "name": "string",
+  "creatorId": "string"
+}
+```
+
+create new league by user with id `creatorId` in body
+
 ## Source
 
 Setting up a gin project: https://go.dev/doc/tutorial/web-service-gin
