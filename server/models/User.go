@@ -9,5 +9,5 @@ type User struct {
 	ID      string `gorm:"primaryKey"`
 	Name    string
 	Email   string
-	Leagues []*League `gorm:"many2many:user_leagues;"`
+	Leagues []League `gorm:"many2many:user_leagues;"`
 }
