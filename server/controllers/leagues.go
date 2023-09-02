@@ -24,7 +24,7 @@ func GetAllLeagues(c *gin.Context) {
 }
 
 func CreateLeague(c *gin.Context) {
-	newLeague := models.League{ID: uuid.New().String(), Name: "John Doe"}
+	newLeague := models.League{ID: uuid.New().String(), Name: "The league"}
 	result := initializers.DB.Create(&newLeague)
 	if result.Error != nil {
 		panic("Failed to create league: " + result.Error.Error())

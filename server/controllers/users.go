@@ -39,7 +39,8 @@ func GetUserById(c *gin.Context) {
 }
 
 func CreateUser(c *gin.Context) {
-	newUser := models.User{ID: uuid.New().String(), Name: "John Doe", LeagueID: "id"}
+	newUser := models.User{ID: uuid.New().String(), Name: "John Doe"}
+
 	result := initializers.DB.Create(&newUser)
 	if result.Error != nil {
 		panic("Failed to create user: " + result.Error.Error())
