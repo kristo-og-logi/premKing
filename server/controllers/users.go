@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
 // var db *gorm.DB = initializers.DB
@@ -27,8 +28,13 @@ func GetAllUsers(c *gin.Context) {
 func GetUserById(c *gin.Context) {
 	id := c.Param("id")
 
+	if !utils.IsValidUuid(id) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", id)})
+		return
+	}
+
 	var user models.User
-	result := initializers.DB.First(&user, id)
+	result := initializers.DB.First(&user, "id = ?", id)
 
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with ID %s not found", id)})
