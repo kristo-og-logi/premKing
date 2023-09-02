@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,20 @@ func GetAllUsers(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, users)
+}
+
+func GetUserById(c *gin.Context) {
+	id := c.Param("id")
+
+	var user models.User
+	result := initializers.DB.First(&user, id)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with ID %s not found", id)})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, user)
 }
 
 func CreateUser(c *gin.Context) {
