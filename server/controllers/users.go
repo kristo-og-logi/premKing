@@ -49,8 +49,10 @@ func CreateUser(c *gin.Context) {
 
 	result := initializers.DB.Create(&newUser)
 	if result.Error != nil {
-		panic("Failed to create user: " + result.Error.Error())
+		fmt.Printf("failed to create user:" + result.Error.Error())
+		c.IndentedJSON(http.StatusBadRequest, "Failed to create user")
+		return
 	}
 
-	c.JSON(http.StatusCreated, newUser)
+	c.IndentedJSON(http.StatusCreated, newUser)
 }
