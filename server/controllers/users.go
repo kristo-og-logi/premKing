@@ -15,7 +15,7 @@ import (
 
 func GetAllUsers(c *gin.Context) {
 	var users []models.User
-	result := initializers.DB.Find(&users)
+	result := initializers.DB.Preload("Leagues").Find(&users)
 
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
