@@ -1,13 +1,17 @@
+import { Player } from './Player';
+
 export type League = { id: string; name: string; place: number; total: number };
+
+export type SelectedLeague = { id: string; name: string; players: Player[] };
 
 export const makeLeagueFromName = (name: string) => {
   //   return { id: generateShortId(), name: name, place: 1, total: 1 };
-  return { id: 'ABCD', name: name, place: 1, total: 1 };
+  return { id: generateShortId(), name: name, place: 1, total: 1 };
 };
 
 export const makeLeagueFromCode = (code: string) => {
   //   return { id: code, name: 'unnamed league', place: 2, total: 2 };
-  return { id: 'asdf', name: 'unnamed league', place: 2, total: 2 };
+  return { id: code, name: 'unnamed league', place: 2, total: 2 };
 };
 
 // made by our friend chatGPT
