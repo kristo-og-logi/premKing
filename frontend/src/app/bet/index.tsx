@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { colors } from '../../styles/styles';
+import { View, ScrollView } from 'react-native';
+import { globalStyles } from '../../styles/styles';
 import { MatchUp } from '../../components/bet/MatchUp';
 import { Gameweek } from '../../components/bet/Gameweek';
 import { Confirm } from '../../components/bet/Confirm';
 
 const Bet = () => {
   return (
-    <View style={styles.container}>
+    <View style={globalStyles.container}>
       <Gameweek />
       <ScrollView>
         <MatchUp />
@@ -22,20 +22,5 @@ const Bet = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.charcoal[1],
-    padding: 16,
-  },
-
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: colors.charcoal[1],
-    padding: 16,
-    height: 100,
-  },
-});
 
 export default Bet;

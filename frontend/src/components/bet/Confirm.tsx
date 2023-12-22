@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, Button, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../styles/styles';
 
 export const Confirm = () => {
