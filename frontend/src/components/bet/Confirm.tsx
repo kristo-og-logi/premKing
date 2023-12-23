@@ -1,11 +1,14 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 export const Confirm = () => {
   return (
     <TouchableOpacity style={styles.container}>
-      <Text style={styles.text}>Confirm</Text>
+      <PremText order={2} centered={true}>
+        Confirm
+      </PremText>
     </TouchableOpacity>
   );
 };
@@ -26,11 +29,5 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 3,
     elevation: 5,
-  },
-  text: {
-    textAlign: 'center',
-    fontFamily: 'MusticaPro',
-    fontSize: 24,
-    color: colors.gray[0],
   },
 });

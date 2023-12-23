@@ -1,19 +1,10 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
-import { colors } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 export const Gameweek = () => {
-  return <Text style={styles.container}>Gameweek 2</Text>;
+  return (
+    <PremText order={2} centered={true}>
+      Gameweek 2
+    </PremText>
+  );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    textAlign: 'center',
-    fontFamily: 'MusticaPro',
-    fontSize: 24,
-    color: colors.gray[0],
-  },
-});

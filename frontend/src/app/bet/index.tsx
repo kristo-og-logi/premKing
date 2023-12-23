@@ -9,7 +9,7 @@ const Bet = () => {
   return (
     <View style={globalStyles.container}>
       <Gameweek />
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <MatchUp />
         <MatchUp />
         <MatchUp />

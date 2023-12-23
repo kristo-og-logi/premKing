@@ -1,40 +1,65 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { colors } from '../../styles/styles';
 import liverpoolImg from '../../../assets/team-logos/liverpool.png';
 import chelseaImg from '../../../assets/team-logos/chelsea.png';
+import PremText from '../basic/PremText';
 
-const TeamLeft = () => {
+enum Side {
+  LEFT,
+  RIGHT,
+}
+
+const TeamColumn = ({
+  teamName,
+  odds,
+  logo,
+  side,
+}: {
+  teamName: string;
+  odds: string;
+  logo: ImageSourcePropType;
+  side: Side;
+}) => {
   return (
     <View style={styles.header}>
-      <Text style={[styles.text, styles.headerText]}>Liverpool</Text>
+      <PremText order={2} centered={true} padding={4}>
+        {teamName}
+      </PremText>
       <TouchableOpacity style={styles.team}>
-        <Text style={styles.text}>1.49</Text>
-        <Image source={liverpoolImg} style={styles.image} />
+        {side === Side.LEFT ? (
+          <>
+            <PremText order={2} centered={true}>
+              {odds}
+            </PremText>
+            <Image source={logo} style={styles.image} />
+          </>
+        ) : (
+          <>
+            <Image source={logo} style={styles.image} />
+            <PremText order={2} centered={true}>
+              {odds}
+            </PremText>
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );
 };
 
-const TeamRight = () => {
+const DrawMiddle = ({ date, odds }: { date: string; odds: string }) => {
   return (
     <View style={styles.header}>
-      <Text style={[styles.text, styles.headerText]}>Chelsea</Text>
-      <TouchableOpacity style={styles.team}>
-        <Image source={chelseaImg} style={styles.image} />
-        <Text style={styles.text}>2.49</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const DrawMiddle = () => {
-  return (
-    <View style={styles.header}>
-      <Text style={[styles.text, styles.matchText]}>12. August 13:00</Text>
+      <PremText order={4} centered={true} padding={12}>
+        {date}
+      </PremText>
       <TouchableOpacity style={styles.draw}>
-        <Text style={styles.text}>Draw</Text>
-        <Text style={styles.text}>1.03</Text>
+        <PremText order={2} centered={true}>
+          Draw
+        </PremText>
+        <PremText order={2} centered={true}>
+          {odds}
+        </PremText>
       </TouchableOpacity>
     </View>
   );
@@ -43,9 +68,9 @@ const DrawMiddle = () => {
 export const MatchUp = () => {
   return (
     <View style={styles.container}>
-      <TeamLeft />
-      <DrawMiddle />
-      <TeamRight />
+      <TeamColumn teamName={'Liverpool'} logo={liverpoolImg} odds={'1.59'} side={Side.LEFT} />
+      <DrawMiddle date={'12. August 13:00'} odds={'1.09'} />
+      <TeamColumn teamName={'Chelsea'} logo={chelseaImg} odds={'2.49'} side={Side.RIGHT} />
     </View>
   );
 };
@@ -75,19 +100,5 @@ const styles = StyleSheet.create({
   image: {
     height: 50,
     width: 50,
-  },
-  text: {
-    alignSelf: 'center',
-    textAlign: 'center',
-    fontFamily: 'MusticaPro',
-    fontSize: 24,
-    color: colors.gray[0],
-  },
-  matchText: {
-    fontSize: 12,
-    padding: 12,
-  },
-  headerText: {
-    padding: 4,
   },
 });
