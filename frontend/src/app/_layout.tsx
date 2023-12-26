@@ -12,8 +12,8 @@ export default function AppLayout() {
           headerShown: false,
         }}
       >
-        <Stack.Screen name="login" />
-        <Stack.Screen name="main" />
+        <Stack.Screen name="login" options={{ animation: 'none' }} />
+        <Stack.Screen name="main" options={{ animation: 'fade' }} />
       </Stack>
     </Provider>
   );

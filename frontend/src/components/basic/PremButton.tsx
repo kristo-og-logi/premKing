@@ -8,9 +8,12 @@ interface Props {
   Icon?: JSX.Element;
   onPress: () => void;
   children: string;
+  href?: any; //eslint-disable-line
+  role?: any; //eslint-disable-line
+  ref?: React.RefObject<TouchableOpacity> | undefined;
 }
 
-const PremButton = ({ fullWidth = false, Icon, onPress, children }: Props) => {
+const PremButton = ({ fullWidth = false, Icon, onPress, children, role, ref }: Props) => {
   return (
     <TouchableOpacity
       style={[
@@ -19,6 +22,8 @@ const PremButton = ({ fullWidth = false, Icon, onPress, children }: Props) => {
         globalStyles.shadow,
       ]}
       onPress={onPress}
+      role={role}
+      ref={ref}
     >
       <PremText>{children}</PremText>
       {Icon}
