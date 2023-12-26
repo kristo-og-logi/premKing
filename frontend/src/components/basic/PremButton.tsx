@@ -1,15 +1,16 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Role, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors, globalStyles } from '../../styles/styles';
 import PremText from './PremText';
+import { Href } from 'expo-router/build/link/href';
 
 interface Props {
   fullWidth?: boolean;
   Icon?: JSX.Element;
   onPress: () => void;
   children: string;
-  href?: any; //eslint-disable-line
-  role?: any; //eslint-disable-line
+  href?: Href;
+  role?: Role;
   ref?: React.RefObject<TouchableOpacity> | undefined;
 }
 
