@@ -1,13 +1,13 @@
 import { View, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import PremText from '../../components/basic/PremText';
+import PremText from '../../../components/basic/PremText';
 import { router } from 'expo-router';
-import PremButton from '../../components/basic/PremButton';
-import PremTextInput from '../../components/basic/PremTextInput';
-import { globalStyles } from '../../styles/styles';
-import { useAppDispatch } from '../../hooks';
-import { add } from '../../reducers/leaguesReducer';
-import { makeLeagueFromName } from '../../types/League';
+import PremButton from '../../../components/basic/PremButton';
+import PremTextInput from '../../../components/basic/PremTextInput';
+import { globalStyles } from '../../../styles/styles';
+import { useAppDispatch } from '../../../hooks';
+import { add } from '../../../reducers/leaguesReducer';
+import { makeLeagueFromName } from '../../../types/League';
 
 const CreateLeague = () => {
   const [leagueName, setLeagueName] = useState<string>('');
