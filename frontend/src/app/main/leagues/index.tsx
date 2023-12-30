@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
-import { colors, globalStyles } from '../../styles/styles';
-import PremButton from '../../components/basic/PremButton';
-import LeagueItem from '../../components/leagueMenu/LeagueItem';
+import { colors, globalStyles } from '../../../styles/styles';
+import PremButton from '../../../components/basic/PremButton';
+import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
-import { useAppSelector } from '../../hooks';
-import { League } from '../../types/League';
-import PremText from '../../components/basic/PremText';
-import GameweekShifter from '../../components/leagueId/GameweekShifter';
+import { useAppSelector } from '../../../hooks';
+import { League } from '../../../types/League';
+import PremText from '../../../components/basic/PremText';
+import GameweekShifter from '../../../components/leagueId/GameweekShifter';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
