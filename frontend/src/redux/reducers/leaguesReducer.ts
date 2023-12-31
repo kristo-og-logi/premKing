@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { League } from '../types/League';
+import { League } from '../../types/League';
 
 export interface LeagueState {
   items: League[];

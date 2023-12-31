@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import leaguesReducer from '../reducers/leaguesReducer';
+import leaguesReducer from './reducers/leaguesReducer';
 
 export const store = configureStore({
   reducer: {

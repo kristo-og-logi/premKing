@@ -5,7 +5,7 @@ import { colors, globalStyles } from '../../../styles/styles';
 import PremButton from '../../../components/basic/PremButton';
 import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
-import { useAppSelector } from '../../../hooks';
+import { useAppSelector } from '../../../redux/hooks';
 import { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
@@ -15,7 +15,7 @@ const renderLeagues = (leagues: League[]) => {
     <LeagueItem
       key={league.id}
       league={league}
-      onPress={() => router.push(`leagues/${league.id}`)}
+      onPress={() => router.push(`/main/leagues/${league.id}`)}
     />
   ));
 };
@@ -76,14 +76,14 @@ export default function Page() {
       <View style={styles.actionWrapper}>
         <PremButton
           onPress={() => {
-            router.push('/leagues/CreateLeague');
+            router.push('/main/leagues/CreateLeague');
           }}
         >
           Create
         </PremButton>
         <PremButton
           onPress={() => {
-            router.push('/leagues/JoinLeague');
+            router.push('/main/leagues/JoinLeague');
           }}
         >
           Join
