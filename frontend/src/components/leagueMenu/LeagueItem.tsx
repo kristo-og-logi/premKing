@@ -2,9 +2,10 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
+import { League } from '../../types/League';
 
 interface Props {
-  league: { id: string; name: string; place: number; total: number };
+  league: League;
   onPress: () => void;
 }
 
@@ -14,7 +15,7 @@ const LeagueItem = ({ league, onPress }: Props) => {
       <View style={styles.item}>
         <View style={styles.leftSide}>
           <PremText>{league.name}</PremText>
-          <PremText order={4}>{league.id}</PremText>
+          <PremText order={4}>{league.ID}</PremText>
         </View>
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
