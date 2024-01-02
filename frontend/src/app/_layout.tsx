@@ -2,7 +2,7 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { registerRootComponent } from 'expo';
 import { Provider } from 'react-redux';
-import { store } from '../store';
+import { store } from '../redux/store';
 
 export default function AppLayout() {
   return (

@@ -5,8 +5,8 @@ import { router } from 'expo-router';
 import PremButton from '../../../components/basic/PremButton';
 import PremTextInput from '../../../components/basic/PremTextInput';
 import { globalStyles } from '../../../styles/styles';
-import { useAppDispatch } from '../../../hooks';
-import { add } from '../../../reducers/leaguesReducer';
+import { useAppDispatch } from '../../../redux/hooks';
+import { add } from '../../../redux/reducers/leaguesReducer';
 import { makeLeagueFromName } from '../../../types/League';
 
 const CreateLeague = () => {
