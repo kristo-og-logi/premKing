@@ -10,6 +10,8 @@ import PlayerScore from '../../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
 import PremButton from '../../../components/basic/PremButton';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { getSelectedLeague } from '../../../redux/reducers/leaguesReducer';
 
 // put this into context or redux?
 const currentGW = 3;
@@ -103,34 +105,42 @@ const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
 };
 
 const LeagueView = () => {
+  const leagueSlice = useAppSelector((state) => state.leagues);
+  const dispatch = useAppDispatch();
   const { leagueId } = useLocalSearchParams();
-  const [league, setLeague] = useState<SelectedLeague>();
+  // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(currentGW);
-  const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
+  // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
 
   useEffect(() => {
-    fetchLeagueById(leagueId as string)
-      .then((data) => {
-        setLeague(data);
-        setScoreboardedPlayers(getScoreboardedPlayers(data.players, selectedGW));
-      })
-      .catch((error) => {
-        console.log('fetch league error in [leagueId]', error);
-      });
+    if (!leagueId) return;
+    if (typeof leagueId !== 'string') return;
+
+    dispatch(getSelectedLeague(leagueId));
+    // fetchLeagueById(leagueId as string)
+    //   .then((data) => {
+    //     setLeague(data);
+    //     setScoreboardedPlayers(getScoreboardedPlayers(data.players, selectedGW));
+    //   })
+    //   .catch((error) => {
+    //     console.log('fetch league error in [leagueId]', error);
+    //   });
   }, [leagueId]);
 
-  useEffect(() => {
-    if (!league) return;
-    setScoreboardedPlayers(getScoreboardedPlayers(league.players, selectedGW));
-  }, [selectedGW]);
+  // useEffect(() => {
+  //   if (!league) return;
+  //   setScoreboardedPlayers(getScoreboardedPlayers(league.players, selectedGW));
+  // }, [selectedGW]);
 
   return (
     <View style={globalStyles.container}>
       <Stack.Screen
-        options={{ headerTitle: league?.name || 'selected league' }} // can we make this not so ugly?
+        options={{ headerTitle: leagueSlice.selectedLeague?.name || 'selected league' }} // can we make this not so ugly?
       />
-      {!league ? (
+      {leagueSlice.selectedIsLoading ? (
         <PremText>Loading...</PremText>
+      ) : leagueSlice.selectedHasError || !leagueSlice.selectedLeague ? (
+        <PremText>Error occured</PremText>
       ) : (
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
@@ -144,14 +154,14 @@ const LeagueView = () => {
               Create Bet
             </PremButton>
           </View>
-          {Scoreboard(scoreboardedPlayers, selectedGW)}
+          {/* {Scoreboard(scoreboardedPlayers, selectedGW)}
           <View style={styles.statsWrapper}>
             <PremText order={4}>{`your position: ${calculateYourPlace(
               scoreboardedPlayers,
               'EXAMPLE'
             )}`}</PremText>
-            <PremText order={4}>{`total players: ${league.players.length}`}</PremText>
-          </View>
+            <PremText order={4}>{`total players: ${leagueSlice.selectedLeague.total}`}</PremText>
+          </View> */}
         </>
       )}
     </View>
