@@ -5,6 +5,7 @@ import { colors } from '../../styles/styles';
 type Props = {
   order?: 1 | 2 | 3 | 4;
   centered?: boolean;
+  padding?: number;
   children: string | number;
 };
 
@@ -21,13 +22,18 @@ const getSize = (order: 1 | 2 | 3 | 4) => {
   }
 };
 
-const PremText = ({ order = 3, centered = false, children }: Props) => {
+const PremText = ({ order = 3, centered = false, padding = 0, children }: Props) => {
   const size = getSize(order);
 
-  const styles: TextStyle = { fontFamily: 'MusticaPro', fontSize: size, color: colors.gray[0] };
+  const styles: TextStyle = {
+    fontFamily: 'MusticaPro',
+    fontSize: size,
+    color: colors.gray[0],
+    padding: padding,
+  };
 
   return centered ? (
-    <Text style={{ ...styles, textAlign: 'center' }}>{children}</Text>
+    <Text style={{ ...styles, textAlign: 'center', alignSelf: 'center' }}>{children}</Text>
   ) : (
     <Text style={styles}>{children}</Text>
   );

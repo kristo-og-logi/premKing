@@ -44,6 +44,12 @@ export const globalStyles = StyleSheet.create({
   border: {
     borderWidth: 1,
   },
+  centered: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
 });
 
 export const scoreboardWidths = StyleSheet.create({

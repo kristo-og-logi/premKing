@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
-import { colors, globalStyles } from '../../styles/styles';
-import PremButton from '../../components/basic/PremButton';
-import LeagueItem from '../../components/leagueMenu/LeagueItem';
+import { colors, globalStyles } from '../../../styles/styles';
+import PremButton from '../../../components/basic/PremButton';
+import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
-import { useAppSelector } from '../../hooks';
-import { League } from '../../types/League';
-import PremText from '../../components/basic/PremText';
-import GameweekShifter from '../../components/leagueId/GameweekShifter';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { League } from '../../../types/League';
+import PremText from '../../../components/basic/PremText';
+import GameweekShifter from '../../../components/leagueId/GameweekShifter';
+import { getLeagues } from '../../../redux/reducers/leaguesReducer';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
     <LeagueItem
-      key={league.id}
+      key={league.ID}
       league={league}
-      onPress={() => router.push(`leagues/${league.id}`)}
+      onPress={() => router.push(`/main/leagues/${league.ID}`)}
     />
   ));
 };
@@ -23,22 +24,12 @@ const renderLeagues = (leagues: League[]) => {
 const currentGW = 3;
 
 export default function Page() {
-  const leagues = useAppSelector((state) => state.leagues.items);
+  const dispatch = useAppDispatch();
+  const leagueSlice = useAppSelector((state) => state.leagues);
   const [selectedGW, setSelectedGW] = useState<number>(currentGW);
 
   useEffect(() => {
-    const fetchLeagues = async () => {
-      // const leagues: (League | undefined)[] = await Promise.all(
-      //   leagueIds.map(async (id) => {
-      //     // change this line later
-      //     return init.find((league) => league.id === id);
-      //   })
-      // );
-      // const foundLeagues: League[] = leagues.filter((league) => league !== undefined) as League[];
-      // setLeagues(foundLeagues);
-    };
-
-    fetchLeagues();
+    dispatch(getLeagues());
   }, []);
 
   return (
@@ -60,10 +51,14 @@ export default function Page() {
           </View>
         </View>
       </View>
-      {leagues.length !== 0 ? (
+      {leagueSlice.isLoading ? (
+        <PremText>Loading leagues...</PremText>
+      ) : leagueSlice.hasError ? (
+        <PremText>Error fetching leagues</PremText>
+      ) : leagueSlice.leagues.length !== 0 ? (
         <View style={{ maxHeight: 360 }}>
           <ScrollView style={{ flexGrow: 0 }}>
-            <View style={styles.leagueWrapper}>{renderLeagues(leagues)}</View>
+            <View style={styles.leagueWrapper}>{renderLeagues(leagueSlice.leagues)}</View>
           </ScrollView>
         </View>
       ) : (
@@ -73,17 +68,18 @@ export default function Page() {
           </PremText>
         </View>
       )}
+
       <View style={styles.actionWrapper}>
         <PremButton
           onPress={() => {
-            router.push('/leagues/CreateLeague');
+            router.push('/main/leagues/CreateLeague');
           }}
         >
           Create
         </PremButton>
         <PremButton
           onPress={() => {
-            router.push('/leagues/JoinLeague');
+            router.push('/main/leagues/JoinLeague');
           }}
         >
           Join

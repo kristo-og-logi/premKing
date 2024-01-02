@@ -1,16 +1,20 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Role, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors, globalStyles } from '../../styles/styles';
 import PremText from './PremText';
+import { Href } from 'expo-router/build/link/href';
 
 interface Props {
   fullWidth?: boolean;
   Icon?: JSX.Element;
   onPress: () => void;
   children: string;
+  href?: Href;
+  role?: Role;
+  ref?: React.RefObject<TouchableOpacity> | undefined;
 }
 
-const PremButton = ({ fullWidth = false, Icon, onPress, children }: Props) => {
+const PremButton = ({ fullWidth = false, Icon, onPress, children, role, ref }: Props) => {
   return (
     <TouchableOpacity
       style={[
@@ -19,6 +23,8 @@ const PremButton = ({ fullWidth = false, Icon, onPress, children }: Props) => {
         globalStyles.shadow,
       ]}
       onPress={onPress}
+      role={role}
+      ref={ref}
     >
       <PremText>{children}</PremText>
       {Icon}

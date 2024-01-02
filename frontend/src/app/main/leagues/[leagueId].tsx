@@ -2,14 +2,14 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 
-import { colors, globalStyles, scoreboardWidths } from '../../styles/styles';
-import { fetchLeagueById } from '../../utils/fetchLeague';
-import { SelectedLeague } from '../../types/League';
-import PremText from '../../components/basic/PremText';
-import PlayerScore from '../../components/leagueId/PlayerScore';
-import { Player, PlayerPoints, ScoreboardPlayer } from '../../types/Player';
-import PremButton from '../../components/basic/PremButton';
-import GameweekShifter from '../../components/leagueId/GameweekShifter';
+import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
+import { fetchLeagueById } from '../../../utils/fetchLeague';
+import { SelectedLeague } from '../../../types/League';
+import PremText from '../../../components/basic/PremText';
+import PlayerScore from '../../../components/leagueId/PlayerScore';
+import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
+import PremButton from '../../../components/basic/PremButton';
+import GameweekShifter from '../../../components/leagueId/GameweekShifter';
 
 // put this into context or redux?
 const currentGW = 3;
