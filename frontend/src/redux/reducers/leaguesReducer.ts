@@ -49,10 +49,6 @@ export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async
   const response = await fetch(url);
 
   const data: League[] = await response.json();
-  data.forEach((d) => {
-    console.log(d);
-  });
-
   return data;
 });
 
