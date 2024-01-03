@@ -1,8 +1,8 @@
 import { Player } from './Player';
 
-export type League = { ID: string; name: string; place: number; total: number };
+export type League = { ID: string; Name: string; place: number; total: number };
 
-export type SelectedLeague = { id: string; name: string; players: Player[] };
+export type SelectedLeague = { ID: string; Name: string; players: Player[] };
 
 export const makeLeagueFromName = (name: string) => {
   //   return { id: generateShortId(), name: name, place: 1, total: 1 };
