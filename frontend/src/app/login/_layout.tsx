@@ -3,18 +3,19 @@ import { FlatList, View, TouchableHighlight } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { globalStyles } from '../../styles/styles';
+import { colors, globalStyles } from '../../styles/styles';
 import PremText from '../../components/basic/PremText';
 import PremButton from '../../components/basic/PremButton';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { getUsers } from '../../redux/reducers/userReducer';
+import { getUsers, setUser } from '../../redux/reducers/userReducer';
+import User from '../../types/User';
 
 const Login = () => {
   const router = useRouter();
   const userSlice = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
-  const [selectedUser, setSelectedUser] = useState<boolean>(false);
+  const [selectedUserId, setSelectedUserId] = useState<string>();
   useEffect(() => {
     dispatch(getUsers());
   }, []);
@@ -33,10 +34,25 @@ const Login = () => {
         <FlatList
           data={userSlice.users}
           renderItem={(item) => (
-            <TouchableHighlight onPress={() => setSelectedUser((currentVal) => !currentVal)}>
+            <TouchableHighlight
+              onPress={() =>
+                selectedUserId === item.item.ID
+                  ? setSelectedUserId('')
+                  : setSelectedUserId(item.item.ID)
+              }
+              style={{ borderRadius: 4, marginBottom: 8 }}
+            >
               <View
                 key={item.item.ID}
-                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  backgroundColor:
+                    selectedUserId === item.item.ID ? colors.charcoal[3] : colors.charcoal[2],
+                  padding: 8,
+                  borderRadius: 4,
+                }}
               >
                 <PremText>{item.item.Name}</PremText>
                 <PremText>{`ID: ${item.item.ID.substring(0, 6)}`}</PremText>
@@ -46,7 +62,18 @@ const Login = () => {
         />
       )}
       <View style={[globalStyles.centered]}>
-        <PremButton onPress={() => router.replace('/main')} disabled={selectedUser}>
+        <PremButton
+          onPress={() => {
+            const selectedUser: User | undefined = userSlice.users.find(
+              (u) => u.ID === selectedUserId
+            );
+            if (selectedUser) {
+              dispatch(setUser(selectedUser));
+              router.replace('/main');
+            }
+          }}
+          disabled={!selectedUserId}
+        >
           Login
         </PremButton>
       </View>

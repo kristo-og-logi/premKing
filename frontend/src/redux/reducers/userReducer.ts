@@ -27,6 +27,9 @@ export const userSlice = createSlice({
     clearUser: (state) => {
       state.user = undefined;
     },
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -86,6 +89,7 @@ export const login = createAsyncThunk<User, AuthParams>(
   }
 );
 
+export const { clearUser, setUser } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user.user;
 
 export default userSlice.reducer;
