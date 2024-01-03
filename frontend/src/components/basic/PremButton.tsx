@@ -61,8 +61,7 @@ const styles = StyleSheet.create({
     width: 120,
   },
   disabled: {
-    // backgroundColor: colors.charcoal[2],
-    opacity: 0.75,
+    opacity: 0.6,
   },
 });
 
