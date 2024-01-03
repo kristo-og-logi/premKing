@@ -14,18 +14,18 @@ const LeagueItem = ({ league, onPress }: Props) => {
     <TouchableOpacity onPress={onPress}>
       <View style={styles.item}>
         <View style={styles.leftSide}>
-          <PremText>{league.name}</PremText>
+          <PremText>{league.Name || 'unnamed league'}</PremText>
           <PremText order={4}>{league.ID}</PremText>
         </View>
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>members</PremText>
-            <PremText>{league.place}</PremText>
+            <PremText>{league.total || '?'}</PremText>
           </View>
 
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>position</PremText>
-            <PremText>{league.total}</PremText>
+            <PremText>{league.place || '?'}</PremText>
           </View>
         </View>
       </View>
