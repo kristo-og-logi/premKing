@@ -28,10 +28,12 @@ export const leagueSlice = createSlice({
       state.leagues.push(action.payload);
     },
     remove: (state, action: PayloadAction<League>) => {
-      return {
-        ...state,
-        item: state.leagues.filter((num) => num !== action.payload),
-      };
+      state.leagues = state.leagues.filter((num) => num !== action.payload);
+    },
+    unselect: (state) => {
+      state.selectedHasError = false;
+      state.selectedIsLoading = false;
+      state.selectedLeague = undefined;
     },
   },
   extraReducers: (builder) => {
@@ -81,7 +83,7 @@ export const getSelectedLeague = createAsyncThunk<League, string>(
   }
 );
 
-export const { add, remove } = leagueSlice.actions;
+export const { add, remove, unselect } = leagueSlice.actions;
 
 export const selectLeagues = (state: RootState) => state.leagues.leagues;
 

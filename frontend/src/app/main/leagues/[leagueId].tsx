@@ -1,6 +1,6 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
 import { fetchLeagueById } from '../../../utils/fetchLeague';
@@ -11,7 +11,7 @@ import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
 import PremButton from '../../../components/basic/PremButton';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { getSelectedLeague } from '../../../redux/reducers/leaguesReducer';
+import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 
 // put this into context or redux?
 const currentGW = 3;
@@ -105,6 +105,7 @@ const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
 };
 
 const LeagueView = () => {
+  const navigation = useNavigation();
   const leagueSlice = useAppSelector((state) => state.leagues);
   const dispatch = useAppDispatch();
   const { leagueId } = useLocalSearchParams();
@@ -113,18 +114,31 @@ const LeagueView = () => {
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
 
   useEffect(() => {
+    // Event listener for the navigation 'beforeRemove' event
+    const beforeRemoveListener = navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+      dispatch(unselect()); // unselect the league
+      navigation.dispatch(e.data.action); // default back action
+    });
+
+    // Event listener for the hardware back button on Android
+    const backHandlerListener = BackHandler.addEventListener('hardwareBackPress', () => {
+      dispatch(unselect()); // unselect the league
+      return false; // allows the default back action
+    });
+
+    // Clean up the listeners on component unmount
+    return () => {
+      beforeRemoveListener();
+      backHandlerListener.remove();
+    };
+  }, [navigation]);
+
+  useEffect(() => {
     if (!leagueId) return;
     if (typeof leagueId !== 'string') return;
 
     dispatch(getSelectedLeague(leagueId));
-    // fetchLeagueById(leagueId as string)
-    //   .then((data) => {
-    //     setLeague(data);
-    //     setScoreboardedPlayers(getScoreboardedPlayers(data.players, selectedGW));
-    //   })
-    //   .catch((error) => {
-    //     console.log('fetch league error in [leagueId]', error);
-    //   });
   }, [leagueId]);
 
   // useEffect(() => {
@@ -135,7 +149,11 @@ const LeagueView = () => {
   return (
     <View style={globalStyles.container}>
       <Stack.Screen
-        options={{ headerTitle: leagueSlice.selectedLeague?.name || 'selected league' }} // can we make this not so ugly?
+        options={{
+          headerTitle: leagueSlice.selectedIsLoading
+            ? 'loading...'
+            : leagueSlice.selectedLeague?.Name || 'unnamed league',
+        }}
       />
       {leagueSlice.selectedIsLoading ? (
         <PremText>Loading...</PremText>
