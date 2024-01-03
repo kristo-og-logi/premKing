@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import leaguesReducer from './reducers/leaguesReducer';
+import userReducer from './reducers/userReducer';
 
 export const store = configureStore({
   reducer: {
     leagues: leaguesReducer,
+    user: userReducer,
   },
 });
 
