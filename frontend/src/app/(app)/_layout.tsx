@@ -1,8 +1,13 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAppSelector } from '../../redux/hooks';
 
 export default function MainLayout() {
+  const userSlice = useAppSelector((state) => state.user);
+
+  if (!userSlice.user) return <Redirect href="/login" />;
+
   return (
     <Tabs
       screenOptions={{

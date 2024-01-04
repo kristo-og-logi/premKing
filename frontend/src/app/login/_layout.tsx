@@ -69,7 +69,7 @@ const Login = () => {
             );
             if (selectedUser) {
               dispatch(setUser(selectedUser));
-              router.replace('/main');
+              router.replace('/');
             }
           }}
           disabled={!selectedUserId}
