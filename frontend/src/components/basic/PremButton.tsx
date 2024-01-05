@@ -8,23 +8,33 @@ interface Props {
   fullWidth?: boolean;
   Icon?: JSX.Element;
   onPress: () => void;
+  disabled?: boolean;
   children: string;
   href?: Href;
   role?: Role;
   ref?: React.RefObject<TouchableOpacity> | undefined;
 }
 
-const PremButton = ({ fullWidth = false, Icon, onPress, children, role, ref }: Props) => {
+const PremButton = ({
+  fullWidth = false,
+  Icon,
+  onPress,
+  disabled = false,
+  children,
+  role,
+  ref,
+}: Props) => {
   return (
     <TouchableOpacity
       style={[
         styles.button,
         fullWidth ? styles.fullWidth : styles.normalWidth,
-        globalStyles.shadow,
+        disabled ? styles.disabled : globalStyles.shadow,
       ]}
       onPress={onPress}
       role={role}
       ref={ref}
+      disabled={disabled}
     >
       <PremText>{children}</PremText>
       {Icon}
@@ -49,6 +59,9 @@ const styles = StyleSheet.create({
   },
   normalWidth: {
     width: 120,
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });
 

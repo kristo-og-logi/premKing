@@ -16,7 +16,7 @@ const renderLeagues = (leagues: League[]) => {
     <LeagueItem
       key={league.ID}
       league={league}
-      onPress={() => router.push(`/main/leagues/${league.ID}`)}
+      onPress={() => router.push(`/leagues/${league.ID}`)}
     />
   ));
 };
@@ -72,14 +72,14 @@ export default function Page() {
       <View style={styles.actionWrapper}>
         <PremButton
           onPress={() => {
-            router.push('/main/leagues/CreateLeague');
+            router.push('/leagues/CreateLeague');
           }}
         >
           Create
         </PremButton>
         <PremButton
           onPress={() => {
-            router.push('/main/leagues/JoinLeague');
+            router.push('/leagues/JoinLeague');
           }}
         >
           Join

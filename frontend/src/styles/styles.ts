@@ -3,7 +3,22 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
 
 export const colors = {
-  charcoal: ['#020E12', '#072936', '#093749', '#0A475C', '#0E6481', '#1281A5', '#169DCA'],
+  charcoal: [
+    '#020E12',
+    '#072936',
+    '#093749',
+    '#0A475C',
+    '#0E6481',
+    '#1281A5',
+    '#169DCA',
+    '#20b5e7',
+    '#43c1eb',
+    '#67cdef',
+    '#9cdef4',
+    '#bfeaf8',
+    '#d1f0fa',
+    '#f5fcfe',
+  ],
   red: '#FF1D15',
   green: '#3EC300',
   gray: ['#F8FAFC', '#E2E8F0', '#94A3B8', '#475569'],
