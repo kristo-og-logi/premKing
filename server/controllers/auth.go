@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
 type AuthRequest struct {
@@ -32,6 +33,9 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
+	tokenInfo, _ := CheckTokenStatus(authReq.GoogleToken)
+	utils.PrettyPrint("Token info: %s\n", tokenInfo)
+
 	userInfo, authError := googleAuthenticate(c, authReq.GoogleToken)
 
 	if authError != nil {
@@ -39,7 +43,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("User Info: %+v\n", userInfo)
+	utils.PrettyPrint("User info: %s", userInfo)
 
 	c.IndentedJSON(200, userInfo)
 }
@@ -78,7 +82,7 @@ func googleAuthenticate(c *gin.Context, token string) (*GoogleUserInfo, *AuthErr
 	// Read the response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("ailed to read response body: %s", err)}
+		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to read response body: %s", err)}
 	}
 
 	// Unmarshal the JSON data into the GoogleUserInfo struct
@@ -89,4 +93,44 @@ func googleAuthenticate(c *gin.Context, token string) (*GoogleUserInfo, *AuthErr
 	}
 
 	return &userInfo, nil
+}
+
+// TokenInfo represents the information returned by the Google token info endpoint
+type TokenInfo struct {
+	Audience      string `json:"aud"`            // The audience for which the token was issued
+	Scope         string `json:"scope"`          // The scopes associated with the token
+	ExpiresIn     string `json:"expires_in"`     // The remaining lifetime on the token
+	Email         string `json:"email"`          // The user's email address
+	VerifiedEmail bool   `json:"verified_email"` // Whether the email address has been verified
+	Error         string `json:"error"`          // Error description (if any)
+}
+
+// CheckTokenStatus verifies the status of an OAuth token with Google's token info endpoint
+func CheckTokenStatus(accessToken string) (*TokenInfo, error) {
+	resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s", accessToken))
+	if err != nil {
+		return nil, fmt.Errorf("error making request to token info endpoint: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error response from token info endpoint: status code %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	var tokenInfo TokenInfo
+	err = json.Unmarshal(body, &tokenInfo)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling token info JSON: %v", err)
+	}
+
+	if tokenInfo.Error != "" {
+		return &tokenInfo, fmt.Errorf("error in token info: %s", tokenInfo.Error)
+	}
+
+	return &tokenInfo, nil
 }
