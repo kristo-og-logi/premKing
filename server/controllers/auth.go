@@ -3,8 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -33,42 +32,61 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("token is: %s\n", authReq.GoogleToken)
+	userInfo, authError := googleAuthenticate(c, authReq.GoogleToken)
 
-	// get user info from google
+	if authError != nil {
+		c.IndentedJSON(authError.StatusCode, gin.H{"error": authError.Err.Error()})
+		return
+	}
+
+	fmt.Printf("User Info: %+v\n", userInfo)
+
+	c.IndentedJSON(200, userInfo)
+}
+
+type AuthError struct {
+	StatusCode int
+	Err        error
+}
+
+func googleAuthenticate(c *gin.Context, token string) (*GoogleUserInfo, *AuthError) {
 	userInfoURL := "https://www.googleapis.com/oauth2/v3/userinfo"
 
 	// Create a new HTTP request with the token included in the Authorization header
 	req, err := http.NewRequest("GET", userInfoURL, nil)
 	if err != nil {
-		log.Fatalf("Failed to create request: %s", err)
+		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to create request: %s", err)}
 	}
 	// Set the Authorization header to "Bearer <token>"
-	req.Header.Set("Authorization", "Bearer "+authReq.GoogleToken)
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	// Execute the HTTP request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Failed to send request: %s", err)
+		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to send request %s", err)}
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		if resp.StatusCode == 401 {
+			return nil, &AuthError{StatusCode: http.StatusUnauthorized, Err: fmt.Errorf("invalid oauth token")}
+		}
+		return nil, &AuthError{StatusCode: http.StatusBadRequest, Err: fmt.Errorf("unknown error when fetching user data: status code %d", resp.StatusCode)}
+	}
+
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Failed to read response body: %s", err)
+		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("ailed to read response body: %s", err)}
 	}
 
 	// Unmarshal the JSON data into the GoogleUserInfo struct
 	var userInfo GoogleUserInfo
 	err = json.Unmarshal(body, &userInfo)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal JSON: %s", err)
+		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to unmarshal JSON: %s", err)}
 	}
 
-	fmt.Printf("User Info: %+v\n", userInfo)
-
-	c.IndentedJSON(200, userInfo)
-	return
+	return &userInfo, nil
 }
