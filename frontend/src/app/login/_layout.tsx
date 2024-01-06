@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, View, TouchableHighlight } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Google from 'expo-auth-session/providers/google';
 
 import { colors, globalStyles } from '../../styles/styles';
 import PremText from '../../components/basic/PremText';
@@ -9,6 +10,7 @@ import PremButton from '../../components/basic/PremButton';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { getUsers, setUser } from '../../redux/reducers/userReducer';
 import User from '../../types/User';
+import GoogleButton from '../../components/GoogleButton';
 
 const Login = () => {
   const router = useRouter();
@@ -19,6 +21,41 @@ const Login = () => {
   useEffect(() => {
     dispatch(getUsers());
   }, []);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: '538791218868-3occqdqicf7o6qsspdfu2731811jt4k8.apps.googleusercontent.com',
+  });
+
+  const handleOauth = async () => {
+    if (response?.type === 'success') {
+      console.log('oauth success: ', response.authentication?.accessToken);
+      getUser(response.authentication?.accessToken);
+    }
+  };
+
+  const getUser = async (token?: string) => {
+    if (!token) {
+      console.log('No token');
+      return;
+    }
+    try {
+      const response = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const user = await response.json();
+      console.log('User: ', user);
+      return user;
+    } catch (error) {
+      console.log('ERROR fetching user data');
+    }
+  };
+
+  useEffect(() => {
+    handleOauth();
+  }, [response]);
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -61,21 +98,24 @@ const Login = () => {
           )}
         />
       )}
-      <View style={[globalStyles.centered]}>
-        <PremButton
-          onPress={() => {
-            const selectedUser: User | undefined = userSlice.users.find(
-              (u) => u.ID === selectedUserId
-            );
-            if (selectedUser) {
-              dispatch(setUser(selectedUser));
-              router.replace('/');
-            }
-          }}
-          disabled={!selectedUserId}
-        >
-          Login
-        </PremButton>
+      <View style={{ display: 'flex', gap: 8 }}>
+        <View style={{ ...globalStyles.centered, marginBottom: 30 }}>
+          <PremButton
+            onPress={() => {
+              const selectedUser: User | undefined = userSlice.users.find(
+                (u) => u.ID === selectedUserId
+              );
+              if (selectedUser) {
+                dispatch(setUser(selectedUser));
+                router.replace('/');
+              }
+            }}
+            disabled={!selectedUserId}
+          >
+            Login
+          </PremButton>
+        </View>
+        <GoogleButton onPress={() => promptAsync()} />
       </View>
     </SafeAreaView>
   );

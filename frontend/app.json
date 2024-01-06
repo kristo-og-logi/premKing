@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "premKing-frontend",
+    "slug": "pK",
     "scheme": "premKingApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,13 +16,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kristo.premking",
+      "name": "pk-app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kristo.premking"
     },
     "web": {
       "bundler": "metro",
