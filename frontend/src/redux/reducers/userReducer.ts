@@ -68,19 +68,13 @@ export const getUsers = createAsyncThunk<User[]>('user/getUsers', async () => {
   return data;
 });
 
-type AuthParams = {
-  username: string;
-  password: string;
-};
-
-export const login = createAsyncThunk<User, AuthParams>(
+export const login = createAsyncThunk<User, string>(
   'user/login',
-  async ({ username, password }: AuthParams) => {
+  async (googleOAuthToken: string) => {
     const url = 'http://localhost:8080/api/v1/auth/login';
     const response = await fetch(url, {
       body: JSON.stringify({
-        username,
-        password,
+        googleOAuthToken: googleOAuthToken,
       }),
     });
 
