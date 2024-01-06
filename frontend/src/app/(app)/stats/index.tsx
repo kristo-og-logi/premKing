@@ -13,15 +13,20 @@ const Stats = () => {
 
   return (
     <View style={globalStyles.container}>
-      <PremText>Some stats</PremText>
-      <PremText>{`You are: ${userSlice.user?.Name}`}</PremText>
-      <PremButton
-        onPress={() => {
-          dispatch(clearUser());
-        }}
-      >
-        Logout
-      </PremButton>
+      <PremText order={2} centered>
+        Some stats
+      </PremText>
+      <PremText>{`name: ${userSlice.user?.Name}`}</PremText>
+      {userSlice.user?.email && <PremText>{`email: ${userSlice.user?.email}`}</PremText>}
+      <View style={globalStyles.centered}>
+        <PremButton
+          onPress={() => {
+            dispatch(clearUser());
+          }}
+        >
+          Logout
+        </PremButton>
+      </View>
     </View>
   );
 };

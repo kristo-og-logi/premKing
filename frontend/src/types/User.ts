@@ -4,4 +4,5 @@ export default interface User {
   username: string;
   token: string;
   Name: string;
+  email?: string;
 }

@@ -29,11 +29,16 @@ const Login = () => {
   const handleOauth = async () => {
     if (response?.type === 'success') {
       console.log('oauth success: ', response.authentication?.accessToken);
-      getUser(response.authentication?.accessToken);
+      const user = await getUser(response.authentication?.accessToken);
+
+      if (user) {
+        dispatch(setUser(user));
+        router.replace('/');
+      }
     }
   };
 
-  const getUser = async (token?: string) => {
+  const getUser = async (token?: string): Promise<User | undefined> => {
     if (!token) {
       console.log('No token');
       return;
@@ -47,7 +52,16 @@ const Login = () => {
 
       const user = await response.json();
       console.log('User: ', user);
-      return user;
+
+      const newUser: User = {
+        id: user.id,
+        ID: user.id,
+        username: user.name,
+        Name: user.name,
+        token: token,
+        email: user.email,
+      };
+      return newUser;
     } catch (error) {
       console.log('ERROR fetching user data');
     }
