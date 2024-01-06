@@ -4,9 +4,17 @@ import PremButton from './basic/PremButton';
 
 import googleImage from '../../assets/google.png';
 
-const GoogleButton = () => {
+interface Props {
+  onPress: () => void;
+}
+
+const GoogleButton = ({ onPress }: Props) => {
   return (
-    <PremButton fullWidth Icon={<Image source={googleImage} style={{ height: 28, width: 28 }} />}>
+    <PremButton
+      onPress={onPress}
+      fullWidth
+      Icon={<Image source={googleImage} style={{ height: 28, width: 28 }} />}
+    >
       Sign in
     </PremButton>
   );
