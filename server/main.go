@@ -20,6 +20,8 @@ func init() {
 }
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
+
 	version1 := "v1"
 	var api string = "api"
 
@@ -32,7 +34,8 @@ func main() {
 	// create the api route prefix
 	version1Prefix := "/" + api + "/" + version1
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
 
 	routes.SetupLeagueRoutes(router, version1Prefix)
 	routes.SetupUserRoutes(router, version1Prefix)

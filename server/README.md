@@ -23,7 +23,7 @@ export PATH=$PATH:$GOPATH/bin
 Now, to hot module reload run the backend, start it with..
 
 ```
-CompileDaemon -command="./server"
+CompileDaemon -command="./server" -color=true -log-prefix=false
 ```
 
 ..inside the backend repository. The command includes "./server" as it's the name of the backend directory.
