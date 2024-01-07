@@ -16,7 +16,7 @@ const Stats = () => {
       <PremText order={2} centered>
         Some stats
       </PremText>
-      <PremText>{`name: ${userSlice.user?.Name}`}</PremText>
+      <PremText>{`name: ${userSlice.user?.name}`}</PremText>
       {userSlice.user?.email && <PremText>{`email: ${userSlice.user?.email}`}</PremText>}
       <View style={globalStyles.centered}>
         <PremButton

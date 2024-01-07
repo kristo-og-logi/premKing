@@ -33,7 +33,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	tokenInfo, _ := CheckTokenStatus(authReq.GoogleToken)
+	tokenInfo, _ := checkTokenStatus(authReq.GoogleToken)
 	utils.PrettyPrint("Token info: %s\n", tokenInfo)
 
 	userInfo, authError := googleAuthenticate(c, authReq.GoogleToken)
@@ -105,8 +105,8 @@ type TokenInfo struct {
 	Error         string `json:"error"`          // Error description (if any)
 }
 
-// CheckTokenStatus verifies the status of an OAuth token with Google's token info endpoint
-func CheckTokenStatus(accessToken string) (*TokenInfo, error) {
+// checkTokenStatus verifies the status of an OAuth token with Google's token info endpoint
+func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 	resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s", accessToken))
 	if err != nil {
 		return nil, fmt.Errorf("error making request to token info endpoint: %v", err)
