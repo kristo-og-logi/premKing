@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +11,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/utils"
+	"gorm.io/gorm"
 )
 
 // var db *gorm.DB = initializers.DB
@@ -44,17 +47,85 @@ func GetUserById(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
+type CreateUserRequest struct {
+	Name string `json:"name" binding:"required"`
+}
+
 func CreateUser(c *gin.Context) {
-	newUser := models.User{ID: uuid.New().String(), Name: "John Doe"}
+	var createUserRequest CreateUserRequest
+
+	if err := c.ShouldBindJSON(&createUserRequest); err != nil {
+		if err == io.EOF {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body empty"})
+			return
+		}
+		if createUserRequest.Name == "" {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "attribute `name` missing in body"})
+			return
+		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	newUser := models.User{ID: uuid.New().String(), Name: createUserRequest.Name}
 
 	result := initializers.DB.Create(&newUser)
 	if result.Error != nil {
 		fmt.Printf("failed to create user:" + result.Error.Error())
-		c.IndentedJSON(http.StatusBadRequest, "Failed to create user")
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
 		return
 	}
 
 	c.IndentedJSON(http.StatusCreated, newUser)
+}
+
+func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
+	newUser := models.User{ID: uuid.New().String(), Name: user.Name, Email: user.Email}
+
+	result := initializers.DB.Create(&newUser)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &newUser, nil
+}
+
+type DeleteUserRequest struct {
+	ID string `json:"id" binding:"required"`
+}
+
+func DeleteUserById(c *gin.Context) {
+	userID := c.Param("id")
+
+	if userID == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "missing `id` parameter in route"})
+		return
+	}
+
+	if !utils.IsValidUuid(userID) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("id `%s` is not a valid UUID", userID)})
+		return
+	}
+
+	userExists, err := UserExistsById(userID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "error checking whether user exists"})
+		return
+	}
+
+	if !userExists {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id `%s` not found", userID)})
+		return
+	}
+
+	result := initializers.DB.Delete(&models.User{}, "id = ?", userID)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("internal error when deleting user with id `%s`", userID)})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "user deleted"})
 }
 
 func GetUsersLeaguesByUserId(c *gin.Context) {
@@ -127,4 +198,30 @@ func JoinLeagueByUserId(c *gin.Context) {
 	initializers.DB.Model(&user).Association("Leagues").Append(&league)
 
 	c.IndentedJSON(201, "user successfully joined league")
+}
+
+func UserExistsByEmail(email string) (bool, error) {
+	var user models.User
+	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
+
+		// If there's an error, and it's not a 'record not found' error, return the error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func UserExistsById(id string) (bool, error) {
+	if err := initializers.DB.First(&models.User{}, "id = ?", id).Error; err != nil {
+		// If there's an error, and it's not a 'record not found' error, return the error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
 }

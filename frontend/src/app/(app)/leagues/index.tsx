@@ -14,9 +14,9 @@ import { getLeagues } from '../../../redux/reducers/leaguesReducer';
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
     <LeagueItem
-      key={league.ID}
+      key={league.id}
       league={league}
-      onPress={() => router.push(`/leagues/${league.ID}`)}
+      onPress={() => router.push(`/leagues/${league.id}`)}
     />
   ));
 };

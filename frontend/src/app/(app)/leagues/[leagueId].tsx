@@ -152,7 +152,7 @@ const LeagueView = () => {
         options={{
           headerTitle: leagueSlice.selectedIsLoading
             ? 'loading...'
-            : leagueSlice.selectedLeague?.Name || 'unnamed league',
+            : leagueSlice.selectedLeague?.name || 'unnamed league',
         }}
       />
       {leagueSlice.selectedIsLoading ? (

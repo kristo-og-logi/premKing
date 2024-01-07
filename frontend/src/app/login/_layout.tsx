@@ -55,9 +55,8 @@ const Login = () => {
 
       const newUser: User = {
         id: user.id,
-        ID: user.id,
         username: user.name,
-        Name: user.name,
+        name: user.name,
         token: token,
         email: user.email,
       };
@@ -87,26 +86,26 @@ const Login = () => {
           renderItem={(item) => (
             <TouchableHighlight
               onPress={() =>
-                selectedUserId === item.item.ID
+                selectedUserId === item.item.id
                   ? setSelectedUserId('')
-                  : setSelectedUserId(item.item.ID)
+                  : setSelectedUserId(item.item.id)
               }
               style={{ borderRadius: 4, marginBottom: 8 }}
             >
               <View
-                key={item.item.ID}
+                key={item.item.id}
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   backgroundColor:
-                    selectedUserId === item.item.ID ? colors.charcoal[3] : colors.charcoal[2],
+                    selectedUserId === item.item.id ? colors.charcoal[3] : colors.charcoal[2],
                   padding: 8,
                   borderRadius: 4,
                 }}
               >
-                <PremText>{item.item.Name}</PremText>
-                <PremText>{`ID: ${item.item.ID.substring(0, 6)}`}</PremText>
+                <PremText>{item.item.name}</PremText>
+                <PremText>{`id: ${item.item.id.substring(0, 6)}`}</PremText>
               </View>
             </TouchableHighlight>
           )}
@@ -117,7 +116,7 @@ const Login = () => {
           <PremButton
             onPress={() => {
               const selectedUser: User | undefined = userSlice.users.find(
-                (u) => u.ID === selectedUserId
+                (u) => u.id === selectedUserId
               );
               if (selectedUser) {
                 dispatch(setUser(selectedUser));

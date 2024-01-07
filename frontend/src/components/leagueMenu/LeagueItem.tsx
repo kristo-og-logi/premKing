@@ -14,8 +14,8 @@ const LeagueItem = ({ league, onPress }: Props) => {
     <TouchableOpacity onPress={onPress}>
       <View style={styles.item}>
         <View style={styles.leftSide}>
-          <PremText>{league.Name || 'unnamed league'}</PremText>
-          <PremText order={4}>{league.ID}</PremText>
+          <PremText>{league.name || 'unnamed league'}</PremText>
+          <PremText order={4}>{league.id}</PremText>
         </View>
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
