@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/utils"
+	"gorm.io/gorm"
 )
 
 // var db *gorm.DB = initializers.DB
@@ -74,6 +76,17 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newUser)
+}
+
+func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
+	newUser := models.User{ID: uuid.New().String(), Name: user.Name, Email: user.Email}
+
+	result := initializers.DB.Create(&newUser)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &newUser, nil
 }
 
 func GetUsersLeaguesByUserId(c *gin.Context) {
@@ -146,4 +159,18 @@ func JoinLeagueByUserId(c *gin.Context) {
 	initializers.DB.Model(&user).Association("Leagues").Append(&league)
 
 	c.IndentedJSON(201, "user successfully joined league")
+}
+
+func UserExistsByEmail(email string) (bool, error) {
+	var user models.User
+	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
+
+		// If there's an error, and it's not a 'record not found' error, return the error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
 }

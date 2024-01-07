@@ -33,7 +33,12 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	tokenInfo, _ := checkTokenStatus(authReq.GoogleToken)
+	tokenInfo, err := checkTokenStatus(authReq.GoogleToken)
+	if err != nil {
+		fmt.Printf("token error: %s\n", err.Error())
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
+		return
+	}
 	utils.PrettyPrint("Token info: %s\n", tokenInfo)
 
 	userInfo, authError := googleAuthenticate(c, authReq.GoogleToken)
@@ -44,6 +49,30 @@ func GetAuth(c *gin.Context) {
 	}
 
 	utils.PrettyPrint("User info: %s", userInfo)
+
+	userExists, err := UserExistsByEmail(userInfo.Email)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error while checking whether user email exists in db"})
+		return
+	}
+
+	if !userExists {
+		createdUser, err := CreateUserFromGoogleAuth(*userInfo)
+		if err != nil {
+			fmt.Printf("Error creating user: %s\n", err.Error())
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating new user"})
+			return
+		}
+
+		// utils.PrettyPrint("new user: %v\n", createdUser)
+		fmt.Printf("new user: %+v\n", createdUser)
+
+		c.IndentedJSON(http.StatusCreated, createdUser)
+		return
+	}
+
+	fmt.Printf("userExists: %t\n", userExists)
 
 	c.IndentedJSON(200, userInfo)
 }
@@ -114,6 +143,8 @@ func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		// body, _ := io.ReadAll(resp.Body)
+		// fmt.Printf("google error: %s\n", body)
 		return nil, fmt.Errorf("error response from token info endpoint: status code %d", resp.StatusCode)
 	}
 
