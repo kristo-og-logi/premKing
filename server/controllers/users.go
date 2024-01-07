@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,13 +45,34 @@ func GetUserById(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
+type CreateUserRequest struct {
+	Name string `json:"name" binding:"required"`
+}
+
 func CreateUser(c *gin.Context) {
-	newUser := models.User{ID: uuid.New().String(), Name: "John Doe"}
+	var createUserRequest CreateUserRequest
+
+	if err := c.ShouldBindJSON(&createUserRequest); err != nil {
+		fmt.Printf("error message: %s\n", err.Error())
+		fmt.Printf("name is: %s\n", createUserRequest.Name)
+
+		if err == io.EOF {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body empty"})
+			return
+		}
+		if createUserRequest.Name == "" {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "attribute `name` missing in body"})
+			return
+		}
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	newUser := models.User{ID: uuid.New().String(), Name: createUserRequest.Name}
 
 	result := initializers.DB.Create(&newUser)
 	if result.Error != nil {
 		fmt.Printf("failed to create user:" + result.Error.Error())
-		c.IndentedJSON(http.StatusBadRequest, "Failed to create user")
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
 		return
 	}
 
