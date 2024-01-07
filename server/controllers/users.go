@@ -89,6 +89,45 @@ func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	return &newUser, nil
 }
 
+type DeleteUserRequest struct {
+	ID string `json:"id" binding:"required"`
+}
+
+func DeleteUserById(c *gin.Context) {
+	userID := c.Param("id")
+
+	if userID == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "missing `id` parameter in route"})
+		return
+	}
+
+	if !utils.IsValidUuid(userID) {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("id `%s` is not a valid UUID", userID)})
+		return
+	}
+
+	userExists, err := UserExistsById(userID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "error checking whether user exists"})
+		return
+	}
+
+	if !userExists {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id `%s` not found", userID)})
+		return
+	}
+
+	result := initializers.DB.Delete(&models.User{}, "id = ?", userID)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("internal error when deleting user with id `%s`", userID)})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
+
 func GetUsersLeaguesByUserId(c *gin.Context) {
 	id := c.Param("id")
 
@@ -165,6 +204,18 @@ func UserExistsByEmail(email string) (bool, error) {
 	var user models.User
 	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
 
+		// If there's an error, and it's not a 'record not found' error, return the error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func UserExistsById(id string) (bool, error) {
+	if err := initializers.DB.First(&models.User{}, "id = ?", id).Error; err != nil {
 		// If there's an error, and it's not a 'record not found' error, return the error
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, err

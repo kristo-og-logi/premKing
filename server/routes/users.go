@@ -12,6 +12,7 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		leagueGroup.POST("", controllers.CreateUser)
 
 		leagueGroup.GET("/:id", controllers.GetUserById)
+		leagueGroup.DELETE("/:id", controllers.DeleteUserById)
 
 		leagueGroup.GET("/:id/leagues", controllers.GetUsersLeaguesByUserId)
 		leagueGroup.POST("/:id/leagues", controllers.JoinLeagueByUserId)
