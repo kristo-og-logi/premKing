@@ -214,6 +214,15 @@ func UserExistsByEmail(email string) (bool, error) {
 	return true, nil
 }
 
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	if err := initializers.DB.First(&user, "email = ?", email).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func UserExistsById(id string) (bool, error) {
 	if err := initializers.DB.First(&models.User{}, "id = ?", id).Error; err != nil {
 		// If there's an error, and it's not a 'record not found' error, return the error

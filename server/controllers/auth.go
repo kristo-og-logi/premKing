@@ -48,7 +48,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	utils.PrettyPrint("User info: %s", userInfo)
+	// utils.PrettyPrint("User info: %s", userInfo)
 
 	userExists, err := UserExistsByEmail(userInfo.Email)
 
@@ -65,16 +65,12 @@ func GetAuth(c *gin.Context) {
 			return
 		}
 
-		// utils.PrettyPrint("new user: %v\n", createdUser)
-		fmt.Printf("new user: %+v\n", createdUser)
-
 		c.IndentedJSON(http.StatusCreated, createdUser)
 		return
 	}
 
-	fmt.Printf("userExists: %t\n", userExists)
-
-	c.IndentedJSON(200, userInfo)
+	user, _ := GetUserByEmail(userInfo.Email)
+	c.IndentedJSON(200, user)
 }
 
 type AuthError struct {
