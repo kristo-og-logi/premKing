@@ -53,9 +53,6 @@ func CreateUser(c *gin.Context) {
 	var createUserRequest CreateUserRequest
 
 	if err := c.ShouldBindJSON(&createUserRequest); err != nil {
-		fmt.Printf("error message: %s\n", err.Error())
-		fmt.Printf("name is: %s\n", createUserRequest.Name)
-
 		if err == io.EOF {
 			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body empty"})
 			return
