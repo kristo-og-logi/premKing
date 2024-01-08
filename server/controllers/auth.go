@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
@@ -23,6 +24,11 @@ type GoogleUserInfo struct {
 	Picture       string `json:"picture"`
 	Email         string `json:"email"`
 	EmailVerified bool   `json:"email_verified"`
+}
+
+type LoginResponse struct {
+	User  *models.User `json:"user"`
+	Token string       `json:"token"`
 }
 
 func GetAuth(c *gin.Context) {
@@ -70,7 +76,16 @@ func GetAuth(c *gin.Context) {
 	}
 
 	user, _ := GetUserByEmail(userInfo.Email)
-	c.IndentedJSON(200, user)
+
+	tokenString, err := utils.CreateToken(*user)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
+		return
+	}
+
+	response := LoginResponse{User: user, Token: tokenString}
+	c.IndentedJSON(200, response)
 }
 
 type AuthError struct {
@@ -160,4 +175,16 @@ func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 	}
 
 	return &tokenInfo, nil
+}
+
+func IsAuth(c *gin.Context) {
+	untypedUser, exists := c.Get("user")
+	user := untypedUser.(*models.User)
+
+	if !exists {
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "Is not authenticated"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, user)
 }
