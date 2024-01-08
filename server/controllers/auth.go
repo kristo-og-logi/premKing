@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
@@ -70,6 +71,16 @@ func GetAuth(c *gin.Context) {
 	}
 
 	user, _ := GetUserByEmail(userInfo.Email)
+
+	tokenString, err := utils.CreateToken(*user)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
+		return
+	}
+
+	fmt.Printf("token: %s\n", tokenString)
+
 	c.IndentedJSON(200, user)
 }
 
@@ -160,4 +171,16 @@ func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 	}
 
 	return &tokenInfo, nil
+}
+
+func IsAuth(c *gin.Context) {
+	untypedUser, exists := c.Get("user")
+	user := untypedUser.(models.User)
+
+	if !exists {
+		c.IndentedJSON(http.StatusOK, gin.H{"message": "Is not authenticated"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, user)
 }
