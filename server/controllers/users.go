@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 	"gorm.io/gorm"
 )
@@ -151,7 +152,6 @@ func GetUsersLeaguesByUserId(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user.Leagues)
-
 }
 
 func JoinLeagueByUserId(c *gin.Context) {
@@ -233,4 +233,48 @@ func UserExistsById(id string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func GetMyLeagues(c *gin.Context) {
+	currentUser := utils.GetUserFromContext(c)
+	if currentUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, "todo")
+}
+
+type CreateMyLeagueRequestBody struct {
+	LeagueName string `json:"leagueName" binding:"required"`
+}
+
+func CreateMyLeague(c *gin.Context) {
+	currentUser := utils.GetUserFromContext(c)
+	if currentUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
+	}
+
+	var body CreateMyLeagueRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		if err == io.EOF {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body missing"})
+			return
+		}
+		if body.LeagueName == "" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body attribute `leagueName` missing"})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	league, err := repositories.CreateleagueFromOwnerId(body.LeagueName, currentUser.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, league)
 }

@@ -15,7 +15,7 @@ import (
 
 func GetAllLeagues(c *gin.Context) {
 	var leagues []models.League
-	result := initializers.DB.Find(&leagues)
+	result := initializers.DB.Preload("Owner").Find(&leagues)
 
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
