@@ -26,6 +26,11 @@ type GoogleUserInfo struct {
 	EmailVerified bool   `json:"email_verified"`
 }
 
+type LoginResponse struct {
+	User  *models.User `json:"user"`
+	Token string       `json:"token"`
+}
+
 func GetAuth(c *gin.Context) {
 	var authReq AuthRequest
 
@@ -79,9 +84,8 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("token: %s\n", tokenString)
-
-	c.IndentedJSON(200, user)
+	response := LoginResponse{User: user, Token: tokenString}
+	c.IndentedJSON(200, response)
 }
 
 type AuthError struct {
@@ -175,7 +179,7 @@ func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 
 func IsAuth(c *gin.Context) {
 	untypedUser, exists := c.Get("user")
-	user := untypedUser.(models.User)
+	user := untypedUser.(*models.User)
 
 	if !exists {
 		c.IndentedJSON(http.StatusOK, gin.H{"message": "Is not authenticated"})
