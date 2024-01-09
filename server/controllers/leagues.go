@@ -12,8 +12,6 @@ import (
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
-// var db *gorm.DB = initializers.DB
-
 func GetAllLeagues(c *gin.Context) {
 	var leagues []models.League
 	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
@@ -59,9 +57,7 @@ func GetLeagueById(c *gin.Context) {
 	}
 
 	league := models.League{}
-
-	result := initializers.DB.First(&league, "id = ?", id)
-
+	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
 		return
