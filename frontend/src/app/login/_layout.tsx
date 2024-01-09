@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, View, TouchableHighlight } from 'react-native';
+import React, { useEffect } from 'react';
+import { Image, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Google from 'expo-auth-session/providers/google';
 
-import { colors, globalStyles } from '../../styles/styles';
-import PremText from '../../components/basic/PremText';
-import PremButton from '../../components/basic/PremButton';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { getUsers, setUser } from '../../redux/reducers/userReducer';
+import { globalStyles } from '../../styles/styles';
+import { useAppDispatch } from '../../redux/hooks';
+import { getUsers } from '../../redux/reducers/usersReducer';
 import User from '../../types/User';
 import GoogleButton from '../../components/GoogleButton';
+import { setUser } from '../../redux/reducers/authReducer';
+
+import premkingLogo from '../../../assets/premKingLogo.png';
 
 const Login = () => {
   const router = useRouter();
-  const userSlice = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
-  const [selectedUserId, setSelectedUserId] = useState<string>();
   useEffect(() => {
     dispatch(getUsers());
   }, []);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [_, response, promptAsync] = Google.useAuthRequest({
     iosClientId: '538791218868-3occqdqicf7o6qsspdfu2731811jt4k8.apps.googleusercontent.com',
   });
 
@@ -71,63 +70,20 @@ const Login = () => {
   }, [response]);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
-      <PremText centered order={1}>
-        Login screen
-      </PremText>
-
-      {userSlice.usersAreLoading ? (
-        <PremText>Loading...</PremText>
-      ) : userSlice.users.length === 0 ? (
-        <PremText>No users</PremText>
-      ) : (
-        <FlatList
-          data={userSlice.users}
-          renderItem={(item) => (
-            <TouchableHighlight
-              onPress={() =>
-                selectedUserId === item.item.id
-                  ? setSelectedUserId('')
-                  : setSelectedUserId(item.item.id)
-              }
-              style={{ borderRadius: 4, marginBottom: 8 }}
-            >
-              <View
-                key={item.item.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  backgroundColor:
-                    selectedUserId === item.item.id ? colors.charcoal[3] : colors.charcoal[2],
-                  padding: 8,
-                  borderRadius: 4,
-                }}
-              >
-                <PremText>{item.item.name}</PremText>
-                <PremText>{`id: ${item.item.id.substring(0, 6)}`}</PremText>
-              </View>
-            </TouchableHighlight>
-          )}
+    <SafeAreaView style={{ ...globalStyles.container, justifyContent: 'space-between' }}>
+      {/* <PremText centered order={1}>
+        PremKing
+      </PremText> */}
+      <View>
+        <Image
+          source={premkingLogo}
+          // height={1}
+          // width={0.8}
+          style={{ width: 'auto', height: 200 }}
         />
-      )}
+      </View>
+
       <View style={{ display: 'flex', gap: 8 }}>
-        <View style={{ ...globalStyles.centered, marginBottom: 30 }}>
-          <PremButton
-            onPress={() => {
-              const selectedUser: User | undefined = userSlice.users.find(
-                (u) => u.id === selectedUserId
-              );
-              if (selectedUser) {
-                dispatch(setUser(selectedUser));
-                router.replace('/');
-              }
-            }}
-            disabled={!selectedUserId}
-          >
-            Login
-          </PremButton>
-        </View>
         <GoogleButton onPress={() => promptAsync()} />
       </View>
     </SafeAreaView>

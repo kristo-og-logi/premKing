@@ -5,9 +5,9 @@ import { useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
 
 export default function MainLayout() {
-  const userSlice = useAppSelector((state) => state.user);
+  const authSlice = useAppSelector((state) => state.auth);
 
-  if (!userSlice.user) return <Redirect href="/login" />;
+  if (!authSlice.user) return <Redirect href="/login" />;
 
   return (
     <Tabs
