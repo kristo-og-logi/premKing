@@ -1,24 +1,25 @@
 import { View, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import PremText from '../../../components/basic/PremText';
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import PremButton from '../../../components/basic/PremButton';
 import PremTextInput from '../../../components/basic/PremTextInput';
 import { globalStyles } from '../../../styles/styles';
-import { useAppDispatch } from '../../../redux/hooks';
-import { add } from '../../../redux/reducers/leaguesReducer';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { add, createLeague } from '../../../redux/reducers/leaguesReducer';
 import { makeLeagueFromName } from '../../../types/League';
 
 const CreateLeague = () => {
   const [leagueName, setLeagueName] = useState<string>('');
   const dispatch = useAppDispatch();
 
-  const createLeague = () => {
-    // POST leagues/
-    const league = makeLeagueFromName(leagueName);
-    // add league to backend
-    dispatch(add(league));
-  };
+  // const createLeague = () => {
+  //   // POST leagues/
+  //   const league = makeLeagueFromName(leagueName);
+  //   // add league to backend
+  //   dispatch(add(league));
+  // };
+  const authSlice = useAppSelector((state) => state.auth);
 
   return (
     <View style={globalStyles.container}>
@@ -35,7 +36,7 @@ const CreateLeague = () => {
         <PremButton
           onPress={() => {
             console.log(`POST /users/me/leagues body: {leagueName: ${leagueName}}`);
-            createLeague();
+            dispatch(createLeague({ token: authSlice.token, leagueName: leagueName }));
             router.back();
           }}
         >

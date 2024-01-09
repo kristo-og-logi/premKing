@@ -60,11 +60,16 @@ export const leagueSlice = createSlice({
       .addCase(getSelectedLeague.rejected, (state) => {
         state.selectedIsLoading = false;
         state.hasError = true;
+      })
+      // createLeague
+      .addCase(createLeague.fulfilled, (state, action: PayloadAction<League>) => {
+        state.leagues.push(action.payload);
       });
   },
 });
 
 const leagueUrl = 'http://localhost:8080/api/v1/leagues';
+export const backend = 'http://localhost:8080/api/v1';
 
 export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async () => {
   const response = await fetch(leagueUrl);
@@ -79,6 +84,31 @@ export const getSelectedLeague = createAsyncThunk<League, string>(
     const response = await fetch(`${leagueUrl}/${leagueId}`);
 
     const data: League = await response.json();
+    return data;
+  }
+);
+
+interface CreateLeagueParams {
+  token: string;
+  leagueName: string;
+}
+
+export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
+  'leagues/createLeague',
+  async ({ token, leagueName }: CreateLeagueParams) => {
+    console.log('token is: ', token);
+    const response = await fetch(`${backend}/users/me/leagues`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ leagueName: leagueName }),
+    });
+
+    const data: League = await response.json();
+
+    console.log('new league: ', data);
     return data;
   }
 );
