@@ -1,5 +1,7 @@
 # PremKing
 
+![](assets/LOGO.png)
+
 ## Frontend
 
 Written in react native, using expo, typescript and redux.
