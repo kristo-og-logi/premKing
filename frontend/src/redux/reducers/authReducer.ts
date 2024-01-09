@@ -4,16 +4,16 @@ import { RootState } from '../store';
 
 export interface AuthState {
   user?: User;
-  googleToken?: string;
-  token?: string;
+  googleToken: string;
+  token: string;
   isLoading: boolean;
   hasError: boolean;
 }
 
 const initialState: AuthState = {
   user: undefined,
-  googleToken: undefined,
-  token: undefined,
+  googleToken: '',
+  token: '',
   isLoading: false,
   hasError: false,
 };
@@ -24,6 +24,8 @@ export const authSlice = createSlice({
   reducers: {
     clearUser: (state) => {
       state.user = undefined;
+      state.googleToken = '';
+      state.token = '';
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
@@ -56,14 +58,20 @@ export const login = createAsyncThunk<LoginResponse, string>(
   'user/login',
   async (googleOAuthToken: string) => {
     const url = 'http://localhost:8080/api/v1/auth/login';
-    const response = await fetch(url, {
-      body: JSON.stringify({
-        googleOAuthToken: googleOAuthToken,
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          googleToken: googleOAuthToken,
+        }),
+      });
 
-    const data: LoginResponse = await response.json();
-    return data;
+      const data: LoginResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.log('ERROR logging in: ', error);
+      throw error;
+    }
   }
 );
 
