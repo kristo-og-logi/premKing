@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kristo-og-logi/premKing/server/controllers"
+	"github.com/kristo-og-logi/premKing/server/middleware"
 )
 
 func SetupLeagueRoutes(router *gin.Engine, prefix string) {
@@ -13,5 +14,6 @@ func SetupLeagueRoutes(router *gin.Engine, prefix string) {
 		leagueGroup.POST("", controllers.CreateLeague)
 
 		leagueGroup.GET("/:id", controllers.GetLeagueById)
+		leagueGroup.POST("/:id", middleware.Authenticate, controllers.JoinLeague)
 	}
 }
