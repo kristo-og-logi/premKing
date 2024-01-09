@@ -5,10 +5,10 @@ import PremText from '../../../components/basic/PremText';
 import PremButton from '../../../components/basic/PremButton';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { clearUser } from '../../../redux/reducers/userReducer';
+import { clearUser } from '../../../redux/reducers/authReducer';
 
 const Stats = () => {
-  const userSlice = useAppSelector((state) => state.user);
+  const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   return (
@@ -16,8 +16,8 @@ const Stats = () => {
       <PremText order={2} centered>
         Some stats
       </PremText>
-      <PremText>{`name: ${userSlice.user?.name}`}</PremText>
-      {userSlice.user?.email && <PremText>{`email: ${userSlice.user?.email}`}</PremText>}
+      <PremText>{`name: ${authSlice.user?.name}`}</PremText>
+      {authSlice.user?.email && <PremText>{`email: ${authSlice.user?.email}`}</PremText>}
       <View style={globalStyles.centered}>
         <PremButton
           onPress={() => {
