@@ -14,5 +14,5 @@ type League struct {
 	Name    string `json:"name"`
 	OwnerID string `gorm:"not null" json:"ownerId"`
 	Owner   User   `gorm:"foreignKey:OwnerID" json:"owner"`
-	Users   []User `gorm:"many2many:user_languages;" json:"users"`
+	Users   []User `gorm:"many2many:user_leagues;" json:"users"`
 }
