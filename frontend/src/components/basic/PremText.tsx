@@ -6,6 +6,7 @@ type Props = {
   order?: 1 | 2 | 3 | 4;
   centered?: boolean;
   padding?: number;
+  color?: string;
   children: string | number;
 };
 
@@ -22,13 +23,13 @@ const getSize = (order: 1 | 2 | 3 | 4) => {
   }
 };
 
-const PremText = ({ order = 3, centered = false, padding = 0, children }: Props) => {
+const PremText = ({ order = 3, centered = false, padding = 0, color, children }: Props) => {
   const size = getSize(order);
 
   const styles: TextStyle = {
     fontFamily: 'MusticaPro',
     fontSize: size,
-    color: colors.gray[0],
+    color: color ?? colors.gray[0],
     padding: padding,
   };
 
