@@ -7,10 +7,7 @@ import PremButton from '../../../components/basic/PremButton';
 import { router } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { joinLeague, removeJoinLeagueError } from '../../../redux/reducers/leaguesReducer';
-
-const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const ID_LEN = 6;
-const ERROR_TIMEOUT = 3000;
+import { CHARSET, ERROR_TIMEOUT, ID_LEN } from '../../../utils/constants';
 
 const isValidCode = (leagueCode: string): boolean => {
   if (leagueCode.length !== ID_LEN) return false;
