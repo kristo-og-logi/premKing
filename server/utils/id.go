@@ -16,12 +16,33 @@ func IsValidUuid(input string) bool {
 	return regex.MatchString(input)
 }
 
+const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const ID_LEN = 6
+
 func GenerateId() string {
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var sb strings.Builder
-	for i := 0; i < 6; i++ {
+	for i := 0; i < ID_LEN; i++ {
 		index := rand.Intn(len(charset))
 		sb.WriteByte(charset[index])
 	}
 	return sb.String()
+}
+
+func IsValidPremKingId(id string) bool {
+	if len(id) != ID_LEN {
+		return false
+	}
+	for i := 0; i < ID_LEN; i++ {
+		charValid := false
+		for _, char := range charset {
+			if char == rune(id[i]) {
+				charValid = true
+			}
+		}
+		if !charValid {
+			return false
+		}
+	}
+
+	return true
 }
