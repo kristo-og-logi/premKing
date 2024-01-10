@@ -74,7 +74,7 @@ func JoinLeague(c *gin.Context) {
 	}
 
 	leagueId := c.Param("id")
-	if !utils.IsValidUuid(leagueId) {
+	if !utils.IsValidPremKingId(leagueId) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", leagueId)})
 		return
 	}
