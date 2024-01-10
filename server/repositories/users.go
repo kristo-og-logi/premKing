@@ -3,9 +3,21 @@ package repositories
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 )
+
+func CreateUser(name string, email string) (*models.User, error) {
+	user := models.User{ID: uuid.NewString(), Name: name, Email: email}
+
+	result := initializers.DB.Create(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
 
 func GetUserById(id string) (*models.User, error) {
 	var user models.User
@@ -16,4 +28,18 @@ func GetUserById(id string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func GetAllUserLeaguesById(id string) ([]models.League, error) {
+	var user models.User
+
+	userResult := initializers.DB.First(&user, "id = ?", id)
+	if userResult.Error != nil {
+		return nil, userResult.Error
+	}
+
+	var leagues []models.League
+	initializers.DB.Model(&user).Association("Leagues").Find(&leagues)
+
+	return leagues, nil
 }

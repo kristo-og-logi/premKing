@@ -66,3 +66,11 @@ func GetTokenFromHeader(c *gin.Context) (string, *AuthError) {
 	token := authTokens[1]
 	return token, nil
 }
+
+func GetUserFromContext(c *gin.Context) *models.User {
+	user, exists := c.Get("user")
+	if !exists {
+		return nil
+	}
+	return user.(*models.User)
+}

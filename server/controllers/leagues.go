@@ -8,14 +8,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
-// var db *gorm.DB = initializers.DB
-
 func GetAllLeagues(c *gin.Context) {
 	var leagues []models.League
-	result := initializers.DB.Find(&leagues)
+	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
 
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
@@ -58,11 +57,50 @@ func GetLeagueById(c *gin.Context) {
 	}
 
 	league := models.League{}
-
-	result := initializers.DB.First(&league, "id = ?", id)
-
+	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, league)
+}
+
+func JoinLeague(c *gin.Context) {
+	currentUser := utils.GetUserFromContext(c)
+	if currentUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
+		return
+	}
+
+	leagueId := c.Param("id")
+	if !utils.IsValidPremKingId(leagueId) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", leagueId)})
+		return
+	}
+
+	league, err := repositories.GetLeagueById(leagueId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if league == nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", leagueId)})
+		return
+	}
+
+	for _, leagueUser := range league.Users {
+		if leagueUser.ID == currentUser.ID {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "user already in league"})
+			return
+		}
+	}
+
+	league.Users = append(league.Users, *currentUser)
+	if err := initializers.DB.Save(&league).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

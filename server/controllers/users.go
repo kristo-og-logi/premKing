@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 	"gorm.io/gorm"
 )
@@ -66,12 +66,11 @@ func CreateUser(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	newUser := models.User{ID: uuid.New().String(), Name: createUserRequest.Name}
 
-	result := initializers.DB.Create(&newUser)
-	if result.Error != nil {
-		fmt.Printf("failed to create user:" + result.Error.Error())
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
+	newUser, err := repositories.CreateUser(createUserRequest.Name, "unknown@email.com")
+	if err != nil {
+		fmt.Printf("failed to create user:" + err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
@@ -79,14 +78,12 @@ func CreateUser(c *gin.Context) {
 }
 
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
-	newUser := models.User{ID: uuid.New().String(), Name: user.Name, Email: user.Email}
-
-	result := initializers.DB.Create(&newUser)
-	if result.Error != nil {
-		return nil, result.Error
+	newUser, err := repositories.CreateUser(user.Name, user.Email)
+	if err != nil {
+		return nil, err
 	}
 
-	return &newUser, nil
+	return newUser, nil
 }
 
 type DeleteUserRequest struct {
@@ -151,7 +148,6 @@ func GetUsersLeaguesByUserId(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, user.Leagues)
-
 }
 
 func JoinLeagueByUserId(c *gin.Context) {
@@ -181,7 +177,7 @@ func JoinLeagueByUserId(c *gin.Context) {
 	//get the league
 	var league models.League
 	if err := initializers.DB.Where("id = ?", body.LeagueId).First(&league).Error; err != nil {
-		c.IndentedJSON(404, gin.H{"error": fmt.Sprintf("League with id %s not found", body.LeagueId)})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("League with id %s not found", body.LeagueId)})
 		return
 	}
 
@@ -233,4 +229,55 @@ func UserExistsById(id string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func GetMyLeagues(c *gin.Context) {
+	currentUser := utils.GetUserFromContext(c)
+	if currentUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
+		return
+	}
+
+	leagues, err := repositories.GetAllUserLeaguesById(currentUser.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, leagues)
+}
+
+type CreateMyLeagueRequestBody struct {
+	LeagueName string `json:"leagueName" binding:"required"`
+}
+
+func CreateMyLeague(c *gin.Context) {
+	currentUser := utils.GetUserFromContext(c)
+	if currentUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token missing"})
+	}
+
+	var body CreateMyLeagueRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		if err == io.EOF {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body missing"})
+			return
+		}
+		if body.LeagueName == "" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body attribute `leagueName` missing"})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	league, err := repositories.CreateleagueFromOwnerId(body.LeagueName, currentUser.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, league)
 }
