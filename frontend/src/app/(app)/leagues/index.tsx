@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
-import { getLeagues } from '../../../redux/reducers/leaguesReducer';
+import { getMyLeagues } from '../../../redux/reducers/leaguesReducer';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
@@ -27,9 +27,10 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const leagueSlice = useAppSelector((state) => state.leagues);
   const [selectedGW, setSelectedGW] = useState<number>(currentGW);
+  const authSlice = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(getLeagues());
+    dispatch(getMyLeagues(authSlice.token));
   }, []);
 
   return (
@@ -63,7 +64,10 @@ export default function Page() {
         </View>
       ) : (
         <View style={{ marginBottom: 12 }}>
-          <PremText order={2} centered>
+          <PremText order={3} centered>
+            No leagues found
+          </PremText>
+          <PremText order={3} centered>
             Create or join a league
           </PremText>
         </View>
