@@ -6,28 +6,37 @@ import PremTextInput from '../../../components/basic/PremTextInput';
 import PremButton from '../../../components/basic/PremButton';
 import { router } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { joinLeague } from '../../../redux/reducers/leaguesReducer';
+import { joinLeague, removeJoinLeagueError } from '../../../redux/reducers/leaguesReducer';
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const ID_LEN = 6;
+const ERROR_TIMEOUT = 3000;
+
+const isValidCode = (leagueCode: string): boolean => {
+  if (leagueCode.length !== ID_LEN) return false;
+  for (const char of leagueCode) if (!CHARSET.includes(char)) return false;
+  return true;
+};
 
 const JoinLeague = () => {
-  const [leagueCode, setLeagueCode] = useState<string>('');
   const dispatch = useAppDispatch();
-
   const token = useAppSelector((state) => state.auth.token);
+  const leagueSlice = useAppSelector((state) => state.leagues);
 
+  const [leagueCode, setLeagueCode] = useState<string>('');
   const [inputError, setInputError] = useState<boolean>(false);
 
   useEffect(() => {
-    if (inputError) setTimeout(() => setInputError(false), 2000);
+    if (inputError) setTimeout(() => setInputError(false), ERROR_TIMEOUT);
   }, [inputError]);
 
-  const isValidCode = (): boolean => {
-    if (leagueCode.length !== ID_LEN) return false;
-    for (const char of leagueCode) if (!CHARSET.includes(char)) return false;
-    return true;
-  };
+  useEffect(() => {
+    if (!leagueSlice.joinActive) router.back();
+  }, [leagueSlice.joinActive]);
+
+  useEffect(() => {
+    setTimeout(() => dispatch(removeJoinLeagueError()), ERROR_TIMEOUT);
+  }, [leagueSlice.joinHasError]);
 
   return (
     <View style={globalStyles.container}>
@@ -45,12 +54,8 @@ const JoinLeague = () => {
           }
         />
         <PremButton
-          disabled={!isValidCode()}
-          onPress={() => {
-            dispatch(joinLeague({ token: token, leagueId: leagueCode }));
-            console.log(`POST /users/me/leagues/join body: {leagueId: ${leagueCode}}`);
-            router.back();
-          }}
+          disabled={!isValidCode(leagueCode)}
+          onPress={() => dispatch(joinLeague({ token: token, leagueId: leagueCode }))}
         >
           Join league
         </PremButton>
@@ -58,6 +63,18 @@ const JoinLeague = () => {
       <PremText centered order={4} color={inputError ? colors.red : undefined}>
         Code must be a mix of 6 letters or numbers
       </PremText>
+      {leagueSlice.joinIsLoading ? (
+        <PremText>loading...</PremText>
+      ) : (
+        leagueSlice.joinHasError && (
+          <View>
+            <PremText color={colors.red}>Error joining league</PremText>
+            <PremText order={4} color={colors.red}>
+              {leagueSlice.joinErrorMessage}
+            </PremText>
+          </View>
+        )
+      )}
     </View>
   );
 };

@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { League } from '../../types/League';
+import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 
 export interface LeagueState {
   leagues: League[];
@@ -9,8 +10,10 @@ export interface LeagueState {
   selectedLeague?: League;
   selectedIsLoading: boolean;
   selectedHasError: boolean;
+  joinActive: boolean;
   joinIsLoading: boolean;
   joinHasError: boolean;
+  joinErrorMessage: string;
 }
 
 const initialState: LeagueState = {
@@ -20,17 +23,16 @@ const initialState: LeagueState = {
   selectedLeague: undefined,
   selectedIsLoading: false,
   selectedHasError: false,
+  joinActive: false,
   joinIsLoading: false,
   joinHasError: false,
+  joinErrorMessage: '',
 };
 
 export const leagueSlice = createSlice({
   name: 'leagues',
   initialState,
   reducers: {
-    add: (state, action: PayloadAction<League>) => {
-      state.leagues.push(action.payload);
-    },
     remove: (state, action: PayloadAction<League>) => {
       state.leagues = state.leagues.filter((num) => num !== action.payload);
     },
@@ -38,6 +40,14 @@ export const leagueSlice = createSlice({
       state.selectedHasError = false;
       state.selectedIsLoading = false;
       state.selectedLeague = undefined;
+    },
+    setJoinLeagueActive: (state) => {
+      state.joinActive = true;
+      state.joinHasError = false;
+      state.joinIsLoading = false;
+    },
+    removeJoinLeagueError: (state) => {
+      state.joinHasError = false;
     },
   },
   extraReducers: (builder) => {
@@ -84,13 +94,19 @@ export const leagueSlice = createSlice({
       .addCase(joinLeague.pending, (state) => {
         state.joinIsLoading = true;
       })
-      .addCase(joinLeague.rejected, (state) => {
-        state.joinHasError = true;
-        state.joinIsLoading = false;
-      })
+      .addCase(
+        joinLeague.rejected,
+        (state, action: RejectedActionFromAsyncThunk<typeof joinLeague>) => {
+          console.log('in builder: action = ', action);
+          state.joinHasError = true;
+          state.joinIsLoading = false;
+          state.joinErrorMessage = action.error.message ?? '';
+        }
+      )
       .addCase(joinLeague.fulfilled, (state, action: PayloadAction<League>) => {
         state.joinIsLoading = false;
         state.leagues.push(action.payload);
+        state.joinActive = false;
       });
   },
 });
@@ -182,8 +198,12 @@ export const joinLeague = createAsyncThunk<League, JoinLeagueParams>(
         },
       });
 
+      if (!response.ok) {
+        const data: { error: string } = await response.json();
+        throw new Error(data.error);
+      }
+
       const joinedLeague: League = await response.json();
-      console.log('joined league: ', joinedLeague);
       return joinedLeague;
     } catch (error) {
       console.log('ERROR in leagues/joinLeague: ', error);
@@ -192,7 +212,7 @@ export const joinLeague = createAsyncThunk<League, JoinLeagueParams>(
   }
 );
 
-export const { add, remove, unselect } = leagueSlice.actions;
+export const { remove, unselect, setJoinLeagueActive, removeJoinLeagueError } = leagueSlice.actions;
 
 export const selectLeagues = (state: RootState) => state.leagues.leagues;
 

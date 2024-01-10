@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
-import { getMyLeagues } from '../../../redux/reducers/leaguesReducer';
+import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
@@ -83,6 +83,7 @@ export default function Page() {
         </PremButton>
         <PremButton
           onPress={() => {
+            dispatch(setJoinLeagueActive());
             router.push('/leagues/JoinLeague');
           }}
         >

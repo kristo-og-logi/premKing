@@ -177,7 +177,7 @@ func JoinLeagueByUserId(c *gin.Context) {
 	//get the league
 	var league models.League
 	if err := initializers.DB.Where("id = ?", body.LeagueId).First(&league).Error; err != nil {
-		c.IndentedJSON(404, gin.H{"error": fmt.Sprintf("League with id %s not found", body.LeagueId)})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("League with id %s not found", body.LeagueId)})
 		return
 	}
 
