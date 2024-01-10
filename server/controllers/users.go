@@ -238,7 +238,14 @@ func GetMyLeagues(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, "todo")
+	leagues, err := repositories.GetAllUserLeaguesById(currentUser.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, leagues)
 }
 
 type CreateMyLeagueRequestBody struct {
