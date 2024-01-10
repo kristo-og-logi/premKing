@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
@@ -67,12 +66,11 @@ func CreateUser(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	newUser := models.User{ID: uuid.New().String(), Name: createUserRequest.Name}
 
-	result := initializers.DB.Create(&newUser)
-	if result.Error != nil {
-		fmt.Printf("failed to create user:" + result.Error.Error())
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
+	newUser, err := repositories.CreateUser(createUserRequest.Name, "unknown@email.com")
+	if err != nil {
+		fmt.Printf("failed to create user:" + err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
@@ -80,14 +78,12 @@ func CreateUser(c *gin.Context) {
 }
 
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
-	newUser := models.User{ID: uuid.New().String(), Name: user.Name, Email: user.Email}
-
-	result := initializers.DB.Create(&newUser)
-	if result.Error != nil {
-		return nil, result.Error
+	newUser, err := repositories.CreateUser(user.Name, user.Email)
+	if err != nil {
+		return nil, err
 	}
 
-	return &newUser, nil
+	return newUser, nil
 }
 
 type DeleteUserRequest struct {

@@ -4,21 +4,20 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/utils"
 	"gorm.io/gorm"
 )
 
 func CreateleagueFromOwnerId(name string, ownerId string) (*models.League, error) {
-
 	owner, err := GetUserById(ownerId)
 	if err != nil {
 		return nil, err
 	}
 
 	league := models.League{
-		ID:      uuid.NewString(),
+		ID:      utils.GenerateId(),
 		Name:    name,
 		OwnerID: ownerId,
 		Users:   []models.User{*owner},
