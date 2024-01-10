@@ -35,6 +35,7 @@ const JoinLeague = () => {
   }, [leagueSlice.joinActive]);
 
   useEffect(() => {
+    setLeagueCode('');
     setTimeout(() => dispatch(removeJoinLeagueError()), ERROR_TIMEOUT);
   }, [leagueSlice.joinHasError]);
 
@@ -54,7 +55,7 @@ const JoinLeague = () => {
           }
         />
         <PremButton
-          disabled={!isValidCode(leagueCode)}
+          disabled={!isValidCode(leagueCode) || leagueSlice.joinIsLoading}
           onPress={() => dispatch(joinLeague({ token: token, leagueId: leagueCode }))}
         >
           Join league
