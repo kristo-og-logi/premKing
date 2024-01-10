@@ -9,6 +9,8 @@ export interface LeagueState {
   selectedLeague?: League;
   selectedIsLoading: boolean;
   selectedHasError: boolean;
+  joinIsLoading: boolean;
+  joinHasError: boolean;
 }
 
 const initialState: LeagueState = {
@@ -18,6 +20,8 @@ const initialState: LeagueState = {
   selectedLeague: undefined,
   selectedIsLoading: false,
   selectedHasError: false,
+  joinIsLoading: false,
+  joinHasError: false,
 };
 
 export const leagueSlice = createSlice({
@@ -38,17 +42,28 @@ export const leagueSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getLeagues.pending, (state) => {
+      .addCase(getMyLeagues.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getLeagues.fulfilled, (state, action: PayloadAction<League[]>) => {
+      .addCase(getMyLeagues.fulfilled, (state, action: PayloadAction<League[]>) => {
         state.isLoading = false;
         state.leagues = action.payload;
       })
-      .addCase(getLeagues.rejected, (state) => {
+      .addCase(getMyLeagues.rejected, (state) => {
         state.isLoading = false;
         state.hasError = true;
       })
+      // .addCase(getLeagues.pending, (state) => {
+      //   state.isLoading = true;
+      // })
+      // .addCase(getLeagues.fulfilled, (state, action: PayloadAction<League[]>) => {
+      //   state.isLoading = false;
+      //   state.leagues = action.payload;
+      // })
+      // .addCase(getLeagues.rejected, (state) => {
+      //   state.isLoading = false;
+      //   state.hasError = true;
+      // })
       // getSelectedLeague
       .addCase(getSelectedLeague.pending, (state) => {
         state.selectedIsLoading = true;
@@ -64,6 +79,18 @@ export const leagueSlice = createSlice({
       // createLeague
       .addCase(createLeague.fulfilled, (state, action: PayloadAction<League>) => {
         state.leagues.push(action.payload);
+      })
+      // joinLeague
+      .addCase(joinLeague.pending, (state) => {
+        state.joinIsLoading = true;
+      })
+      .addCase(joinLeague.rejected, (state) => {
+        state.joinHasError = true;
+        state.joinIsLoading = false;
+      })
+      .addCase(joinLeague.fulfilled, (state, action: PayloadAction<League>) => {
+        state.joinIsLoading = false;
+        state.leagues.push(action.payload);
       });
   },
 });
@@ -72,19 +99,29 @@ const leagueUrl = 'http://localhost:8080/api/v1/leagues';
 export const backend = 'http://localhost:8080/api/v1';
 
 export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async () => {
-  const response = await fetch(leagueUrl);
+  try {
+    const response = await fetch(leagueUrl);
 
-  const data: League[] = await response.json();
-  return data;
+    const data: League[] = await response.json();
+    return data;
+  } catch (error) {
+    console.log('ERROR: ', error);
+    throw error;
+  }
 });
 
 export const getSelectedLeague = createAsyncThunk<League, string>(
   'leagues/getSelectedLeagues',
   async (leagueId: string) => {
-    const response = await fetch(`${leagueUrl}/${leagueId}`);
+    try {
+      const response = await fetch(`${leagueUrl}/${leagueId}`);
 
-    const data: League = await response.json();
-    return data;
+      const data: League = await response.json();
+      return data;
+    } catch (error) {
+      console.log('ERROR: ', error);
+      throw error;
+    }
   }
 );
 
@@ -96,7 +133,6 @@ interface CreateLeagueParams {
 export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
   'leagues/createLeague',
   async ({ token, leagueName }: CreateLeagueParams) => {
-    console.log('token is: ', token);
     const response = await fetch(`${backend}/users/me/leagues`, {
       method: 'POST',
       headers: {
@@ -107,9 +143,52 @@ export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
     });
 
     const data: League = await response.json();
-
-    console.log('new league: ', data);
     return data;
+  }
+);
+
+export const getMyLeagues = createAsyncThunk<League[], string>(
+  'leagues/getMyLeagues',
+  async (token) => {
+    try {
+      const response = await fetch(`${backend}/users/me/leagues`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const myLeagues: League[] = await response.json();
+      return myLeagues;
+    } catch (error) {
+      console.log('ERROR in leagues/getMyLeagues: ', error);
+      throw error;
+    }
+  }
+);
+
+interface JoinLeagueParams {
+  token: string;
+  leagueId: string;
+}
+
+export const joinLeague = createAsyncThunk<League, JoinLeagueParams>(
+  'leagues/joinLeague',
+  async ({ token, leagueId }: JoinLeagueParams) => {
+    try {
+      const response = await fetch(`${backend}/leagues/${leagueId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const joinedLeague: League = await response.json();
+      console.log('joined league: ', joinedLeague);
+      return joinedLeague;
+    } catch (error) {
+      console.log('ERROR in leagues/joinLeague: ', error);
+      throw error;
+    }
   }
 );
 
