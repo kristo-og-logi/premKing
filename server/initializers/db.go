@@ -108,7 +108,7 @@ func migrateFixturesToDB(db *gorm.DB) {
 		log.Fatalf("error fetching all teams: %s\n", result.Error.Error())
 	}
 
-	jsonData, err := os.ReadFile("./json/fixtures.json")
+	jsonData, err := os.ReadFile("./json/fixtures2.json")
 	if err != nil {
 		log.Fatalf("error reading fixtures.json: %s\n", err.Error())
 	}
@@ -135,6 +135,13 @@ func migrateFixturesToDB(db *gorm.DB) {
 			}
 		}
 
+		result := "X"
+		if fixture.Teams.Home.Winner {
+			result = "1"
+		} else if fixture.Teams.Away.Winner {
+			result = "2"
+		}
+
 		model := models.Fixture{
 			ID:         fixture.Fixture.ID,
 			CreatedAt:  time.Now(),
@@ -143,6 +150,10 @@ func migrateFixturesToDB(db *gorm.DB) {
 			HomeTeam:   homeTeam,
 			AwayTeamId: awayTeam.ID,
 			AwayTeam:   awayTeam,
+			Finished:   fixture.Fixture.Status.Elapsed == 90,
+			HomeGoals:  fixture.Goals.Home,
+			AwayGoals:  fixture.Goals.Away,
+			Result:     result,
 			MatchDate:  fixture.Fixture.Date,
 			GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
 			Name:       fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
