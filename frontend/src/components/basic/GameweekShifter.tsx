@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../../styles/styles';
-import PremText from '../basic/PremText';
+import PremText from './PremText';
 
 interface Props {
   selectedGW: number;
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-around',
   },
 });

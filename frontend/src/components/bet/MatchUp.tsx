@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { colors } from '../../styles/styles';
-import liverpoolImg from '../../../assets/team-logos/liverpool.png';
-import chelseaImg from '../../../assets/team-logos/chelsea.png';
 import PremText from '../basic/PremText';
+import Fixture from '../../types/Fixture';
 
 enum Side {
   LEFT,
@@ -23,13 +22,13 @@ const TeamColumn = ({
 }) => {
   return (
     <View style={styles.header}>
-      <PremText order={2} centered={true} padding={4}>
+      <PremText order={3} centered={true} padding={4}>
         {teamName}
       </PremText>
       <TouchableOpacity style={styles.team}>
         {side === Side.LEFT ? (
           <>
-            <PremText order={2} centered={true}>
+            <PremText order={3} centered={true}>
               {odds}
             </PremText>
             <Image source={logo} style={styles.image} />
@@ -37,7 +36,7 @@ const TeamColumn = ({
         ) : (
           <>
             <Image source={logo} style={styles.image} />
-            <PremText order={2} centered={true}>
+            <PremText order={3} centered={true}>
               {odds}
             </PremText>
           </>
@@ -54,10 +53,10 @@ const DrawMiddle = ({ date, odds }: { date: string; odds: string }) => {
         {date}
       </PremText>
       <TouchableOpacity style={styles.draw}>
-        <PremText order={2} centered={true}>
+        <PremText order={3} centered={true}>
           Draw
         </PremText>
-        <PremText order={2} centered={true}>
+        <PremText order={3} centered={true}>
           {odds}
         </PremText>
       </TouchableOpacity>
@@ -65,12 +64,26 @@ const DrawMiddle = ({ date, odds }: { date: string; odds: string }) => {
   );
 };
 
-export const MatchUp = () => {
+interface Props {
+  fixture: Fixture;
+}
+
+export const MatchUp = ({ fixture }: Props) => {
   return (
     <View style={styles.container}>
-      <TeamColumn teamName={'Liverpool'} logo={liverpoolImg} odds={'1.59'} side={Side.LEFT} />
-      <DrawMiddle date={'12. August 13:00'} odds={'1.09'} />
-      <TeamColumn teamName={'Chelsea'} logo={chelseaImg} odds={'2.49'} side={Side.RIGHT} />
+      <TeamColumn
+        teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
+        logo={{ uri: fixture.homeTeam.logo }}
+        odds={'1.59'}
+        side={Side.LEFT}
+      />
+      <DrawMiddle date={new Date(fixture.matchDate).toDateString()} odds={'1.09'} />
+      <TeamColumn
+        teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
+        logo={{ uri: fixture.awayTeam.logo }}
+        odds={'2.49'}
+        side={Side.RIGHT}
+      />
     </View>
   );
 };

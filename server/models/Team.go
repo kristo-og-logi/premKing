@@ -8,9 +8,11 @@ type Team struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	Name      string `json:"name"`
-	ShortName string `json:"shortName"`
-	Logo      string `json:"logo"`
+	Name         string    `json:"name"`
+	ShortName    string    `json:"shortName"`
+	Logo         string    `json:"logo"`
+	HomeFixtures []Fixture `gorm:"foreignKey:HomeTeamId"`
+	AwayFixtures []Fixture `gorm:"foreignKey:AwayTeamId"`
 }
 
 type TeamJSON struct {
