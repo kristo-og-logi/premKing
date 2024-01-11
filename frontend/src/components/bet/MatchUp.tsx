@@ -1,8 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { colors } from '../../styles/styles';
-import liverpoolImg from '../../../assets/team-logos/liverpool.png';
-import chelseaImg from '../../../assets/team-logos/chelsea.png';
 import PremText from '../basic/PremText';
 import Fixture from '../../types/Fixture';
 
