@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
-import { fetchLeagueById } from '../../../utils/fetchLeague';
+// import { fetchLeagueById } from '../../../utils/fetchLeague';
 import { SelectedLeague } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import PlayerScore from '../../../components/leagueId/PlayerScore';
@@ -106,9 +106,12 @@ const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
 
 const LeagueView = () => {
   const navigation = useNavigation();
-  const leagueSlice = useAppSelector((state) => state.leagues);
-  const dispatch = useAppDispatch();
   const { leagueId } = useLocalSearchParams();
+
+  const dispatch = useAppDispatch();
+  const token = useAppSelector((state) => state.auth.token);
+  const leagueSlice = useAppSelector((state) => state.leagues);
+
   // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(currentGW);
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
@@ -138,7 +141,7 @@ const LeagueView = () => {
     if (!leagueId) return;
     if (typeof leagueId !== 'string') return;
 
-    dispatch(getSelectedLeague(leagueId));
+    dispatch(getSelectedLeague({ leagueId, token }));
   }, [leagueId]);
 
   // useEffect(() => {
@@ -171,6 +174,11 @@ const LeagueView = () => {
             >
               Create Bet
             </PremButton>
+          </View>
+          <View>
+            {leagueSlice.selectedLeague && (
+              <PremText>{`${leagueSlice.selectedLeague?.users?.length} members`}</PremText>
+            )}
           </View>
           {/* {Scoreboard(scoreboardedPlayers, selectedGW)}
           <View style={styles.statsWrapper}>
