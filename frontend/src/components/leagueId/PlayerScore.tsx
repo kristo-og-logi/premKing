@@ -4,10 +4,11 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import PremText from '../basic/PremText';
 import { colors, scoreboardWidths } from '../../styles/styles';
-import { ScoreboardPlayer } from '../../types/Player';
+// import { ScoreboardPlayer } from '../../types/Player';
+import User from '../../types/User';
 
 interface Props {
-  player: ScoreboardPlayer;
+  player: User;
   userId: string;
   position: number;
   gw: number;
@@ -38,17 +39,16 @@ const renderPositionChange = (posChange: number, gw: number) => {
 };
 
 const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
-  console.log(
-    `player ${player.name}, position ${position}, posChange ${player.posChange}, prevPos: ${player.prevPosition}`
-  );
+  // console.log(
+  //   `player ${player.name}, position ${position}, posChange ${player.posChange}, prevPos: ${player.prevPosition}`
+  // );
   return (
     <View style={[styles.container, player.id === userId && styles.myScore]}>
-      <View style={[styles.scoreWrapper]}>
+      <View style={[styles.scoreWrapper, styles.shrinker]}>
         <View
           style={[
             styles.scoreWrapper,
             styles.positionWrapper,
-            // globalStyles.border,
             leagueSize >= 10
               ? scoreboardWidths.between10and100WrapperWidth
               : scoreboardWidths.under10WrapperWidth,
@@ -64,15 +64,20 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
           >
             <PremText>{position}</PremText>
           </View>
-          {renderPositionChange(player.posChange, gw)}
+          {/* {renderPositionChange(player.posChange, gw)} */}
+          {renderPositionChange(0, gw)}
         </View>
 
-        <PremText>{player.name}</PremText>
+        <View style={[styles.shrinker]}>
+          <PremText overflowing>{player.name}</PremText>
+        </View>
       </View>
 
       <View style={[styles.scoreWrapper, styles.rightSide, scoreboardWidths.pointsWidth]}>
-        {renderPointChange(player.points, player.prevPoints)}
-        <PremText>{player.points}</PremText>
+        {/* {renderPointChange(player.points, player.prevPoints)} */}
+        {renderPointChange(1, 0)}
+        {/* <PremText>{player.points}</PremText> */}
+        <PremText>{0}</PremText>
       </View>
     </View>
   );
@@ -82,7 +87,6 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    width: 'auto',
     justifyContent: 'space-between',
     padding: 8,
     backgroundColor: colors.charcoal[3],
@@ -116,6 +120,10 @@ const styles = StyleSheet.create({
 
   rightSide: {
     justifyContent: 'space-between',
+  },
+
+  shrinker: {
+    flexShrink: 1,
   },
 });
 

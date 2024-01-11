@@ -7,6 +7,7 @@ type Props = {
   centered?: boolean;
   padding?: number;
   color?: string;
+  overflowing?: boolean;
   children: string | number;
 };
 
@@ -23,20 +24,35 @@ const getSize = (order: 1 | 2 | 3 | 4) => {
   }
 };
 
-const PremText = ({ order = 3, centered = false, padding = 0, color, children }: Props) => {
+const PremText = ({
+  order = 3,
+  centered = false,
+  padding = 0,
+  color,
+  overflowing = false,
+  children,
+}: Props) => {
   const size = getSize(order);
 
   const styles: TextStyle = {
-    fontFamily: 'MusticaPro',
-    fontSize: size,
-    color: color ?? colors.gray[0],
-    padding: padding,
+    ...{
+      fontFamily: 'MusticaPro',
+      fontSize: size,
+      color: color ?? colors.gray[0],
+      padding: padding,
+    },
+    ...(overflowing ? { overflow: 'hidden' } : {}),
+    ...(centered ? { textAlign: 'center', alignSelf: 'center' } : {}),
   };
 
-  return centered ? (
-    <Text style={{ ...styles, textAlign: 'center', alignSelf: 'center' }}>{children}</Text>
-  ) : (
-    <Text style={styles}>{children}</Text>
+  return (
+    <Text
+      style={styles}
+      numberOfLines={overflowing ? 1 : undefined}
+      ellipsizeMode={overflowing ? 'tail' : undefined}
+    >
+      {children}
+    </Text>
   );
 };
 
