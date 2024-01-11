@@ -40,6 +40,7 @@ func main() {
 	routes.SetupLeagueRoutes(router, version1Prefix)
 	routes.SetupUserRoutes(router, version1Prefix)
 	routes.SetupAuthRoutes(router, version1Prefix)
+	routes.SetupTeamsRoutes(router, version1Prefix)
 	router.GET("/gw", getCurrentGameWeek)
 
 	router.Run()
