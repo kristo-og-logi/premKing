@@ -544,6 +544,7 @@
         "team": {
             "id": 50,
             "name": "Manchester City",
+            "shortName": "Man City",
             "logo": "https://media-3.api-sports.io/football/teams/50.png"
         },
         "points": 0,
@@ -589,6 +590,7 @@
         "team": {
             "id": 33,
             "name": "Manchester United",
+            "shortName": "Man United",
             "logo": "https://media-3.api-sports.io/football/teams/33.png"
         },
         "points": 0,
@@ -679,6 +681,7 @@
         "team": {
             "id": 65,
             "name": "Nottingham Forest",
+            "shortName": "Nott'm Forest",
             "logo": "https://media-3.api-sports.io/football/teams/65.png"
         },
         "points": 0,
@@ -724,6 +727,7 @@
         "team": {
             "id": 62,
             "name": "Sheffield Utd",
+            "shortName": "Sheffield",
             "logo": "https://media-2.api-sports.io/football/teams/62.png"
         },
         "points": 0,
