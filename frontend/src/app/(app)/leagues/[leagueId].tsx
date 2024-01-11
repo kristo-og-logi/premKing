@@ -9,7 +9,7 @@ import PremText from '../../../components/basic/PremText';
 import PlayerScore from '../../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
 import PremButton from '../../../components/basic/PremButton';
-import GameweekShifter from '../../../components/leagueId/GameweekShifter';
+import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 import User from '../../../types/User';

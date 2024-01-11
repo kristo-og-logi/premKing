@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
-import GameweekShifter from '../../../components/leagueId/GameweekShifter';
+import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
 
 const renderLeagues = (leagues: League[]) => {
