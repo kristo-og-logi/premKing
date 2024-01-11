@@ -1,10 +1,10 @@
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
-import { fetchLeagueById } from '../../../utils/fetchLeague';
-import { SelectedLeague } from '../../../types/League';
+// import { fetchLeagueById } from '../../../utils/fetchLeague';
+// import { SelectedLeague } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import PlayerScore from '../../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
@@ -12,6 +12,7 @@ import PremButton from '../../../components/basic/PremButton';
 import GameweekShifter from '../../../components/leagueId/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
+import User from '../../../types/User';
 
 // put this into context or redux?
 const currentGW = 3;
@@ -55,12 +56,12 @@ const calculateTimeUntilGW = (gwNumber: number, currentGW: number) => {
   return 'Starts In 3 days, 2 hours';
 };
 
-const Scoreboard = (players: ScoreboardPlayer[], gw: number) => {
+const Scoreboard = (players: User[], gw: number, myId: string) => {
   const playerItems = players.map((player, index) => (
     <PlayerScore
       position={index + 1}
       player={player}
-      userId={'EXAMPLE'}
+      userId={myId}
       key={player.id}
       gw={gw}
       leagueSize={players.length}
@@ -100,18 +101,26 @@ const Scoreboard = (players: ScoreboardPlayer[], gw: number) => {
   );
 };
 
-const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
+// const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
+//   return players.findIndex((player) => player.id === userId) + 1;
+// };
+const calculateYourPlace = (players: User[], userId: string) => {
   return players.findIndex((player) => player.id === userId) + 1;
 };
 
 const LeagueView = () => {
   const navigation = useNavigation();
-  const leagueSlice = useAppSelector((state) => state.leagues);
-  const dispatch = useAppDispatch();
   const { leagueId } = useLocalSearchParams();
+
+  const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.auth);
+  const leagueSlice = useAppSelector((state) => state.leagues);
+
   // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(currentGW);
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
+
+  if (!auth.user) return <Redirect href="/" />;
 
   useEffect(() => {
     // Event listener for the navigation 'beforeRemove' event
@@ -138,7 +147,7 @@ const LeagueView = () => {
     if (!leagueId) return;
     if (typeof leagueId !== 'string') return;
 
-    dispatch(getSelectedLeague(leagueId));
+    dispatch(getSelectedLeague({ leagueId, token: auth.token }));
   }, [leagueId]);
 
   // useEffect(() => {
@@ -172,14 +181,16 @@ const LeagueView = () => {
               Create Bet
             </PremButton>
           </View>
-          {/* {Scoreboard(scoreboardedPlayers, selectedGW)}
+          {Scoreboard(leagueSlice.selectedLeague.users, selectedGW, auth.user.id)}
           <View style={styles.statsWrapper}>
             <PremText order={4}>{`your position: ${calculateYourPlace(
-              scoreboardedPlayers,
-              'EXAMPLE'
+              leagueSlice.selectedLeague.users,
+              auth.user?.id
             )}`}</PremText>
-            <PremText order={4}>{`total players: ${leagueSlice.selectedLeague.total}`}</PremText>
-          </View> */}
+            <PremText
+              order={4}
+            >{`total players: ${leagueSlice.selectedLeague.users.length}`}</PremText>
+          </View>
         </>
       )}
     </View>

@@ -126,11 +126,24 @@ export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async
   }
 });
 
-export const getSelectedLeague = createAsyncThunk<League, string>(
+interface GetSelectedLeagueParams {
+  leagueId: string;
+  token: string;
+}
+export const getSelectedLeague = createAsyncThunk<League, GetSelectedLeagueParams>(
   'leagues/getSelectedLeagues',
-  async (leagueId: string) => {
+  async ({ leagueId, token }: GetSelectedLeagueParams) => {
     try {
-      const response = await fetch(`${leagueUrl}/${leagueId}`);
+      const response = await fetch(`${leagueUrl}/${leagueId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorJson: { error: string } = await response.json();
+        throw new Error(errorJson.error);
+      }
 
       const data: League = await response.json();
       return data;
