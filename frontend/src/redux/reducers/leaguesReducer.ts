@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import { League } from '../../types/League';
 import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import { backend } from '../../utils/constants';
 
 export interface LeagueState {
   leagues: League[];
@@ -111,8 +112,7 @@ export const leagueSlice = createSlice({
   },
 });
 
-const leagueUrl = 'http://localhost:8080/api/v1/leagues';
-export const backend = 'http://localhost:8080/api/v1';
+const leagueUrl = `${backend}/leagues`;
 
 export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async () => {
   try {
