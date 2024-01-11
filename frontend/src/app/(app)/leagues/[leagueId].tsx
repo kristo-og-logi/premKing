@@ -4,7 +4,7 @@ import { Redirect, Stack, useLocalSearchParams, useNavigation } from 'expo-route
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
 // import { fetchLeagueById } from '../../../utils/fetchLeague';
-import { SelectedLeague } from '../../../types/League';
+// import { SelectedLeague } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import PlayerScore from '../../../components/leagueId/PlayerScore';
 import { Player, PlayerPoints, ScoreboardPlayer } from '../../../types/Player';
@@ -13,7 +13,6 @@ import GameweekShifter from '../../../components/leagueId/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 import User from '../../../types/User';
-import { authSlice } from '../../../redux/reducers/authReducer';
 
 // put this into context or redux?
 const currentGW = 3;
