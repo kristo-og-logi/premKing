@@ -3,6 +3,8 @@ import React from 'react';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
 import { League } from '../../types/League';
+import { useAppSelector } from '../../redux/hooks';
+import { Redirect } from 'expo-router';
 
 interface Props {
   league: League;
@@ -10,6 +12,9 @@ interface Props {
 }
 
 const LeagueItem = ({ league, onPress }: Props) => {
+  const me = useAppSelector((state) => state.auth.user);
+  if (!me) return <Redirect href="/" />;
+
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.item}>
@@ -20,12 +25,12 @@ const LeagueItem = ({ league, onPress }: Props) => {
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>members</PremText>
-            <PremText>{league.total || '?'}</PremText>
+            <PremText>{league.users.length ?? '?'}</PremText>
           </View>
 
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>position</PremText>
-            <PremText>{league.place || '?'}</PremText>
+            <PremText>{league.users.findIndex((user) => user.id === me.id) + 1 || '?'}</PremText>
           </View>
         </View>
       </View>
