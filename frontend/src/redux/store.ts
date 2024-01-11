@@ -2,12 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import leaguesReducer from './reducers/leaguesReducer';
 import usersReducer from './reducers/usersReducer';
 import authReducer from './reducers/authReducer';
+import fixtureReducer from './reducers/fixtureReducer';
 
 export const store = configureStore({
   reducer: {
     leagues: leaguesReducer,
     users: usersReducer,
     auth: authReducer,
+    fixtures: fixtureReducer,
   },
 });
 
