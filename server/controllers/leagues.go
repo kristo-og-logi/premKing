@@ -49,17 +49,22 @@ func CreateLeague(c *gin.Context) {
 }
 
 func GetLeagueById(c *gin.Context) {
-	id := c.Param("id")
+	user := utils.GetUserFromContext(c)
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
-	if !utils.IsValidUuid(id) {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", id)})
+	id := c.Param("id")
+	if !utils.IsValidPremKingId(id) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid id: %s", id)})
 		return
 	}
 
 	league := models.League{}
 	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
 		return
 	}
 
@@ -75,7 +80,7 @@ func JoinLeague(c *gin.Context) {
 
 	leagueId := c.Param("id")
 	if !utils.IsValidPremKingId(leagueId) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", leagueId)})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid id: %s", leagueId)})
 		return
 	}
 

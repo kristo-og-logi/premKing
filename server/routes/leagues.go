@@ -13,7 +13,7 @@ func SetupLeagueRoutes(router *gin.Engine, prefix string) {
 
 		leagueGroup.POST("", controllers.CreateLeague)
 
-		leagueGroup.GET("/:id", controllers.GetLeagueById)
+		leagueGroup.GET("/:id", middleware.Authenticate, controllers.GetLeagueById)
 		leagueGroup.POST("/:id", middleware.Authenticate, controllers.JoinLeague)
 	}
 }
