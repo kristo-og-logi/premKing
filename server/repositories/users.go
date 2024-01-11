@@ -33,13 +33,9 @@ func GetUserById(id string) (*models.User, error) {
 func GetAllUserLeaguesById(id string) ([]models.League, error) {
 	var user models.User
 
-	userResult := initializers.DB.First(&user, "id = ?", id)
+	userResult := initializers.DB.Preload("Leagues.Users").Find(&user, "id = ?", id)
 	if userResult.Error != nil {
 		return nil, userResult.Error
 	}
-
-	var leagues []models.League
-	initializers.DB.Model(&user).Association("Leagues").Find(&leagues)
-
-	return leagues, nil
+	return user.Leagues, nil
 }
