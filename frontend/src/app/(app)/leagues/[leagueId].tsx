@@ -14,9 +14,6 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 import User from '../../../types/User';
 
-// put this into context or redux?
-const currentGW = 3;
-
 const calculatePoints = (points: PlayerPoints[], gw: number) => {
   return points.reduce((sum, curr) => {
     if (curr.gw > gw) return sum;
@@ -115,9 +112,10 @@ const LeagueView = () => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
   const leagueSlice = useAppSelector((state) => state.leagues);
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   // const [league, setLeague] = useState<SelectedLeague>();
-  const [selectedGW, setSelectedGW] = useState<number>(currentGW);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
 
   if (!auth.user) return <Redirect href="/" />;
@@ -172,7 +170,7 @@ const LeagueView = () => {
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
           <View style={styles.betWrapper}>
-            <PremText centered>{calculateTimeUntilGW(selectedGW, currentGW)}</PremText>
+            <PremText centered>{calculateTimeUntilGW(selectedGW, gameweekSlice.gameweek)}</PremText>
             <PremButton
               onPress={() => {
                 console.log('bet created');
