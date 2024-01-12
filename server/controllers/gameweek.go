@@ -20,8 +20,8 @@ func GetCurrentGameWeek(c *gin.Context) {
 	var currentGameweek models.Gameweek
 	now := time.Now()
 
-	for _, gw := range gameweeks {
-		if gw.Opens.Before(now) && gw.Closes.After(now) {
+	for index, gw := range gameweeks {
+		if index == len(gameweeks) || gw.Opens.Before(now) && gameweeks[index+1].Opens.After(now) {
 			currentGameweek = gw
 		}
 	}
