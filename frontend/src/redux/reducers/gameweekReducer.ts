@@ -1,5 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
+import Gameweek from '../../types/Gameweek';
 
 export interface GameweekState {
   gameweek: number;
@@ -8,6 +9,9 @@ export interface GameweekState {
   opens: string;
   closes: string;
   finishes: string;
+  allGameweeks: Gameweek[];
+  allIsLoading: boolean;
+  allHasError: boolean;
 }
 
 const initialState: GameweekState = {
@@ -17,6 +21,9 @@ const initialState: GameweekState = {
   opens: new Date().setDate(1000000).toString(),
   closes: new Date().setDate(1000000).toString(),
   finishes: new Date().setDate(1000000).toString(),
+  allGameweeks: [],
+  allIsLoading: false,
+  allHasError: false,
 };
 
 const gameweekSlice = createSlice({
@@ -39,6 +46,18 @@ const gameweekSlice = createSlice({
         state.closes = action.payload.closes;
         state.finishes = action.payload.finishes;
         state.gameweek = action.payload.gameweek;
+      })
+      // getAllGameweeks
+      .addCase(getAllGameweeks.pending, (state) => {
+        state.allIsLoading = true;
+      })
+      .addCase(getAllGameweeks.rejected, (state) => {
+        state.allIsLoading = false;
+        state.allHasError = true;
+      })
+      .addCase(getAllGameweeks.fulfilled, (state, action: PayloadAction<Gameweek[]>) => {
+        state.allIsLoading = false;
+        state.allGameweeks = action.payload;
       });
   },
 });
@@ -65,5 +84,17 @@ export const getCurrentGameweek = createAsyncThunk<GameweekResponse>(
     return gameweek;
   }
 );
+
+export const getAllGameweeks = createAsyncThunk<Gameweek[]>('gameweek/getAll', async () => {
+  const response = await fetch(`${backend}/gw/all`);
+
+  if (!response.ok) {
+    const message: { error: string } = await response.json();
+    throw new Error(message.error);
+  }
+
+  const gameweeks: Gameweek[] = await response.json();
+  return gameweeks;
+});
 
 export default gameweekSlice.reducer;
