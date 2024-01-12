@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Tabs } from 'expo-router';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAppSelector } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
+import { getCurrentGameweek } from '../../redux/reducers/gameweekReducer';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
 
   if (!authSlice.user) return <Redirect href="/login" />;
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getCurrentGameweek());
+  }, []);
 
   return (
     <Tabs
