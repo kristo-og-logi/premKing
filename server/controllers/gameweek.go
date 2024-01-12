@@ -28,3 +28,14 @@ func GetCurrentGameWeek(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, currentGameweek)
 }
+
+func GetAllGameWeeks(c *gin.Context) {
+	gameweeks, err := repositories.GetAllGameWeeks()
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gameweeks)
+}
