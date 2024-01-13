@@ -187,6 +187,19 @@ func migrateGameweeksToDB(db *gorm.DB) {
 		LastFixtureDate  time.Time `gorm:"last_fixture_date"`
 	}
 
+	existingGameweeks := []models.Gameweek{}
+
+	result := db.Find(&existingGameweeks)
+
+	if result.Error != nil {
+		log.Fatalf("error fetching existing gameweeks %s\n", result.Error.Error())
+	}
+
+	if len(existingGameweeks) == 38 {
+		fmt.Println("gameweeks already exist")
+		return
+	}
+
 	var borders []FirstAndLastFixture
 	err := db.Raw(`
     SELECT DISTINCT f1.game_week,
