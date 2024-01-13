@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "premKing",
-    "slug": "pK",
+    "slug": "premking",
     "scheme": "premKing",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#072936"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kristo.premking",
@@ -29,6 +31,17 @@
       "bundler": "metro",
       "favicon": "./assets/IOS-LOGO-3x.png"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d7fc379a-c178-4bfa-8fc4-e91110513d54"
+      }
+    },
+    "owner": "kristoferfannar"
   }
 }
