@@ -13,6 +13,10 @@ type Fixture struct {
 	HomeTeam   Team      `gorm:"foreignKey:HomeTeamId" json:"homeTeam"`
 	AwayTeamId uint16    `gorm:"index" json:"awayTeamId"`
 	AwayTeam   Team      `gorm:"foreignKey:AwayTeamId" json:"awayTeam"`
+	Finished   bool      `json:"finished"`
+	HomeGoals  uint8     `json:"homeGoals"`
+	AwayGoals  uint8     `json:"awayGoals"`
+	Result     string    `json:"result"`
 	MatchDate  time.Time `json:"matchDate"`
 	Name       string    `json:"name"`
 }
@@ -23,20 +27,29 @@ type FixturesResponse struct {
 
 type FixtureJSON struct {
 	Fixture struct {
-		ID   uint32    `json:"id"`
-		Date time.Time `json:"date"`
+		ID     uint32    `json:"id"`
+		Date   time.Time `json:"date"`
+		Status struct {
+			Elapsed uint16 `json:"elapsed"`
+		} `json:"status"`
 	} `json:"fixture"`
 	League struct {
 		Round string `json:"round"`
 	} `json:"league"`
 	Teams struct {
 		Home struct {
-			ID   uint16 `json:"id"`
-			Name string `json:"name"`
+			ID     uint16 `json:"id"`
+			Name   string `json:"name"`
+			Winner bool   `json:"winner"`
 		} `json:"home"`
 		Away struct {
-			ID   uint16 `json:"id"`
-			Name string `json:"name"`
+			ID     uint16 `json:"id"`
+			Name   string `json:"name"`
+			Winner bool   `json:"winner"`
 		} `json:"away"`
 	} `json:"teams"`
+	Goals struct {
+		Home uint8 `json:"home"`
+		Away uint8 `json:"away"`
+	} `json:"goals"`
 }

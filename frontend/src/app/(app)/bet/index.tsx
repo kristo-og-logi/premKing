@@ -11,12 +11,17 @@ import GameweekShifter from '../../../components/basic/GameweekShifter';
 const Bet = () => {
   const dispatch = useAppDispatch();
   const fixtureSlice = useAppSelector((state) => state.fixtures);
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
 
-  const [selectedGW, setSelectedGW] = useState<number>(20);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
   }, [selectedGW]);
+
+  useEffect(() => {
+    setSelectedGW(gameweekSlice.gameweek);
+  }, [gameweekSlice.gameweek]);
 
   const renderMatches = () => {
     return fixtureSlice.fixtures.map((fixture) => <MatchUp key={fixture.id} fixture={fixture} />);

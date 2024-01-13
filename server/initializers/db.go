@@ -14,8 +14,7 @@ import (
 )
 
 func autoMigrateDB(db *gorm.DB) {
-	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{})
-
+	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{})
 	if err != nil {
 		log.Fatal("failed to autoMigrate: " + err.Error())
 	}
@@ -31,14 +30,22 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Failed to connect to database ", err)
 	}
-	autoMigrateDB(db)
-	MigrateTeamsToDB(db)
-	MigrateFixturesToDB(db)
+
+	shouldMigrate := false
+	if shouldMigrate {
+		fmt.Println("migrating")
+		autoMigrateDB(db)
+		migrateTeamsToDB(db)
+		migrateFixturesToDB(db)
+		migrateGameweeksToDB(db)
+	} else {
+		fmt.Println("not migrating")
+	}
 
 	DB = db
 }
 
-func MigrateTeamsToDB(db *gorm.DB) {
+func migrateTeamsToDB(db *gorm.DB) {
 	var existingTeams []models.Team
 	result := db.Select("id").Find(&existingTeams)
 	if result.Error != nil {
@@ -89,7 +96,7 @@ func MigrateTeamsToDB(db *gorm.DB) {
 	}
 }
 
-func MigrateFixturesToDB(db *gorm.DB) {
+func migrateFixturesToDB(db *gorm.DB) {
 	var existingFixtures []models.Fixture
 	result := db.Select("id").Find(&existingFixtures)
 	if result.Error != nil {
@@ -107,7 +114,7 @@ func MigrateFixturesToDB(db *gorm.DB) {
 		log.Fatalf("error fetching all teams: %s\n", result.Error.Error())
 	}
 
-	jsonData, err := os.ReadFile("./json/fixtures.json")
+	jsonData, err := os.ReadFile("./json/fixtures2.json")
 	if err != nil {
 		log.Fatalf("error reading fixtures.json: %s\n", err.Error())
 	}
@@ -134,6 +141,13 @@ func MigrateFixturesToDB(db *gorm.DB) {
 			}
 		}
 
+		result := "X"
+		if fixture.Teams.Home.Winner {
+			result = "1"
+		} else if fixture.Teams.Away.Winner {
+			result = "2"
+		}
+
 		model := models.Fixture{
 			ID:         fixture.Fixture.ID,
 			CreatedAt:  time.Now(),
@@ -142,6 +156,10 @@ func MigrateFixturesToDB(db *gorm.DB) {
 			HomeTeam:   homeTeam,
 			AwayTeamId: awayTeam.ID,
 			AwayTeam:   awayTeam,
+			Finished:   fixture.Fixture.Status.Elapsed == 90,
+			HomeGoals:  fixture.Goals.Home,
+			AwayGoals:  fixture.Goals.Away,
+			Result:     result,
 			MatchDate:  fixture.Fixture.Date,
 			GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
 			Name:       fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
@@ -157,6 +175,49 @@ func MigrateFixturesToDB(db *gorm.DB) {
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
 			if result.Error != nil {
 				log.Fatalf("Error adding team to DB: %s\n", result.Error.Error())
+			}
+		}
+	}
+}
+
+func migrateGameweeksToDB(db *gorm.DB) {
+	type FirstAndLastFixture struct {
+		GameWeek         uint8     `gorm:"game_week"`
+		FirstFixtureDate time.Time `gorm:"first_fixture_date"`
+		LastFixtureDate  time.Time `gorm:"last_fixture_date"`
+	}
+
+	var borders []FirstAndLastFixture
+	err := db.Raw(`
+    SELECT DISTINCT f1.game_week,
+    (SELECT match_date FROM fixtures f2 WHERE f2.game_week = f1.game_week ORDER BY f2.match_date ASC LIMIT 1) as first_fixture_date,
+    (SELECT match_date FROM fixtures f3 WHERE f3.game_week = f1.game_week ORDER BY f3.match_date DESC LIMIT 1) as last_fixture_date
+    FROM fixtures f1
+`).Scan(&borders).Error
+
+	if err != nil {
+		log.Fatalf("error fetching first and last fixture dates from db: %s\n", err.Error())
+	}
+
+	for index, border := range borders {
+		openTime := border.FirstFixtureDate.Add(-7 * 24 * time.Hour)
+		if index != 0 {
+			openTime = borders[index-1].LastFixtureDate.Add(2 * time.Hour)
+		}
+
+		model := models.Gameweek{
+			Gameweek:  border.GameWeek,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Opens:     openTime,
+			Closes:    border.FirstFixtureDate.Add(-2 * time.Hour),
+			Finishes:  border.LastFixtureDate.Add(2 * time.Hour),
+		}
+
+		if true {
+			result := db.Where(models.Gameweek{Gameweek: model.Gameweek}).FirstOrCreate(&model)
+			if result.Error != nil {
+				log.Fatalf("Error adding gameweek to DB: %s\n", result.Error.Error())
 			}
 		}
 	}

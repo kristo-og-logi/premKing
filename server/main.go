@@ -1,7 +1,7 @@
 package main
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -9,10 +9,6 @@ import (
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/routes"
 )
-
-func getCurrentGameWeek(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, 2)
-}
 
 func init() {
 	initializers.LoadEnv()
@@ -42,8 +38,9 @@ func main() {
 	routes.SetupAuthRoutes(router, version1Prefix)
 	routes.SetupTeamsRoutes(router, version1Prefix)
 	routes.SetupFixtureRoutes(router, version1Prefix)
-	router.GET("/gw", getCurrentGameWeek)
+	routes.SetupGameweekRoutes(router, version1Prefix)
 
+	fmt.Println("Router running...")
 	router.Run()
 }
 

@@ -21,22 +21,31 @@ const renderLeagues = (leagues: League[]) => {
   ));
 };
 
-const currentGW = 3;
-
 export default function Page() {
   const dispatch = useAppDispatch();
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
   const leagueSlice = useAppSelector((state) => state.leagues);
-  const [selectedGW, setSelectedGW] = useState<number>(currentGW);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
   const authSlice = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMyLeagues(authSlice.token));
   }, []);
 
+  useEffect(() => {
+    setSelectedGW(gameweekSlice.gameweek);
+  }, [gameweekSlice.gameweek]);
+
   return (
     <View style={[styles.leagueScreen, globalStyles.container]}>
       <View>
-        <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+        {gameweekSlice.isLoading ? (
+          <PremText>Loading...</PremText>
+        ) : gameweekSlice.hasError ? (
+          <PremText>Error occurred</PremText>
+        ) : (
+          <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+        )}
         <View style={[styles.gwScores]}>
           <View style={[styles.secondaryCard, globalStyles.shadow]}>
             <PremText order={4}>Avg</PremText>
