@@ -13,6 +13,7 @@ import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 import User from '../../../types/User';
+import Gameweek from '../../../types/Gameweek';
 
 const calculatePoints = (points: PlayerPoints[], gw: number) => {
   return points.reduce((sum, curr) => {
@@ -46,11 +47,23 @@ const getScoreboardedPlayers = (players: Player[], selectedGw: number): Scoreboa
   return finalPlayers.sort((a, b) => (a.points >= b.points ? -1 : 1));
 };
 
-const calculateTimeUntilGW = (gwNumber: number, currentGW: number) => {
-  if (gwNumber < currentGW) return 'Finished';
-  if (gwNumber > currentGW) return 'Closed';
+const calculateTimeUntilGW = (gameweek: Gameweek) => {
+  const now = new Date();
+  const opens = new Date(gameweek.opens);
+  const closes = new Date(gameweek.closes);
+  const finishes = new Date(gameweek.finishes);
 
-  return 'Starts In 3 days, 2 hours';
+  // "now" can be inbetween any of these 3 times, giving us four cases
+  // opens - closes - finishes
+  if (now < opens)
+    return `Opens on ${opens.toDateString()}, ${opens.getHours()}:${opens.getMinutes()}`;
+
+  if (finishes < now)
+    return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes()}`;
+
+  if (now < closes) return `Currently open`;
+
+  return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes()}`;
 };
 
 const Scoreboard = (players: User[], gw: number, myId: string) => {
@@ -103,6 +116,18 @@ const Scoreboard = (players: User[], gw: number, myId: string) => {
 // };
 const calculateYourPlace = (players: User[], userId: string) => {
   return players.findIndex((player) => player.id === userId) + 1;
+};
+
+const calculateGwAction = (gameweek: Gameweek): string => {
+  return isOpen(gameweek) ? 'Create bet' : 'Locked';
+};
+
+const isOpen = (gameweek: Gameweek): boolean => {
+  const now = new Date();
+  const opens = new Date(gameweek.opens);
+  const closes = new Date(gameweek.closes);
+
+  return opens < now && now < closes;
 };
 
 const LeagueView = () => {
@@ -170,13 +195,16 @@ const LeagueView = () => {
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
           <View style={styles.betWrapper}>
-            <PremText centered>{calculateTimeUntilGW(selectedGW, gameweekSlice.gameweek)}</PremText>
+            <PremText centered>
+              {calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}
+            </PremText>
             <PremButton
+              disabled={!isOpen(gameweekSlice.allGameweeks[selectedGW - 1])}
               onPress={() => {
                 console.log('bet created');
               }}
             >
-              Create Bet
+              {calculateGwAction(gameweekSlice.allGameweeks[selectedGW - 1])}
             </PremButton>
           </View>
           {Scoreboard(leagueSlice.selectedLeague.users, selectedGW, auth.user.id)}

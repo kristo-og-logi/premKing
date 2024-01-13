@@ -3,7 +3,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
-import { getCurrentGameweek } from '../../redux/reducers/gameweekReducer';
+import { getAllGameweeks, getCurrentGameweek } from '../../redux/reducers/gameweekReducer';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
@@ -14,6 +14,7 @@ export default function MainLayout() {
 
   useEffect(() => {
     dispatch(getCurrentGameweek());
+    dispatch(getAllGameweeks());
   }, []);
 
   return (
