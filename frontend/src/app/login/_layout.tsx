@@ -18,6 +18,7 @@ const Login = () => {
 
   const [_, response, promptAsync] = Google.useAuthRequest({
     iosClientId: '538791218868-3occqdqicf7o6qsspdfu2731811jt4k8.apps.googleusercontent.com',
+    webClientId: '538791218868-le0ufbps49vd2bthqc0n1bdjhm8al2bf.apps.googleusercontent.com',
   });
 
   const handleOauth = async () => {
