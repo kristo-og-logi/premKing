@@ -15,7 +15,6 @@ import (
 
 func autoMigrateDB(db *gorm.DB) {
 	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{})
-
 	if err != nil {
 		log.Fatal("failed to autoMigrate: " + err.Error())
 	}
@@ -31,10 +30,17 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Failed to connect to database ", err)
 	}
-	autoMigrateDB(db)
-	migrateTeamsToDB(db)
-	migrateFixturesToDB(db)
-	migrateGameweeksToDB(db)
+
+	shouldMigrate := false
+	if shouldMigrate {
+		fmt.Println("migrating")
+		autoMigrateDB(db)
+		migrateTeamsToDB(db)
+		migrateFixturesToDB(db)
+		migrateGameweeksToDB(db)
+	} else {
+		fmt.Println("not migrating")
+	}
 
 	DB = db
 }

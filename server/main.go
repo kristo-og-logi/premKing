@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
@@ -38,6 +40,7 @@ func main() {
 	routes.SetupFixtureRoutes(router, version1Prefix)
 	routes.SetupGameweekRoutes(router, version1Prefix)
 
+	fmt.Println("Router running...")
 	router.Run()
 }
 
