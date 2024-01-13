@@ -8,9 +8,9 @@
     "icon": "./assets/IOS-LOGO-3x.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/premKingLogo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffbb00"
+      "backgroundColor": "#072936"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/IOS-LOGO-3x.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#072936"
       },
       "package": "com.kristo.premking"
     },
