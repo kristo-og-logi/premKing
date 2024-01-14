@@ -11,6 +11,7 @@ import { login } from '../../redux/reducers/authReducer';
 
 import premkingLogo from '../../../assets/premKingLogo.png';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
 
 maybeCompleteAuthSession();
 
@@ -23,6 +24,9 @@ const Login = () => {
     iosClientId: '538791218868-3occqdqicf7o6qsspdfu2731811jt4k8.apps.googleusercontent.com',
     webClientId: '538791218868-le0ufbps49vd2bthqc0n1bdjhm8al2bf.apps.googleusercontent.com',
     androidClientId: '538791218868-sjkkasc0pr2u56pmc2l3uvmucdkm1mpq.apps.googleusercontent.com',
+    redirectUri: makeRedirectUri({
+      scheme: 'com.kristo.premking',
+    }),
   });
 
   const handleOauth = async () => {
