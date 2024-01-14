@@ -10,6 +10,9 @@ import GoogleButton from '../../components/GoogleButton';
 import { login } from '../../redux/reducers/authReducer';
 
 import premkingLogo from '../../../assets/premKingLogo.png';
+import { maybeCompleteAuthSession } from 'expo-web-browser';
+
+maybeCompleteAuthSession();
 
 const Login = () => {
   const router = useRouter();
