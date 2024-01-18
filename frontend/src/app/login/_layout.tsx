@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, TextInput, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,23 +13,16 @@ import { login } from '../../redux/reducers/authReducer';
 import premkingLogo from '../../../assets/premKingLogo.png';
 import PremButton from '../../components/basic/PremButton';
 import PremText from '../../components/basic/PremText';
+import { getTokenFromStorage, saveTokenInStorage } from '../../utils/storage';
+import PremTextInput from '../../components/basic/PremTextInput';
 
-const save = async (key: string, value: string) => {
-  await SecureStore.setItemAsync(key, value);
-};
-
-const getValueFor = async (key: string) => {
-  const result = await SecureStore.getItemAsync(key);
-  if (result) {
-    alert("🔐 Here's your value 🔐 \n" + result);
-  } else {
-    alert('No values stored under that key.');
-  }
+const deletedValueFor = async (key: string) => {
+  await SecureStore.deleteItemAsync(key);
+  alert('Value deleted');
 };
 
 const Login = () => {
-  const [key, onChangeKey] = React.useState('USER');
-  const [value, onChangeValue] = React.useState('YourValueHere');
+  const [tokenValue, setTokenValue] = useState<string>('');
 
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -66,21 +59,35 @@ const Login = () => {
         <GoogleButton onPress={() => promptAsync()} />
       </View> */}
       <View>
-        <PremText>Save an item, and grab it later!</PremText>
+        <PremTextInput placeholder="token value" onChangeText={setTokenValue} value={tokenValue} />
         <PremButton
           onPress={() => {
-            save(key, value);
+            console.log('saving value1');
+            saveTokenInStorage(tokenValue);
+            console.log('saving value2');
           }}
         >
-          Save
+          Save "TOKEN: VALUE"
         </PremButton>
-        <PremText>🔐 Enter your key 🔐</PremText>
-        <TextInput
-          onSubmitEditing={(event) => {
-            getValueFor(event.nativeEvent.text);
+        <PremButton
+          onPress={async () => {
+            console.log('getting value1');
+            const token = await getTokenFromStorage();
+            alert(`token is ${token}`);
+            console.log('getting value2');
           }}
-          placeholder="Enter the key for the value you want to get"
-        />
+        >
+          GET "TOKEN"
+        </PremButton>
+        <PremButton
+          onPress={() => {
+            console.log('deleting value1');
+            deletedValueFor('TOKEN');
+            console.log('deleting value2');
+          }}
+        >
+          REMOVE "TOKEN"
+        </PremButton>
       </View>
     </SafeAreaView>
   );
