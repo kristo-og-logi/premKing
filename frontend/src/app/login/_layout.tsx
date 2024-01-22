@@ -7,9 +7,10 @@ import * as Google from 'expo-auth-session/providers/google';
 import { globalStyles } from '../../styles/styles';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import GoogleButton from '../../components/GoogleButton';
-import { login } from '../../redux/reducers/authReducer';
+import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 
 import premkingLogo from '../../../assets/premKingLogo.png';
+import { getTokenFromStorage } from '../../utils/storage';
 
 const Login = () => {
   const router = useRouter();
@@ -24,9 +25,9 @@ const Login = () => {
     if (response?.type === 'success') {
       console.log('oauth success: ', response.authentication?.accessToken);
 
-      if (response.authentication?.accessToken)
+      if (response.authentication?.accessToken) {
         dispatch(login(response.authentication?.accessToken));
-
+      }
       router.replace('/');
     }
   };
@@ -35,9 +36,19 @@ const Login = () => {
     handleOauth();
   }, [response]);
 
-  if (authSlice.user) return <Redirect href={'/leagues'} />;
+  useEffect(() => {
+    getTokenFromStorage()
+      .then((userData) => {
+        dispatch(setUserDataFromStorage(userData));
+      })
+      .catch((error) => {
+        console.log('token not found in storage');
+      });
+  }, []);
 
-  return (
+  return authSlice.user ? (
+    <Redirect href={'/'} />
+  ) : (
     <SafeAreaView style={{ ...globalStyles.container, justifyContent: 'space-between' }}>
       <View>
         <Image source={premkingLogo} style={{ width: 'auto', height: 200 }} />

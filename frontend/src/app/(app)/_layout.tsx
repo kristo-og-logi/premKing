@@ -8,14 +8,17 @@ import { getAllGameweeks, getCurrentGameweek } from '../../redux/reducers/gamewe
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
 
-  if (!authSlice.user) return <Redirect href="/login" />;
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getCurrentGameweek());
     dispatch(getAllGameweeks());
   }, []);
+
+  if (!authSlice.user) {
+    console.log('redirecting to login');
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Tabs
