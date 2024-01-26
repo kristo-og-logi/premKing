@@ -6,6 +6,7 @@ import PremButton from '../../../components/basic/PremButton';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser } from '../../../redux/reducers/authReducer';
+import { removeTokenFromStorage } from '../../../utils/storage';
 
 const Stats = () => {
   const authSlice = useAppSelector((state) => state.auth);
@@ -21,6 +22,7 @@ const Stats = () => {
       <View style={globalStyles.centered}>
         <PremButton
           onPress={() => {
+            removeTokenFromStorage();
             dispatch(clearUser());
           }}
         >

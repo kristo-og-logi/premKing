@@ -12,13 +12,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#072936"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kristo.premking",
-      "name": "pk-app"
+      "name": "pk-app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,9 +32,7 @@
       "bundler": "metro",
       "favicon": "./assets/IOS-LOGO-3x.png"
     },
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "extra": {
       "router": {
         "origin": false

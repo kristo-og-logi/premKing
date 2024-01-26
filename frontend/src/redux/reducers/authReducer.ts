@@ -1,10 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import User from '../../types/User';
 import { RootState } from '../store';
+import { saveTokenInStorage } from '../../utils/storage';
 
 export interface AuthState {
   user?: User;
-  googleToken: string;
   token: string;
   isLoading: boolean;
   hasError: boolean;
@@ -12,7 +12,6 @@ export interface AuthState {
 
 const initialState: AuthState = {
   user: undefined,
-  googleToken: '',
   token: '',
   isLoading: false,
   hasError: false,
@@ -24,11 +23,14 @@ export const authSlice = createSlice({
   reducers: {
     clearUser: (state) => {
       state.user = undefined;
-      state.googleToken = '';
       state.token = '';
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+    },
+    setUserDataFromStorage: (state, action: PayloadAction<LoginResponse>) => {
+      state.token = action.payload.token;
+      state.user = action.payload.user;
     },
   },
   extraReducers: (builder) => {
@@ -67,6 +69,8 @@ export const login = createAsyncThunk<LoginResponse, string>(
       });
 
       const data: LoginResponse = await response.json();
+      await saveTokenInStorage(data);
+
       return data;
     } catch (error) {
       console.log('ERROR logging in: ', error);
@@ -75,7 +79,7 @@ export const login = createAsyncThunk<LoginResponse, string>(
   }
 );
 
-export const { clearUser, setUser } = authSlice.actions;
+export const { clearUser, setUser, setUserDataFromStorage } = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;
 
 export default authSlice.reducer;
