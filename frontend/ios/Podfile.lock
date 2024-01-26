@@ -25,7 +25,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoSecureStore (12.3.1):
     - ExpoModulesCore
-  - ExpoWebBrowser (12.3.2):
+  - ExpoWebBrowser (12.5.0):
     - ExpoModulesCore
   - EXSplashScreen (0.20.5):
     - ExpoModulesCore
@@ -657,7 +657,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoModulesCore: c480fd4e3c7c8e81f0a6ba3a7c56869f25fe016d
   ExpoSecureStore: 57db3b6da8b59046e2057e95bf7738a8027b47c3
-  ExpoWebBrowser: 2c788f9c07718a780fe6d8bf2f6195c47609faaa
+  ExpoWebBrowser: b6e56949734089d75f758f21cfe93fad02bd828c
   EXSplashScreen: c0e7f2d4a640f3b875808ed0b88575538daf6d82
   FBLazyVector: 748c0ef74f2bf4b36cfcccf37916806940a64c32
   FBReactNativeSpec: 966f29e4e697de53a3b366355e8f57375c856ad9
