@@ -1,4 +1,4 @@
-import { Role, StyleSheet, TouchableOpacity } from 'react-native';
+import { Role, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import React from 'react';
 import { colors, globalStyles } from '../../styles/styles';
 import PremText from './PremText';
@@ -13,6 +13,7 @@ interface Props {
   href?: Href;
   role?: Role;
   ref?: React.RefObject<TouchableOpacity> | undefined;
+  extraStyles?: ViewStyle;
 }
 
 const PremButton = ({
@@ -23,11 +24,13 @@ const PremButton = ({
   children,
   role,
   ref,
+  extraStyles = {},
 }: Props) => {
   return (
     <TouchableOpacity
       style={[
         styles.button,
+        extraStyles,
         fullWidth ? styles.fullWidth : styles.normalWidth,
         disabled ? styles.disabled : globalStyles.shadow,
       ]}
