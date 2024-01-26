@@ -148,9 +148,11 @@ export const MatchUp = ({ fixture, selectedGW }: Props) => {
         />
       </View>
       {fixture.finished && (
-        <PremText
-          centered
-        >{`${fixture.homeTeam.name} ${fixture.homeGoals} - ${fixture.awayGoals} ${fixture.awayTeam.name}`}</PremText>
+        <View>
+          <PremText
+            centered
+          >{`${fixture.homeTeam.name} ${fixture.homeGoals} - ${fixture.awayGoals} ${fixture.awayTeam.name}`}</PremText>
+        </View>
       )}
     </>
   );

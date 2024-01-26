@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { globalStyles } from '../../../styles/styles';
 import { MatchUp } from '../../../components/bet/MatchUp';
 import { Confirm } from '../../../components/bet/Confirm';
@@ -24,9 +24,13 @@ const Bet = () => {
   }, [gameweekSlice.gameweek]);
 
   const renderMatches = () => {
-    return fixtureSlice.fixtures.map((fixture) => (
-      <MatchUp selectedGW={selectedGW} key={fixture.id} fixture={fixture} />
-    ));
+    return (
+      <View style={styles.fixtureList}>
+        {fixtureSlice.fixtures.map((fixture) => (
+          <MatchUp selectedGW={selectedGW} key={fixture.id} fixture={fixture} />
+        ))}
+      </View>
+    );
   };
 
   return (
@@ -49,3 +53,9 @@ const Bet = () => {
 };
 
 export default Bet;
+
+const styles = StyleSheet.create({
+  fixtureList: {
+    gap: 12,
+  },
+});
