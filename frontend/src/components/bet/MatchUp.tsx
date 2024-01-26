@@ -26,7 +26,6 @@ const TeamColumn = ({
   disabled = false,
   selected = false,
   extraStyles = {},
-  finished,
   onPress,
 }: {
   teamName: string;
@@ -36,7 +35,6 @@ const TeamColumn = ({
   disabled: boolean;
   selected: boolean;
   extraStyles?: ViewStyle;
-  finished: boolean;
   onPress?: () => void;
 }) => {
   return (
@@ -50,7 +48,7 @@ const TeamColumn = ({
         style={{
           ...styles.team,
           ...extraStyles,
-          ...(finished && (selected ? styles.win : styles.lose)),
+          ...(selected ? styles.win : styles.lose),
         }}
         disabled={disabled}
         onPress={onPress}
@@ -80,14 +78,12 @@ const DrawMiddle = ({
   odds,
   disabled = false,
   selected = false,
-  finished,
   onPress,
 }: {
   date: string;
   odds: string;
   disabled?: boolean;
   selected?: boolean;
-  finished: boolean;
   onPress?: () => void;
 }) => {
   return (
@@ -98,7 +94,7 @@ const DrawMiddle = ({
         </PremText>
       </View>
       <TouchableOpacity
-        style={{ ...styles.draw, ...(finished && (selected ? styles.win : styles.lose)) }}
+        style={{ ...styles.draw, ...(selected ? styles.win : styles.lose) }}
         disabled={disabled}
         onPress={onPress}
       >
@@ -144,9 +140,12 @@ export const MatchUp = ({ fixture, selectedGW, bet, setBet }: Props) => {
     <>
       <View style={styles.container}>
         <TeamColumn
-          finished={fixture.finished}
           extraStyles={styles.homeTeamBorder}
-          selected={fixture.result == FixtureResult.HOME}
+          selected={
+            (fixture.finished && fixture.result == FixtureResult.HOME) ||
+            bet.some((b) => b.fixture == fixture.id && b.team == fixture.homeTeam.name) ||
+            !bet.some((b) => b.fixture == fixture.id)
+          }
           disabled={!selectedGWIsCurrent}
           teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
           logo={{ uri: fixture.homeTeam.logo }}
@@ -162,8 +161,10 @@ export const MatchUp = ({ fixture, selectedGW, bet, setBet }: Props) => {
           }}
         />
         <DrawMiddle
-          finished={fixture.finished}
-          selected={fixture.result == FixtureResult.DRAW}
+          selected={
+            (fixture.finished && fixture.result == FixtureResult.DRAW) ||
+            bet.some((b) => b.fixture === fixture.id && b.team === 'DRAW')
+          }
           disabled={!selectedGWIsCurrent}
           date={new Date(fixture.matchDate).toDateString()}
           odds={'1.09'}
@@ -176,9 +177,12 @@ export const MatchUp = ({ fixture, selectedGW, bet, setBet }: Props) => {
           }}
         />
         <TeamColumn
-          finished={fixture.finished}
           extraStyles={styles.awayTeamBorder}
-          selected={fixture.result == FixtureResult.AWAY}
+          selected={
+            (fixture.finished && fixture.result == FixtureResult.AWAY) ||
+            bet.some((b) => b.fixture === fixture.id && b.team === fixture.awayTeam.name) ||
+            !bet.some((b) => b.fixture == fixture.id)
+          }
           disabled={!selectedGWIsCurrent}
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
