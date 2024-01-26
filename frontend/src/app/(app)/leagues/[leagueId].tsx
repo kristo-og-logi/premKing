@@ -1,6 +1,6 @@
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Redirect, Stack, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
 // import { fetchLeagueById } from '../../../utils/fetchLeague';
@@ -131,6 +131,7 @@ const isOpen = (gameweek: Gameweek): boolean => {
 };
 
 const LeagueView = () => {
+  const router = useRouter();
   const navigation = useNavigation();
   const { leagueId } = useLocalSearchParams();
 
@@ -201,7 +202,7 @@ const LeagueView = () => {
             <PremButton
               disabled={!isOpen(gameweekSlice.allGameweeks[selectedGW - 1])}
               onPress={() => {
-                console.log('bet created');
+                router.replace('bet');
               }}
             >
               {calculateGwAction(gameweekSlice.allGameweeks[selectedGW - 1])}
