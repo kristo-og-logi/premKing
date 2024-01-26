@@ -170,7 +170,7 @@ export const MatchUp = ({ fixture, selectedGW, bet, setBet }: Props) => {
           odds={'1.09'}
           onPress={() => {
             selectedGWIsCurrent && teamExistsInBet('DRAW')
-              ? setBet(bet.filter((b) => b.team !== 'DRAW'))
+              ? setBet(bet.filter((b) => !(b.fixture === fixture.id && b.team === 'DRAW')))
               : fixtureExistsInBet()
                 ? changeFixtureInBet('DRAW')
                 : setBet([...bet, { fixture: fixture.id, team: 'DRAW' }]);
