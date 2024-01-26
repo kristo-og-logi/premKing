@@ -41,7 +41,7 @@ const Bet = () => {
           <>{renderMatches()}</>
         )}
       </ScrollView>
-      <Confirm />
+      <Confirm selectedGW={selectedGW} />
     </View>
   );
 };

@@ -2,32 +2,21 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
+import { useAppSelector } from '../../redux/hooks';
+import PremButton from '../basic/PremButton';
 
-export const Confirm = () => {
+interface Props {
+  selectedGW: number;
+}
+
+export const Confirm = ({ selectedGW }: Props) => {
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
+
+  const selectedGWIsCurrent = selectedGW == gameweekSlice.gameweek;
+
   return (
-    <TouchableOpacity style={styles.container}>
-      <PremText order={2} centered={true}>
-        Confirm
-      </PremText>
-    </TouchableOpacity>
+    <PremButton fullWidth disabled={!selectedGWIsCurrent} onPress={() => console.log('bet placed')}>
+      {selectedGWIsCurrent ? 'Confirm' : 'Disabled'}
+    </PremButton>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 15,
-    left: 40,
-    right: 40,
-    padding: 16,
-    backgroundColor: colors.charcoal[2],
-    shadowColor: 'black',
-    shadowOpacity: 0.3,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 3,
-    elevation: 5,
-  },
-});
