@@ -24,7 +24,9 @@ const Bet = () => {
   }, [gameweekSlice.gameweek]);
 
   const renderMatches = () => {
-    return fixtureSlice.fixtures.map((fixture) => <MatchUp key={fixture.id} fixture={fixture} />);
+    return fixtureSlice.fixtures.map((fixture) => (
+      <MatchUp selectedGW={selectedGW} key={fixture.id} fixture={fixture} />
+    ));
   };
 
   return (
