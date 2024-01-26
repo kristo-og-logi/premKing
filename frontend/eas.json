@@ -18,6 +18,11 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "kristoferfannarb@gmail.com",
+        "sku": "PREMKING"
+      }
+    }
   }
 }
