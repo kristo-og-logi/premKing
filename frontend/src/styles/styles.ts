@@ -65,6 +65,16 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
+  glow: {
+    shadowColor: colors.charcoal[8],
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 4.05,
+    elevation: 40,
+  },
 });
 
 export const scoreboardWidths = StyleSheet.create({
