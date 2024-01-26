@@ -11,6 +11,7 @@ import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
 import Fixture, { FixtureResult } from '../../types/Fixture';
 import { useAppSelector } from '../../redux/hooks';
+import { Bet } from '../../app/(app)/bet';
 
 enum Side {
   LEFT,
@@ -26,6 +27,7 @@ const TeamColumn = ({
   selected = false,
   extraStyles = {},
   finished,
+  onPress,
 }: {
   teamName: string;
   odds: string;
@@ -35,6 +37,7 @@ const TeamColumn = ({
   selected: boolean;
   extraStyles?: ViewStyle;
   finished: boolean;
+  onPress?: () => void;
 }) => {
   return (
     <View style={{ ...styles.header }}>
@@ -50,6 +53,7 @@ const TeamColumn = ({
           ...(finished && (selected ? styles.win : styles.lose)),
         }}
         disabled={disabled}
+        onPress={onPress}
       >
         {side === Side.LEFT ? (
           <>
@@ -77,12 +81,14 @@ const DrawMiddle = ({
   disabled = false,
   selected = false,
   finished,
+  onPress,
 }: {
   date: string;
   odds: string;
   disabled?: boolean;
   selected?: boolean;
   finished: boolean;
+  onPress?: () => void;
 }) => {
   return (
     <View style={styles.header}>
@@ -94,6 +100,7 @@ const DrawMiddle = ({
       <TouchableOpacity
         style={{ ...styles.draw, ...(finished && (selected ? styles.win : styles.lose)) }}
         disabled={disabled}
+        onPress={onPress}
       >
         <PremText order={3} centered={true}>
           Draw
@@ -109,12 +116,29 @@ const DrawMiddle = ({
 interface Props {
   fixture: Fixture;
   selectedGW: number;
+  bet: Bet[];
+  setBet: (bet: Bet[]) => void;
 }
 
-export const MatchUp = ({ fixture, selectedGW }: Props) => {
+export const MatchUp = ({ fixture, selectedGW, bet, setBet }: Props) => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const selectedGWIsCurrent = selectedGW == gameweekSlice.gameweek;
+
+  const fixtureExistsInBet = () => {
+    return bet.some((b) => b.fixture === fixture.id);
+  };
+
+  const teamExistsInBet = (teamName: string) => {
+    return bet.some((b) => b.fixture === fixture.id && b.team === teamName);
+  };
+
+  const changeFixtureInBet = (newTeam: string) => {
+    setBet([
+      ...bet.filter((b) => b.fixture !== fixture.id),
+      { fixture: fixture.id, team: newTeam },
+    ]);
+  };
 
   return (
     <>
@@ -128,6 +152,14 @@ export const MatchUp = ({ fixture, selectedGW }: Props) => {
           logo={{ uri: fixture.homeTeam.logo }}
           odds={'1.59'}
           side={Side.LEFT}
+          onPress={() => {
+            const teamName = fixture.homeTeam.name;
+            selectedGWIsCurrent && teamExistsInBet(teamName)
+              ? setBet(bet.filter((b) => b.team !== teamName))
+              : fixtureExistsInBet()
+                ? changeFixtureInBet(teamName)
+                : setBet([...bet, { fixture: fixture.id, team: teamName }]);
+          }}
         />
         <DrawMiddle
           finished={fixture.finished}
@@ -135,6 +167,13 @@ export const MatchUp = ({ fixture, selectedGW }: Props) => {
           disabled={!selectedGWIsCurrent}
           date={new Date(fixture.matchDate).toDateString()}
           odds={'1.09'}
+          onPress={() => {
+            selectedGWIsCurrent && teamExistsInBet('DRAW')
+              ? setBet(bet.filter((b) => b.team !== 'DRAW'))
+              : fixtureExistsInBet()
+                ? changeFixtureInBet('DRAW')
+                : setBet([...bet, { fixture: fixture.id, team: 'DRAW' }]);
+          }}
         />
         <TeamColumn
           finished={fixture.finished}
@@ -145,6 +184,14 @@ export const MatchUp = ({ fixture, selectedGW }: Props) => {
           logo={{ uri: fixture.awayTeam.logo }}
           odds={'2.49'}
           side={Side.RIGHT}
+          onPress={() => {
+            const teamName = fixture.awayTeam.name;
+            selectedGWIsCurrent && teamExistsInBet(teamName)
+              ? setBet(bet.filter((b) => b.team !== teamName))
+              : fixtureExistsInBet()
+                ? changeFixtureInBet(teamName)
+                : setBet([...bet, { fixture: fixture.id, team: teamName }]);
+          }}
         />
       </View>
       {fixture.finished && (

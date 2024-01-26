@@ -8,6 +8,11 @@ import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 
+export interface Bet {
+  fixture: number;
+  team: string;
+}
+
 const Bet = () => {
   const dispatch = useAppDispatch();
   const fixtureSlice = useAppSelector((state) => state.fixtures);
@@ -23,11 +28,23 @@ const Bet = () => {
     setSelectedGW(gameweekSlice.gameweek);
   }, [gameweekSlice.gameweek]);
 
+  const [bet, setBet] = useState<Bet[]>([]);
+
+  useEffect(() => {
+    console.log('bet: ', bet);
+  }, [bet]);
+
   const renderMatches = () => {
     return (
       <View style={styles.fixtureList}>
         {fixtureSlice.fixtures.map((fixture) => (
-          <MatchUp selectedGW={selectedGW} key={fixture.id} fixture={fixture} />
+          <MatchUp
+            bet={bet}
+            setBet={setBet}
+            selectedGW={selectedGW}
+            key={fixture.id}
+            fixture={fixture}
+          />
         ))}
       </View>
     );
