@@ -61,7 +61,7 @@ const calculateTimeUntilGW = (gameweek: Gameweek) => {
   if (finishes < now)
     return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes()}`;
 
-  if (now < closes) return `Currently open`;
+  if (now < closes) return `Closes at ${closes.toDateString()}`;
 
   return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes()}`;
 };
