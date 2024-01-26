@@ -1,7 +1,4 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { colors } from '../../styles/styles';
-import PremText from '../basic/PremText';
 import { useAppSelector } from '../../redux/hooks';
 import PremButton from '../basic/PremButton';
 
