@@ -86,3 +86,9 @@ create new league by user with id `creatorId` in body
 ## Source
 
 Setting up a gin project: https://go.dev/doc/tutorial/web-service-gin
+
+## Common Errors
+
+*"I'm getting an error while migrating into or reading from the `GAMEWEEKS` table, something do do with dates (unsupported Scan, storing driver.Value type []uint8 into type *time.Time)"\*
+
+- In your .env's `DSN` variable, make sure to postfix it with `&parseTime=True&charset=utf8mb4`. This will read dates from mysql as time.Time types, not []uint8.
