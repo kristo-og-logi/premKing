@@ -187,9 +187,9 @@ func migrateFixturesToDB(db *gorm.DB) {
 
 func migrateGameweeksToDB(db *gorm.DB) {
 	type FirstAndLastFixture struct {
-		GameWeek         uint8   `gorm:"game_week"`
-		FirstFixtureDate []uint8 `gorm:"first_fixture_date"` // as of `recently??`, gorm can't directly parse MYsql date objects ([]byte)...
-		LastFixtureDate  []uint8 `gorm:"last_fixture_date"`  // ... into time.Time. I have to do this manually below.
+		GameWeek         uint8     `gorm:"game_week"`
+		FirstFixtureDate time.Time `gorm:"first_fixture_date"`
+		LastFixtureDate  time.Time `gorm:"last_fixture_date"`
 	}
 
 	existingGameweeks := []models.Gameweek{}
@@ -218,24 +218,10 @@ func migrateGameweeksToDB(db *gorm.DB) {
 	}
 
 	for index, border := range borders {
-		layout := "2006-01-02 15:04:05.000" // some random go niche is to have this specific date for formatting.
+		openTime := border.FirstFixtureDate.Add(-7 * 24 * time.Hour)
 
-		firstFixture, err1 := time.Parse(layout, string(border.FirstFixtureDate)) // []uint8 -> time.Time
-		lastFixture, err3 := time.Parse(layout, string(border.LastFixtureDate))
-
-		if err1 != nil || err3 != nil {
-			log.Fatalf("error converting time ([]uint8) to string: %s\n", err1.Error())
-		}
-
-		openTime := firstFixture.Add(-7 * 24 * time.Hour)
 		if index != 0 {
-			prevFixture, err2 := time.Parse(layout, string(borders[index-1].LastFixtureDate))
-
-			if err2 != nil {
-				log.Fatalf("error converting time ([]uint8) to string")
-			}
-
-			openTime = prevFixture.Add(2 * time.Hour)
+			openTime = borders[index-1].LastFixtureDate.Add(2 * time.Hour)
 		}
 
 		model := models.Gameweek{
@@ -243,8 +229,8 @@ func migrateGameweeksToDB(db *gorm.DB) {
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			Opens:     openTime,
-			Closes:    firstFixture.Add(-2 * time.Hour),
-			Finishes:  lastFixture.Add(2 * time.Hour),
+			Closes:    border.FirstFixtureDate.Add(-2 * time.Hour),
+			Finishes:  border.LastFixtureDate.Add(2 * time.Hour),
 		}
 
 		if true {
