@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Image, View } from 'react-native';
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Google from 'expo-auth-session/providers/google';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
@@ -13,7 +13,6 @@ import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer'
 import premkingLogo from '../../../assets/premKingLogo.png';
 import { getTokenFromStorage } from '../../utils/storage';
 import PremButton from '../../components/basic/PremButton';
-import PremText from '../../components/basic/PremText';
 
 maybeCompleteAuthSession();
 
@@ -21,6 +20,7 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const authSlice = useAppSelector((state) => state.auth);
 
+  // eslint-disable-next-line
   const [_, response, promptAsync] = Google.useAuthRequest({
     iosClientId: '538791218868-3occqdqicf7o6qsspdfu2731811jt4k8.apps.googleusercontent.com',
     webClientId: '538791218868-le0ufbps49vd2bthqc0n1bdjhm8al2bf.apps.googleusercontent.com',
@@ -49,7 +49,7 @@ const Login = () => {
       .then((userData) => {
         dispatch(setUserDataFromStorage(userData));
       })
-      .catch((error) => {
+      .catch(() => {
         console.log('token not found in storage');
       });
   }, []);
