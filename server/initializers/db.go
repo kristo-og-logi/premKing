@@ -36,7 +36,7 @@ func ConnectDB() {
 		log.Fatal("Failed to connect to database ", err)
 	}
 
-	shouldMigrate := true
+	shouldMigrate := false
 	if shouldMigrate {
 		fmt.Println("migrating")
 		autoMigrateDB(db)
