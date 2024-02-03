@@ -118,6 +118,11 @@ export const getLeagues = createAsyncThunk<League[]>('leagues/getLeagues', async
   try {
     const response = await fetch(leagueUrl);
 
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      throw new Error(message.error);
+    }
+
     const data: League[] = await response.json();
     return data;
   } catch (error) {
@@ -171,6 +176,11 @@ export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
       body: JSON.stringify({ leagueName: leagueName }),
     });
 
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      throw new Error(message.error);
+    }
+
     const data: League = await response.json();
     return data;
   }
@@ -185,6 +195,11 @@ export const getMyLeagues = createAsyncThunk<League[], string>(
           Authorization: `Bearer ${token}`,
         },
       });
+
+      if (!response.ok) {
+        const message: { error: string } = await response.json();
+        throw new Error(message.error);
+      }
 
       const myLeagues: League[] = await response.json();
       return myLeagues;

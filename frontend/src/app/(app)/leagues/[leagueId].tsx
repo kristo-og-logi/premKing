@@ -1,6 +1,6 @@
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Redirect, Stack, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
 // import { fetchLeagueById } from '../../../utils/fetchLeague';
@@ -142,8 +142,6 @@ const LeagueView = () => {
   // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
-
-  if (!auth.user) return <Redirect href="/" />;
 
   useEffect(() => {
     // Event listener for the navigation 'beforeRemove' event

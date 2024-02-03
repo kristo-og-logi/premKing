@@ -15,7 +15,7 @@ export default function MainLayout() {
     dispatch(getAllGameweeks());
   }, []);
 
-  if (!authSlice.user) {
+  if (!authSlice.isLoading && !authSlice.user) {
     console.log('redirecting to login');
     return <Redirect href="/login" />;
   }
