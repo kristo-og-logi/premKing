@@ -12,11 +12,12 @@ import GoogleButton from '../../components/GoogleButton';
 import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 import premkingLogo from '../../../assets/premKingLogo.png';
 import { getTokenFromStorage } from '../../utils/storage';
+import PremButton from '../../components/basic/PremButton';
+import PremText from '../../components/basic/PremText';
 
 maybeCompleteAuthSession();
 
 const Login = () => {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const authSlice = useAppSelector((state) => state.auth);
 
@@ -36,7 +37,6 @@ const Login = () => {
       if (response.authentication?.accessToken) {
         dispatch(login(response.authentication?.accessToken));
       }
-      router.replace('/');
     }
   };
 
@@ -54,7 +54,7 @@ const Login = () => {
       });
   }, []);
 
-  return authSlice.user ? (
+  return !authSlice.isLoading && authSlice.user ? (
     <Redirect href={'/'} />
   ) : (
     <SafeAreaView style={{ ...globalStyles.container, justifyContent: 'space-between' }}>
@@ -63,7 +63,13 @@ const Login = () => {
       </View>
 
       <View style={{ display: 'flex', gap: 8 }}>
-        <GoogleButton onPress={() => promptAsync()} />
+        {authSlice.isLoading ? (
+          <PremButton disabled fullWidth onPress={() => {}}>
+            Loading
+          </PremButton>
+        ) : (
+          <GoogleButton onPress={() => promptAsync()} />
+        )}
       </View>
     </SafeAreaView>
   );

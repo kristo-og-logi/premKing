@@ -40,13 +40,13 @@ export const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
-        state.isLoading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.isLoading = false;
       })
       .addCase(login.rejected, (state) => {
-        state.isLoading = false;
         state.hasError = true;
+        state.isLoading = false;
       });
   },
 });
@@ -67,6 +67,11 @@ export const login = createAsyncThunk<LoginResponse, string>(
           googleToken: googleOAuthToken,
         }),
       });
+
+      if (!response.ok) {
+        const message: { error: string } = await response.json();
+        throw new Error(message.error);
+      }
 
       const data: LoginResponse = await response.json();
       await saveTokenInStorage(data);

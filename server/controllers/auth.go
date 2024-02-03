@@ -71,7 +71,14 @@ func GetAuth(c *gin.Context) {
 			return
 		}
 
-		c.IndentedJSON(http.StatusCreated, createdUser)
+		tokenString, err := utils.CreateToken(*createdUser)
+
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
+			return
+		}
+
+		c.IndentedJSON(http.StatusCreated, gin.H{"user": createdUser, "token": tokenString})
 		return
 	}
 
