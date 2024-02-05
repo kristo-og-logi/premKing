@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios:dev": "cat .env.DEV > .env && expo run:ios --clean",
+    "ios:dev": "cat .env.DEV > .env && expo run:ios",
     "ios:prod": "cat .env.PROD > .env && expo run:ios",
     "web": "expo start --web",
     "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios",
