@@ -5,8 +5,11 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web"
+    "ios:dev": "cat .env.DEV > .env && expo run:ios --clean",
+    "ios:prod": "cat .env.PROD > .env && expo run:ios",
+    "web": "expo start --web",
+    "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios",
+    "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
@@ -27,6 +30,7 @@
     "expo-web-browser": "^12.5.0",
     "react": "18.2.0",
     "react-native": "0.72.6",
+    "react-native-dotenv": "^3.4.9",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
