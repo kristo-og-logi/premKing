@@ -72,12 +72,10 @@ export const login = createAsyncThunk<LoginResponse, string>(
 
       if (!response.ok) {
         const message: { error: string } = await response.json();
-        console.log('login ERROR: ', JSON.stringify(message.error));
         throw new Error(message.error);
       }
 
       const data: LoginResponse = await response.json();
-      console.log('login SUCCESS: ', JSON.stringify(data));
       await saveTokenInStorage(data);
 
       return data;
