@@ -8,8 +8,9 @@
     "ios:dev": "cat .env.DEV > .env && expo run:ios",
     "ios:prod": "cat .env.PROD > .env && expo run:ios",
     "web": "expo start --web",
-    "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios",
-    "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios"
+    "eas:ios:build": "cat .env.PROD > .env && expo prebuild && eas build --platform ios",
+    "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
