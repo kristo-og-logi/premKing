@@ -3,6 +3,8 @@ import User from '../../types/User';
 import { RootState } from '../store';
 import { saveTokenInStorage } from '../../utils/storage';
 
+import { BACKEND_URL } from '@env';
+
 export interface AuthState {
   user?: User;
   token: string;
@@ -59,7 +61,7 @@ export interface LoginResponse {
 export const login = createAsyncThunk<LoginResponse, string>(
   'user/login',
   async (googleOAuthToken: string) => {
-    const url = 'http://localhost:8080/api/v1/auth/login';
+    const url = `${BACKEND_URL}/api/v1/auth/login`;
     try {
       const response = await fetch(url, {
         method: 'POST',

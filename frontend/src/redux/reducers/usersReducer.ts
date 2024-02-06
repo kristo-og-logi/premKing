@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import User from '../../types/User';
 import { RootState } from '../store';
+import { BACKEND_URL } from '@env';
 
 export interface UserState {
   isLoading: boolean;
@@ -15,7 +16,7 @@ const initialState: UserState = {
 };
 
 export const getUsers = createAsyncThunk<User[]>('user/getUsers', async () => {
-  const url = 'http://localhost:8080/api/v1/users';
+  const url = `${BACKEND_URL}/api/v1/users`;
   const response = await fetch(url);
 
   const data: User[] = await response.json();

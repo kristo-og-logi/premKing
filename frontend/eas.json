@@ -15,7 +15,12 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "env": {
+        "ENVIRONMENT": "production",
+        "BACKEND_URL": "https://api.premking.net"
+      }
+    }
   },
   "submit": {
     "production": {
