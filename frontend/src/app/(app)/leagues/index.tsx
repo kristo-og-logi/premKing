@@ -29,8 +29,8 @@ export default function Page() {
   const authSlice = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(getMyLeagues(authSlice.token));
-  }, []);
+    if (authSlice.token) dispatch(getMyLeagues(authSlice.token));
+  }, [authSlice.token]);
 
   useEffect(() => {
     setSelectedGW(gameweekSlice.gameweek);

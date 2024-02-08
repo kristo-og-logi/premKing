@@ -24,6 +24,11 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	dsn := os.Getenv("DSN")
+
+	if dsn == "" {
+		log.Fatal("environment variable DSN not found")
+	}
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
@@ -214,6 +219,7 @@ func migrateGameweeksToDB(db *gorm.DB) {
 
 	for index, border := range borders {
 		openTime := border.FirstFixtureDate.Add(-7 * 24 * time.Hour)
+
 		if index != 0 {
 			openTime = borders[index-1].LastFixtureDate.Add(2 * time.Hour)
 		}

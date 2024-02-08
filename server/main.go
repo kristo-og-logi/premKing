@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -39,6 +40,8 @@ func main() {
 	routes.SetupTeamsRoutes(router, version1Prefix)
 	routes.SetupFixtureRoutes(router, version1Prefix)
 	routes.SetupGameweekRoutes(router, version1Prefix)
+
+	router.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
 
 	fmt.Println("Router running...")
 	router.Run()

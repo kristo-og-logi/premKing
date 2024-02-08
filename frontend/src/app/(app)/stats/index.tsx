@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
+import { ENVIRONMENT, BACKEND_URL } from '@env';
+
 const Stats = () => {
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
@@ -19,6 +21,8 @@ const Stats = () => {
       </PremText>
       <PremText>{`name: ${authSlice.user?.name}`}</PremText>
       {authSlice.user?.email && <PremText>{`email: ${authSlice.user?.email}`}</PremText>}
+      <PremText>{`environment: ${ENVIRONMENT}`}</PremText>
+      <PremText>{`backend url: ${BACKEND_URL}`}</PremText>
       <View style={globalStyles.centered}>
         <PremButton
           onPress={() => {

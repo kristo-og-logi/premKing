@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "premKing-frontend",
-    "slug": "pK",
-    "scheme": "premKingApp",
-    "version": "1.0.0",
+    "name": "premKing",
+    "slug": "premking",
+    "scheme": "premKing",
+    "version": "1.2.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/IOS-LOGO-3x.png",
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/premKingLogo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#072936"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,15 +23,24 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/IOS-LOGO-3x.png",
+        "backgroundColor": "#072936"
       },
       "package": "com.kristo.premking"
     },
     "web": {
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/IOS-LOGO-3x.png"
     },
-    "plugins": ["expo-router"]
+    "plugins": ["expo-router"],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d7fc379a-c178-4bfa-8fc4-e91110513d54"
+      }
+    },
+    "owner": "kristoferfannar"
   }
 }

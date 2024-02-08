@@ -3,6 +3,8 @@ import User from '../../types/User';
 import { RootState } from '../store';
 import { saveTokenInStorage } from '../../utils/storage';
 
+import { BACKEND_URL } from '@env';
+
 export interface AuthState {
   user?: User;
   token: string;
@@ -40,13 +42,13 @@ export const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
-        state.isLoading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.isLoading = false;
       })
       .addCase(login.rejected, (state) => {
-        state.isLoading = false;
         state.hasError = true;
+        state.isLoading = false;
       });
   },
 });
@@ -59,7 +61,7 @@ export interface LoginResponse {
 export const login = createAsyncThunk<LoginResponse, string>(
   'user/login',
   async (googleOAuthToken: string) => {
-    const url = 'http://localhost:8080/api/v1/auth/login';
+    const url = `${BACKEND_URL}/api/v1/auth/login`;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -67,6 +69,11 @@ export const login = createAsyncThunk<LoginResponse, string>(
           googleToken: googleOAuthToken,
         }),
       });
+
+      if (!response.ok) {
+        const message: { error: string } = await response.json();
+        throw new Error(message.error);
+      }
 
       const data: LoginResponse = await response.json();
       console.log('token: ', data.token);

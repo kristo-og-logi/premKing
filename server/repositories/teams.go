@@ -8,7 +8,7 @@ import (
 func GetTeams() ([]models.Team, error) {
 	teams := []models.Team{}
 
-	result := initializers.DB.Preload("HomeTeam,AwayTeam").Find(&teams)
+	result := initializers.DB.Find(&teams)
 	if result.Error != nil {
 		return nil, result.Error
 	}
