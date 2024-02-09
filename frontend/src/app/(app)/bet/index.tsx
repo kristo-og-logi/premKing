@@ -51,7 +51,7 @@ const BetScreen = () => {
           <PastGameweekBet />
         )}
       </ScrollView>
-      <Confirm selectedGW={selectedGW} />
+      <Confirm selectedGW={selectedGW} bet={bet} />
     </View>
   );
 };
