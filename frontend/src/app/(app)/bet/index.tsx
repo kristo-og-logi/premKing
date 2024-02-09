@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView } from 'react-native';
+
 import { globalStyles } from '../../../styles/styles';
-import { MatchUp } from '../../../components/bet/MatchUp';
 import { Confirm } from '../../../components/bet/Confirm';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
+import { Bet } from '../../../types/Bet';
+import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
+import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
+import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
 
-export interface Bet {
-  fixture: number;
-  team: string;
-}
-
-const Bet = () => {
+const BetScreen = () => {
   const dispatch = useAppDispatch();
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
@@ -34,22 +33,6 @@ const Bet = () => {
     console.log('bet: ', bet);
   }, [bet]);
 
-  const renderMatches = () => {
-    return (
-      <View style={styles.fixtureList}>
-        {fixtureSlice.fixtures.map((fixture) => (
-          <MatchUp
-            bet={bet}
-            setBet={setBet}
-            selectedGW={selectedGW}
-            key={fixture.id}
-            fixture={fixture}
-          />
-        ))}
-      </View>
-    );
-  };
-
   return (
     <View style={globalStyles.container}>
       <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
@@ -60,8 +43,12 @@ const Bet = () => {
           <PremText>Error</PremText>
         ) : fixtureSlice.fixtures.length == 0 ? (
           <PremText>no fixture for this gameweek</PremText>
+        ) : selectedGW === gameweekSlice.gameweek ? (
+          <CurrentGameweekBet bet={bet} setBet={setBet} />
+        ) : selectedGW >= gameweekSlice.gameweek ? (
+          <FutureGameweekBet />
         ) : (
-          <>{renderMatches()}</>
+          <PastGameweekBet />
         )}
       </ScrollView>
       <Confirm selectedGW={selectedGW} />
@@ -69,10 +56,4 @@ const Bet = () => {
   );
 };
 
-export default Bet;
-
-const styles = StyleSheet.create({
-  fixtureList: {
-    gap: 12,
-  },
-});
+export default BetScreen;
