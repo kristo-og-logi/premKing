@@ -1,6 +1,6 @@
 import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 
 import { colors, globalStyles, scoreboardWidths } from '../../../styles/styles';
 // import { fetchLeagueById } from '../../../utils/fetchLeague';
@@ -61,7 +61,7 @@ const calculateTimeUntilGW = (gameweek: Gameweek) => {
   if (finishes < now)
     return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes()}`;
 
-  if (now < closes) return `Currently open`;
+  if (now < closes) return `Closes at ${closes.toDateString()}`;
 
   return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes()}`;
 };
@@ -131,6 +131,7 @@ const isOpen = (gameweek: Gameweek): boolean => {
 };
 
 const LeagueView = () => {
+  const router = useRouter();
   const navigation = useNavigation();
   const { leagueId } = useLocalSearchParams();
 
@@ -199,7 +200,7 @@ const LeagueView = () => {
             <PremButton
               disabled={!isOpen(gameweekSlice.allGameweeks[selectedGW - 1])}
               onPress={() => {
-                console.log('bet created');
+                router.replace('bet');
               }}
             >
               {calculateGwAction(gameweekSlice.allGameweeks[selectedGW - 1])}

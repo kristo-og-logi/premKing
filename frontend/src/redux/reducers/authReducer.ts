@@ -76,6 +76,7 @@ export const login = createAsyncThunk<LoginResponse, string>(
       }
 
       const data: LoginResponse = await response.json();
+      console.log('token: ', data.token);
       await saveTokenInStorage(data);
 
       return data;
