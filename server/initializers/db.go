@@ -14,7 +14,7 @@ import (
 )
 
 func autoMigrateDB(db *gorm.DB) {
-	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{})
+	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{}, &models.Bet{})
 	if err != nil {
 		log.Fatal("failed to autoMigrate: " + err.Error())
 	}
