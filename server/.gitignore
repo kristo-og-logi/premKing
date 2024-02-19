@@ -1,6 +1,6 @@
 .env
 .env.DEV
 .env.PROD
-.ebextensions
+.platform
 server
 awsServer
