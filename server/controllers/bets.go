@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -33,6 +34,10 @@ func GetMyBetByGameweek(c *gin.Context) {
 	bets, err := repositories.GetBetsByUserIdAndGameweek(user.ID, gameweek)
 
 	if err != nil {
+		if errors.Is(err, repositories.ErrNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("bets for gameweek %d not found", gameweek)})
+			return
+		}
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("internal error: %s", err.Error())})
 		return
 	}
@@ -102,7 +107,6 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 	}
 
 	currentGW, err := repositories.GetCurrentGameWeek()
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal error while fetching current gameweek"})
 		return

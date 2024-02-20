@@ -9,12 +9,18 @@ import (
 	"gorm.io/gorm"
 )
 
+var ErrNotFound = errors.New("not found")
+
 func GetBetsByUserIdAndGameweek(userId string, gameweek int) ([]models.Bet, error) {
 	bets := []models.Bet{}
 
-	result := initializers.DB.Find(&bets, "user_id = ?", userId)
+	result := initializers.DB.Find(&bets, "user_id = ? AND game_week = ?", userId, gameweek)
 	if result.Error != nil {
 		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, ErrNotFound
 	}
 
 	return bets, nil
