@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/kristo-og-logi/premKing/server/models"
 )
 
 func GetGameweekFromRound(round string) uint8 {
@@ -19,4 +22,18 @@ func GetGameweekFromRound(round string) uint8 {
 		return 0
 	}
 	return uint8(gameWeek)
+}
+
+func CreateFixtureName(homeTeam models.Team, awayTeam models.Team) string {
+	home := homeTeam.Name
+	away := awayTeam.Name
+	if homeTeam.ShortName != "" {
+		home = homeTeam.ShortName
+	}
+	if awayTeam.ShortName != "" {
+		away = awayTeam.ShortName
+	}
+
+	fixtureName := fmt.Sprintf("%s vs %s", home, away)
+	return fixtureName
 }
