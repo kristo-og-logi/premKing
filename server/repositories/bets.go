@@ -15,3 +15,9 @@ func GetBetsByUserIdAndGameweek(userId string, gameweek int) ([]models.Bet, erro
 
 	return bets, nil
 }
+
+func SaveBets(bets []models.Bet) error {
+	result := initializers.DB.Create(bets)
+
+	return result.Error
+}

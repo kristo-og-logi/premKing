@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
@@ -41,7 +43,7 @@ func GetMyBetByGameweek(c *gin.Context) {
 }
 
 type BetCreator struct {
-	FixtureId string `json:"fixtureId"`
+	FixtureId uint32 `json:"fixtureId"`
 	Result    string `json:"result"`
 }
 type PlaceBetBody struct {
@@ -50,6 +52,12 @@ type PlaceBetBody struct {
 
 func PlaceMyBetForGameweek(c *gin.Context) {
 	gameweekParam := c.Param("gameweek")
+	user := utils.GetUserFromContext(c)
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization error"})
+		return
+	}
+
 	gameweek, err := strconv.Atoi(gameweekParam)
 
 	if err != nil {
@@ -79,5 +87,53 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 	// TODO check whether gameweek is open
 	utils.PrettyPrint("body: ", body)
 
+	fixturesForGW, err := repositories.FetchFixturesByGameweek(uint8(gameweek))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Internal error while fetching fixtures for gameweek %d", gameweek)})
+		return
+	}
+
+	if len(body.Bets) != len(fixturesForGW) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("number of bets provided does not match fixtures in GW%d (%d provided, %d needed)", gameweek, len(body.Bets), len(fixturesForGW))})
+		return
+	}
+
+	for _, bet := range body.Bets {
+		if bet.Result != "1" && bet.Result != "X" && bet.Result != "2" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Bet for fixture %d has invalid result: (%s does not match '1' | 'X' | '2')", bet.FixtureId, bet.Result)})
+			return
+		}
+	}
+
+	bets := []models.Bet{}
+
+	for _, fixture := range fixturesForGW {
+		betFixtureFound := false
+		for _, betFixture := range body.Bets {
+			if betFixture.FixtureId == fixture.ID {
+				betFixtureFound = true
+				createdBet := CreateBet(betFixture, user.ID, uint8(gameweek))
+				bets = append(bets, createdBet)
+			}
+		}
+
+		if !betFixtureFound {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Fixture %d, (%s) not found in body", fixture.ID, fixture.Name)})
+			return
+		}
+	}
+
+	err = repositories.SaveBets(bets)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("error saving bets to db: %s", err.Error())})
+		return
+	}
+
 	c.IndentedJSON(http.StatusCreated, gin.H{"bet": "created"})
+}
+
+func CreateBet(betCreator BetCreator, userId string, gameweek uint8) models.Bet {
+	bet := models.Bet{ID: uuid.NewString(), UserId: userId, FixtureId: betCreator.FixtureId, Result: betCreator.Result, GameWeek: gameweek}
+	return bet
 }
