@@ -4,6 +4,7 @@ import usersReducer from './reducers/usersReducer';
 import authReducer from './reducers/authReducer';
 import fixtureReducer from './reducers/fixtureReducer';
 import gameweekReducer from './reducers/gameweekReducer';
+import betReducer from './reducers/betReducer';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     auth: authReducer,
     fixtures: fixtureReducer,
     gameweek: gameweekReducer,
+    bets: betReducer,
   },
 });
 
