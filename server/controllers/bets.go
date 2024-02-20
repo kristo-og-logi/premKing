@@ -101,6 +101,18 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		}
 	}
 
+	currentGW, err := repositories.GetCurrentGameWeek()
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal error while fetching current gameweek"})
+		return
+	}
+
+	if currentGW.Gameweek != gameweek {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("provided gameweek is not currently open (GW%d provided, GW%d current)", gameweek, currentGW.Gameweek)})
+		return
+	}
+
 	if repositories.UserHasBetPlacedForGameweek(user.ID, gameweek) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "user already has bet for gameweek"})
 		return
