@@ -11,16 +11,20 @@ import { Bet } from '../../../types/Bet';
 import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
+import { getBets } from '../../../redux/reducers/betReducer';
 
 const BetScreen = () => {
   const dispatch = useAppDispatch();
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
+  const authSlice = useAppSelector((state) => state.auth);
+  // const betSlice = useAppSelector((state) => state.bets);
 
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
+    dispatch(getBets({ gameweek: selectedGW, token: authSlice.token }));
   }, [selectedGW]);
 
   useEffect(() => {

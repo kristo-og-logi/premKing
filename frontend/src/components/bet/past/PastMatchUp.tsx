@@ -8,25 +8,17 @@ import DrawColumn from '../DrawColumn';
 
 interface Props {
   fixture: Fixture;
-  bet: Bet[];
+  bet?: Bet;
 }
 
 const PastMatchUp = ({ fixture, bet }: Props) => {
-  // const fixtureExistsInBet = () => {
-  //   return bet.some((b) => b.fixtureId === fixture.id);
-  // };
-
-  // const teamExistsInBet = (teamName: string) => {
-  //   return bet.some((b) => b.fixtureId === fixture.id && b.team === teamName);
-  // };
-
   return (
     <>
       <View style={styles.container}>
         <TeamColumn
           selected={
-            (fixture.finished && fixture.result == FixtureResult.HOME) ||
-            bet.some((b) => b.fixtureId == fixture.id && b.bet === FixtureResult.HOME)
+            // (fixture.finished && fixture.result == FixtureResult.HOME) ||
+            bet?.result === FixtureResult.HOME
           }
           disabled={true}
           teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
@@ -36,8 +28,8 @@ const PastMatchUp = ({ fixture, bet }: Props) => {
         />
         <DrawColumn
           selected={
-            (fixture.finished && fixture.result == FixtureResult.DRAW) ||
-            bet.some((b) => b.fixtureId === fixture.id && b.bet === FixtureResult.DRAW)
+            // (fixture.finished && fixture.result == FixtureResult.DRAW) ||
+            bet?.result === FixtureResult.DRAW
           }
           disabled={true}
           date={new Date(fixture.matchDate).toDateString()}
@@ -45,8 +37,8 @@ const PastMatchUp = ({ fixture, bet }: Props) => {
         />
         <TeamColumn
           selected={
-            (fixture.finished && fixture.result == FixtureResult.AWAY) ||
-            bet.some((b) => b.fixtureId === fixture.id && b.bet === FixtureResult.AWAY)
+            // (fixture.finished && fixture.result == FixtureResult.AWAY) ||
+            bet?.result === FixtureResult.AWAY
           }
           disabled={true}
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}

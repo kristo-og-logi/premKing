@@ -12,18 +12,31 @@ interface Props {
 export const Confirm = ({ selectedGW, bet }: Props) => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const fixtureSlice = useAppSelector((state) => state.fixtures);
+  const betSlice = useAppSelector((state) => state.bets);
 
   const selectedGWIsCurrent = selectedGW == gameweekSlice.gameweek;
   const selectedGWIsInPast = selectedGW < gameweekSlice.gameweek;
 
-  return (
+  return selectedGWIsInPast ? (
     <PremButton
-      extraStyles={selectedGWIsInPast ? { backgroundColor: colors.red } : undefined}
+      extraStyles={betSlice.notFound ? { backgroundColor: colors.red } : undefined}
       fullWidth
-      disabled={!selectedGWIsCurrent || fixtureSlice.fixtures.length > bet.length}
+      disabled={true}
       onPress={() => console.log('bet placed')}
     >
-      {selectedGWIsCurrent ? 'Confirm' : selectedGWIsInPast ? 'Missing bet' : 'Locked'}
+      {betSlice.notFound ? 'Missing bet' : 'Bet placed'}
+    </PremButton>
+  ) : selectedGWIsCurrent ? (
+    <PremButton
+      fullWidth
+      disabled={fixtureSlice.fixtures.length > bet.length}
+      onPress={() => console.log('bet placed')}
+    >
+      {'Confirm'}
+    </PremButton>
+  ) : (
+    <PremButton fullWidth disabled={true} onPress={() => console.log('bet placed')}>
+      {'Locked'}
     </PremButton>
   );
 };
