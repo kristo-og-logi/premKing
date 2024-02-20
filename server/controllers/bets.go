@@ -37,8 +37,6 @@ func GetMyBetByGameweek(c *gin.Context) {
 		return
 	}
 
-	utils.PrettyPrint("bets: ", bets)
-
 	c.IndentedJSON(http.StatusOK, gin.H{"message": bets})
 }
 
@@ -58,7 +56,8 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		return
 	}
 
-	gameweek, err := strconv.Atoi(gameweekParam)
+	gameweekInt, err := strconv.Atoi(gameweekParam)
+	gameweek := uint8(gameweekInt)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("invalid gameweek: %s", gameweekParam)})
@@ -84,10 +83,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		return
 	}
 
-	// TODO check whether gameweek is open
-	utils.PrettyPrint("body: ", body)
-
-	fixturesForGW, err := repositories.FetchFixturesByGameweek(uint8(gameweek))
+	fixturesForGW, err := repositories.FetchFixturesByGameweek(gameweek)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Internal error while fetching fixtures for gameweek %d", gameweek)})
 		return
@@ -105,6 +101,11 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		}
 	}
 
+	if repositories.UserHasBetPlacedForGameweek(user.ID, gameweek) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "user already has bet for gameweek"})
+		return
+	}
+
 	bets := []models.Bet{}
 
 	for _, fixture := range fixturesForGW {
@@ -112,7 +113,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		for _, betFixture := range body.Bets {
 			if betFixture.FixtureId == fixture.ID {
 				betFixtureFound = true
-				createdBet := CreateBet(betFixture, user.ID, uint8(gameweek))
+				createdBet := CreateBet(betFixture, user.ID, gameweek)
 				bets = append(bets, createdBet)
 			}
 		}
