@@ -42,7 +42,7 @@ func GetMyBetByGameweek(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{"message": bets})
+	c.IndentedJSON(http.StatusOK, bets)
 }
 
 type BetCreator struct {
