@@ -4,6 +4,7 @@ import Fixture, { FixtureResult } from '../../../types/Fixture';
 import { Bet } from '../../../types/Bet';
 import TeamColumn, { Side } from '../TeamColumn';
 import DrawColumn from '../DrawColumn';
+import { useAppSelector } from '../../../redux/hooks';
 
 interface Props {
   fixture: Fixture;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
+  const betSlice = useAppSelector((state) => state.bets);
   const fixtureExistsInBet = () => {
     return bet.some((b) => b.fixtureId === fixture.id);
   };
@@ -42,6 +44,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           logo={{ uri: fixture.homeTeam.logo }}
           odds={'1.59'}
           side={Side.LEFT}
+          disabled={!betSlice.notFound}
           onPress={() => {
             teamExistsInBet(FixtureResult.HOME)
               ? setBet(bet.filter((b) => b.result !== FixtureResult.HOME))
@@ -57,6 +60,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           }
           date={new Date(fixture.matchDate).toDateString()}
           odds={'1.09'}
+          disabled={!betSlice.notFound}
           onPress={() => {
             teamExistsInBet(FixtureResult.DRAW)
               ? setBet(
@@ -76,6 +80,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           }
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
+          disabled={!betSlice.notFound}
           odds={'2.49'}
           side={Side.RIGHT}
           onPress={() => {
