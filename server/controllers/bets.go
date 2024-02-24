@@ -147,7 +147,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, gin.H{"bet": "created"})
+	c.IndentedJSON(http.StatusCreated, bets)
 }
 
 func CreateBet(betCreator BetCreator, userId string, gameweek uint8) models.Bet {
