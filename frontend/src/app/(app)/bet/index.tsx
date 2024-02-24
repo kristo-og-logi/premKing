@@ -18,7 +18,7 @@ const BetScreen = () => {
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const authSlice = useAppSelector((state) => state.auth);
-  // const betSlice = useAppSelector((state) => state.bets);
+  const betSlice = useAppSelector((state) => state.bets);
 
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
 
@@ -32,6 +32,11 @@ const BetScreen = () => {
   }, [gameweekSlice.gameweek]);
 
   const [bet, setBet] = useState<Bet[]>([]);
+
+  useEffect(() => {
+    console.log(`betSlice.bets updated to: ${betSlice.bets}`);
+    setBet(betSlice.bets);
+  }, [betSlice.bets]);
 
   useEffect(() => {
     console.log('bet: ', bet);

@@ -12,14 +12,12 @@ interface Props {
 }
 
 const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
-  const selectedGWIsCurrent = true;
-
   const fixtureExistsInBet = () => {
     return bet.some((b) => b.fixtureId === fixture.id);
   };
 
   const teamExistsInBet = (fixtureResult: FixtureResult) => {
-    return bet.some((b) => b.fixtureId === fixture.id && b.bet === fixtureResult);
+    return bet.some((b) => b.fixtureId === fixture.id && b.result === fixtureResult);
   };
 
   const changeFixtureInBet = (fixtureResult: FixtureResult) => {
@@ -27,7 +25,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
       ...bet.filter((b) => b.fixtureId !== fixture.id),
       {
         fixtureId: fixture.id,
-        bet: fixtureResult,
+        result: fixtureResult,
       },
     ]);
   };
@@ -38,52 +36,54 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
         <TeamColumn
           selected={
             (fixture.finished && fixture.result == FixtureResult.HOME) ||
-            bet.some((b) => b.fixtureId == fixture.id && b.bet == FixtureResult.HOME)
+            bet.some((b) => b.fixtureId == fixture.id && b.result == FixtureResult.HOME)
           }
           teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
           logo={{ uri: fixture.homeTeam.logo }}
           odds={'1.59'}
           side={Side.LEFT}
           onPress={() => {
-            selectedGWIsCurrent && teamExistsInBet(FixtureResult.HOME)
-              ? setBet(bet.filter((b) => b.bet !== FixtureResult.HOME))
+            teamExistsInBet(FixtureResult.HOME)
+              ? setBet(bet.filter((b) => b.result !== FixtureResult.HOME))
               : fixtureExistsInBet()
                 ? changeFixtureInBet(FixtureResult.HOME)
-                : setBet([...bet, { fixtureId: fixture.id, bet: FixtureResult.HOME }]);
+                : setBet([...bet, { fixtureId: fixture.id, result: FixtureResult.HOME }]);
           }}
         />
         <DrawColumn
           selected={
             (fixture.finished && fixture.result == FixtureResult.DRAW) ||
-            bet.some((b) => b.fixtureId === fixture.id && b.bet === FixtureResult.DRAW)
+            bet.some((b) => b.fixtureId === fixture.id && b.result === FixtureResult.DRAW)
           }
           date={new Date(fixture.matchDate).toDateString()}
           odds={'1.09'}
           onPress={() => {
-            selectedGWIsCurrent && teamExistsInBet(FixtureResult.DRAW)
+            teamExistsInBet(FixtureResult.DRAW)
               ? setBet(
-                  bet.filter((b) => !(b.fixtureId === fixture.id && b.bet === FixtureResult.DRAW))
+                  bet.filter(
+                    (b) => !(b.fixtureId === fixture.id && b.result === FixtureResult.DRAW)
+                  )
                 )
               : fixtureExistsInBet()
                 ? changeFixtureInBet(FixtureResult.DRAW)
-                : setBet([...bet, { fixtureId: fixture.id, bet: FixtureResult.DRAW }]);
+                : setBet([...bet, { fixtureId: fixture.id, result: FixtureResult.DRAW }]);
           }}
         />
         <TeamColumn
           selected={
             (fixture.finished && fixture.result == FixtureResult.AWAY) ||
-            bet.some((b) => b.fixtureId === fixture.id && b.bet === FixtureResult.AWAY)
+            bet.some((b) => b.fixtureId === fixture.id && b.result === FixtureResult.AWAY)
           }
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
           odds={'2.49'}
           side={Side.RIGHT}
           onPress={() => {
-            selectedGWIsCurrent && teamExistsInBet(FixtureResult.AWAY)
-              ? setBet(bet.filter((b) => b.bet !== FixtureResult.AWAY))
+            teamExistsInBet(FixtureResult.AWAY)
+              ? setBet(bet.filter((b) => b.result !== FixtureResult.AWAY))
               : fixtureExistsInBet()
                 ? changeFixtureInBet(FixtureResult.AWAY)
-                : setBet([...bet, { fixtureId: fixture.id, bet: FixtureResult.AWAY }]);
+                : setBet([...bet, { fixtureId: fixture.id, result: FixtureResult.AWAY }]);
           }}
         />
       </View>
