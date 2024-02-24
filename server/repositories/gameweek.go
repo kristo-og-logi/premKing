@@ -24,3 +24,21 @@ func GetAllGameWeeks() ([]models.Gameweek, error) {
 
 	return gameweeks, nil
 }
+
+func GetCurrentGameWeek() (*models.Gameweek, error) {
+	gameweeks, err := GetAllGameWeeks()
+	if err != nil {
+		return nil, err
+	}
+
+	var currentGameweek models.Gameweek
+	now := time.Now()
+
+	for index, gw := range gameweeks {
+		if index == len(gameweeks) || gw.Opens.Before(now) && gameweeks[index+1].Opens.After(now) {
+			currentGameweek = gw
+		}
+	}
+
+	return &currentGameweek, nil
+}

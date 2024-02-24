@@ -1,4 +1,7 @@
+import { FixtureResult } from './Fixture';
+
 export interface Bet {
-  fixture: number;
-  team: string;
+  fixtureId: number;
+  result: FixtureResult;
+  won?: boolean;
 }

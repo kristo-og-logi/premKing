@@ -14,7 +14,7 @@ import (
 )
 
 func autoMigrateDB(db *gorm.DB) {
-	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{})
+	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{}, &models.Bet{})
 	if err != nil {
 		log.Fatal("failed to autoMigrate: " + err.Error())
 	}
@@ -114,12 +114,12 @@ func migrateFixturesToDB(db *gorm.DB) {
 	}
 
 	var teams []models.Team
-	teamResult := db.Select("id").Find(&teams)
+	teamResult := db.Find(&teams)
 	if teamResult.Error != nil {
 		log.Fatalf("error fetching all teams: %s\n", result.Error.Error())
 	}
 
-	jsonData, err := os.ReadFile("./json/fixtures2.json")
+	jsonData, err := os.ReadFile("./json/fixtures3.json")
 	if err != nil {
 		log.Fatalf("error reading fixtures.json: %s\n", err.Error())
 	}
@@ -133,50 +133,49 @@ func migrateFixturesToDB(db *gorm.DB) {
 	fixtureData := response.Response
 
 	for _, fixture := range fixtureData {
-		var homeTeam models.Team
-		var awayTeam models.Team
-		for _, team := range teams {
-			if team.ID == fixture.Teams.Home.ID {
-				homeTeam = team
-				homeTeam.Name = fixture.Teams.Home.Name
-			}
-			if team.ID == fixture.Teams.Away.ID {
-				awayTeam = team
-				awayTeam.Name = fixture.Teams.Away.Name
-			}
-		}
-
-		result := "X"
-		if fixture.Teams.Home.Winner {
-			result = "1"
-		} else if fixture.Teams.Away.Winner {
-			result = "2"
-		}
-
-		model := models.Fixture{
-			ID:         fixture.Fixture.ID,
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
-			HomeTeamId: homeTeam.ID,
-			HomeTeam:   homeTeam,
-			AwayTeamId: awayTeam.ID,
-			AwayTeam:   awayTeam,
-			Finished:   fixture.Fixture.Status.Elapsed == 90,
-			HomeGoals:  fixture.Goals.Home,
-			AwayGoals:  fixture.Goals.Away,
-			Result:     result,
-			MatchDate:  fixture.Fixture.Date,
-			GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
-			Name:       fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
-		}
-
 		exists := false
-		for _, existingTeam := range existingFixtures {
-			if existingTeam.ID == model.ID {
+		for _, existingFixture := range existingFixtures {
+			if existingFixture.ID == fixture.Fixture.ID {
 				exists = true
 			}
 		}
 		if !exists {
+
+			var homeTeam models.Team
+			var awayTeam models.Team
+			for _, team := range teams {
+				if team.ID == fixture.Teams.Home.ID {
+					homeTeam = team
+				}
+				if team.ID == fixture.Teams.Away.ID {
+					awayTeam = team
+				}
+			}
+
+			fixtureResult := "X"
+			if fixture.Teams.Home.Winner {
+				fixtureResult = "1"
+			} else if fixture.Teams.Away.Winner {
+				fixtureResult = "2"
+			}
+
+			model := models.Fixture{
+				ID:         fixture.Fixture.ID,
+				CreatedAt:  time.Now(),
+				UpdatedAt:  time.Now(),
+				HomeTeamId: homeTeam.ID,
+				HomeTeam:   homeTeam,
+				AwayTeamId: awayTeam.ID,
+				AwayTeam:   awayTeam,
+				Finished:   fixture.Fixture.Status.Elapsed == 90,
+				HomeGoals:  fixture.Goals.Home,
+				AwayGoals:  fixture.Goals.Away,
+				Result:     fixtureResult,
+				MatchDate:  fixture.Fixture.Date,
+				GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
+				Name:       utils.CreateFixtureName(homeTeam, awayTeam),
+			}
+
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
 			if result.Error != nil {
 				log.Fatalf("Error adding team to DB: %s\n", result.Error.Error())
