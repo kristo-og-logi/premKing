@@ -16,6 +16,9 @@ type Fixture struct {
 	Finished   bool      `json:"finished"`
 	HomeGoals  uint8     `json:"homeGoals"`
 	AwayGoals  uint8     `json:"awayGoals"`
+	HomeOdds   float32   `json:"homeOdds"`
+	DrawOdds   float32   `json:"drawOdds"`
+	AwayOdds   float32   `json:"awayOdds"`
 	Result     string    `json:"result"`
 	MatchDate  time.Time `json:"matchDate"`
 	Name       string    `json:"name"`
