@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/kristo-og-logi/premKing/server/models"
@@ -43,6 +44,7 @@ func ConnectDB() {
 		migrateTeamsToDB(db)
 		migrateFixturesToDB(db)
 		migrateGameweeksToDB(db)
+		migrateOddsToFixtures(db)
 	} else {
 		fmt.Println("not migrating")
 	}
@@ -209,8 +211,7 @@ func migrateGameweeksToDB(db *gorm.DB) {
     SELECT DISTINCT f1.game_week,
     (SELECT match_date FROM fixtures f2 WHERE f2.game_week = f1.game_week ORDER BY f2.match_date ASC LIMIT 1) as first_fixture_date,
     (SELECT match_date FROM fixtures f3 WHERE f3.game_week = f1.game_week ORDER BY f3.match_date DESC LIMIT 1) as last_fixture_date
-    FROM fixtures f1
-`).Scan(&borders).Error
+    FROM fixtures f1`).Scan(&borders).Error
 
 	if err != nil {
 		log.Fatalf("error fetching first and last fixture dates from db: %s\n", err.Error())
@@ -239,4 +240,84 @@ func migrateGameweeksToDB(db *gorm.DB) {
 			}
 		}
 	}
+}
+
+func migrateOddsToFixtures(db *gorm.DB) {
+	var response1, response2, response3 models.BetResponse
+	page1, err := os.ReadFile("./json/bets3.json")
+	if err != nil {
+		log.Fatalf("error reading bets3.json: %s\n", err.Error())
+	}
+	err = json.Unmarshal(page1, &response1)
+	if err != nil {
+		log.Fatalf("cannot parse bets3.json data into JSON: %s\n", err.Error())
+	}
+
+	page2, err := os.ReadFile("./json/bets3Page2.json")
+	if err != nil {
+		log.Fatalf("error reading bets3Page2.json: %s\n", err.Error())
+	}
+	err = json.Unmarshal(page2, &response2)
+	if err != nil {
+		log.Fatalf("cannot parse bets3Page2.json data into JSON: %s\n", err.Error())
+	}
+
+	page3, err := os.ReadFile("./json/bets3Page3.json")
+	if err != nil {
+		log.Fatalf("error reading bets3Page3.json: %s\n", err.Error())
+	}
+	err = json.Unmarshal(page3, &response3)
+	if err != nil {
+		log.Fatalf("cannot parse bets3Page3.json data into JSON: %s\n", err.Error())
+	}
+
+	bets := response1.Response
+	bets = append(bets, response2.Response...)
+	bets = append(bets, response3.Response...)
+
+	var fixtures []models.Fixture
+
+	var fixtureIds []uint32
+
+	for _, bet := range bets {
+		fixtureIds = append(fixtureIds, bet.Fixture.ID)
+	}
+
+	result := db.Where("id IN ?", fixtureIds).Find(&fixtures)
+	if result.Error != nil {
+		log.Fatalf("Error fetching fixtures: %v\n", result.Error.Error())
+	}
+
+	if len(fixtures) < len(bets) {
+		log.Fatalf("Error: found only %v / %v fixtures while updating odds\n", len(fixtures), len(bets))
+	}
+
+	for _, bet := range bets {
+		for index, fixture := range fixtures {
+			if bet.Fixture.ID == fixture.ID {
+				for _, bookmakerBet := range bet.Bookmakers[0].Bets[0].Values {
+					odd, err := strconv.ParseFloat(bookmakerBet.Odd, 32)
+					if err != nil {
+						log.Fatalf("error converting string %s to float: %s\n", bookmakerBet.Odd, err.Error())
+					}
+					switch bookmakerBet.Value {
+					case "Home":
+						fixtures[index].HomeOdds = float32(odd)
+					case "Draw":
+						fixtures[index].DrawOdds = float32(odd)
+					case "Away":
+						fixtures[index].AwayOdds = float32(odd)
+					}
+				}
+			}
+		}
+	}
+
+	result = db.Save(&fixtures)
+
+	if result.Error != nil {
+		log.Fatalf("error saving fixtures with updates bets: %s\n", result.Error.Error())
+	}
+
+	fmt.Printf("successfully updated %d fixture bets\n", len(bets))
 }
