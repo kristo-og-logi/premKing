@@ -1,0 +1,354 @@
+{
+  "get": "odds",
+  "parameters": {
+    "league": "39",
+    "bet": "1",
+    "bookmaker": "8",
+    "season": "2023"
+  },
+  "errors": [],
+  "results": 10,
+  "paging": { "current": 1, "total": 3 },
+  "response": [
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035417,
+        "timezone": "UTC",
+        "date": "2024-02-17T15:00:00+00:00",
+        "timestamp": 1708182000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "2.75" },
+                { "value": "Draw", "odd": "3.75" },
+                { "value": "Away", "odd": "2.38" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035423,
+        "timezone": "UTC",
+        "date": "2024-02-17T15:00:00+00:00",
+        "timestamp": 1708182000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "1.55" },
+                { "value": "Draw", "odd": "4.75" },
+                { "value": "Away", "odd": "5.00" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035420,
+        "timezone": "UTC",
+        "date": "2024-02-17T15:00:00+00:00",
+        "timestamp": 1708182000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "1.95" },
+                { "value": "Draw", "odd": "4.00" },
+                { "value": "Away", "odd": "3.50" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035421,
+        "timezone": "UTC",
+        "date": "2024-02-17T15:00:00+00:00",
+        "timestamp": 1708182000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "2.25" },
+                { "value": "Draw", "odd": "3.50" },
+                { "value": "Away", "odd": "3.20" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035415,
+        "timezone": "UTC",
+        "date": "2024-02-17T15:00:00+00:00",
+        "timestamp": 1708182000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "10.00" },
+                { "value": "Draw", "odd": "5.75" },
+                { "value": "Away", "odd": "1.28" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035414,
+        "timezone": "UTC",
+        "date": "2024-02-17T12:30:00+00:00",
+        "timestamp": 1708173000
+      },
+      "update": "2024-02-17T12:02:12+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "4.75" },
+                { "value": "Draw", "odd": "4.20" },
+                { "value": "Away", "odd": "1.67" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035419,
+        "timezone": "UTC",
+        "date": "2024-02-17T17:30:00+00:00",
+        "timestamp": 1708191000
+      },
+      "update": "2024-02-17T16:01:04+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "1.36" },
+                { "value": "Draw", "odd": "5.75" },
+                { "value": "Away", "odd": "7.00" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035422,
+        "timezone": "UTC",
+        "date": "2024-02-18T14:00:00+00:00",
+        "timestamp": 1708264800
+      },
+      "update": "2024-02-18T12:02:22+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "4.50" },
+                { "value": "Draw", "odd": "4.33" },
+                { "value": "Away", "odd": "1.67" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035418,
+        "timezone": "UTC",
+        "date": "2024-02-18T16:30:00+00:00",
+        "timestamp": 1708273800
+      },
+      "update": "2024-02-18T16:01:02+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "4.00" },
+                { "value": "Draw", "odd": "4.00" },
+                { "value": "Away", "odd": "1.83" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "league": {
+        "id": 39,
+        "name": "Premier League",
+        "country": "England",
+        "logo": "https://media.api-sports.io/football/leagues/39.png",
+        "flag": "https://media.api-sports.io/flags/gb.svg",
+        "season": 2023
+      },
+      "fixture": {
+        "id": 1035416,
+        "timezone": "UTC",
+        "date": "2024-02-19T20:00:00+00:00",
+        "timestamp": 1708372800
+      },
+      "update": "2024-02-19T18:00:14+00:00",
+      "bookmakers": [
+        {
+          "id": 8,
+          "name": "Bet365",
+          "bets": [
+            {
+              "id": 1,
+              "name": "Match Winner",
+              "values": [
+                { "value": "Home", "odd": "1.70" },
+                { "value": "Draw", "odd": "3.60" },
+                { "value": "Away", "odd": "5.25" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
