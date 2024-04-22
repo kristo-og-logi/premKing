@@ -176,6 +176,7 @@ func migrateFixturesToDB(db *gorm.DB) {
 				MatchDate:  fixture.Fixture.Date,
 				GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
 				Name:       utils.CreateFixtureName(homeTeam, awayTeam),
+				LongName:   fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
 			}
 
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
