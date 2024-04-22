@@ -42,7 +42,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           }
           teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
           logo={{ uri: fixture.homeTeam.logo }}
-          odds={'1.59'}
+          odds={fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
           disabled={!betSlice.notFound}
           onPress={() => {
@@ -59,7 +59,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
             bet.some((b) => b.fixtureId === fixture.id && b.result === FixtureResult.DRAW)
           }
           date={new Date(fixture.matchDate).toDateString()}
-          odds={'1.09'}
+          odds={fixture.drawOdds.toFixed(2)}
           disabled={!betSlice.notFound}
           onPress={() => {
             teamExistsInBet(FixtureResult.DRAW)
@@ -81,7 +81,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
           disabled={!betSlice.notFound}
-          odds={'2.49'}
+          odds={fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}
           onPress={() => {
             teamExistsInBet(FixtureResult.AWAY)

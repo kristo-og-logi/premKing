@@ -16,4 +16,7 @@ export default interface Fixture {
   result: FixtureResult;
   matchDate: string;
   name: string;
+  homeOdds: number;
+  drawOdds: number;
+  awayOdds: number;
 }
