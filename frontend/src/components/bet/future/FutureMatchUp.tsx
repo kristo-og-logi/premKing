@@ -17,21 +17,21 @@ const FutureMatchUp = ({ fixture }: Props) => {
           disabled={true}
           teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
           logo={{ uri: fixture.homeTeam.logo }}
-          odds={fixture.homeOdds.toFixed(2)}
+          odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
         />
         <DrawColumn
           selectable={false}
           disabled={true}
           date={new Date(fixture.matchDate).toDateString()}
-          odds={fixture.drawOdds.toFixed(2)}
+          odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
         />
         <TeamColumn
           selectable={false}
           disabled={true}
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
-          odds={fixture.awayOdds.toFixed(2)}
+          odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}
         />
       </View>
