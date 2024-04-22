@@ -30,13 +30,13 @@ func ConnectDB() {
 	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
+		DisableForeignKeyConstraintWhenMigrating: false,
 	})
 	if err != nil {
 		log.Fatal("Failed to connect to database ", err)
 	}
 
-	shouldMigrate := true
+	shouldMigrate := false
 	if shouldMigrate {
 		fmt.Println("migrating")
 		autoMigrateDB(db)
