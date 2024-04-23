@@ -8,17 +8,22 @@ type Fixture struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 
-	GameWeek   uint8     `json:"gameWeek"`
-	HomeTeamId uint16    `gorm:"index" json:"homeTeamId"`
-	HomeTeam   Team      `gorm:"foreignKey:HomeTeamId" json:"homeTeam"`
-	AwayTeamId uint16    `gorm:"index" json:"awayTeamId"`
-	AwayTeam   Team      `gorm:"foreignKey:AwayTeamId" json:"awayTeam"`
-	Finished   bool      `json:"finished"`
-	HomeGoals  uint8     `json:"homeGoals"`
-	AwayGoals  uint8     `json:"awayGoals"`
-	Result     string    `json:"result"`
-	MatchDate  time.Time `json:"matchDate"`
-	Name       string    `json:"name"`
+	GameWeek     uint8     `json:"gameWeek"`
+	HomeTeamId   uint16    `gorm:"index" json:"homeTeamId"`
+	HomeTeam     Team      `gorm:"foreignKey:HomeTeamId" json:"homeTeam"`
+	AwayTeamId   uint16    `gorm:"index" json:"awayTeamId"`
+	AwayTeam     Team      `gorm:"foreignKey:AwayTeamId" json:"awayTeam"`
+	Finished     bool      `json:"finished"`
+	HomeGoals    uint8     `json:"homeGoals"`
+	AwayGoals    uint8     `json:"awayGoals"`
+	HomeOdds     float32   `json:"homeOdds"`
+	DrawOdds     float32   `json:"drawOdds"`
+	AwayOdds     float32   `json:"awayOdds"`
+	Result       string    `json:"result"`
+	MatchDate    time.Time `json:"matchDate"`
+	Name         string    `json:"name"`
+	LongName     string    `json:"longName"`
+	SportmonksID uint32    `gorm:"unique" json:"sportmonksId"`
 }
 
 type FixturesResponse struct {

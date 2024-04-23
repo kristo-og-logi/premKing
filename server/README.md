@@ -83,12 +83,26 @@ user joins new league
 
 create new league by user with id `creatorId` in body
 
+## Admin control
+
+This is likely not for you, but for general admin control over the database use the [maintenance](./maintenance/) folder to create and execute scripts on the database.
+
+Currently:
+
+```
+go run maintenance/maintenance.go --environment {DEV || PROD}
+```
+
+executes a maintenance script for either environments's database.
+
 ## Source
 
 Setting up a gin project: https://go.dev/doc/tutorial/web-service-gin
 
 ## Common Errors
 
-*"I'm getting an error while migrating into or reading from the `GAMEWEEKS` table, something do do with dates (unsupported Scan, storing driver.Value type []uint8 into type *time.Time)"\*
+~~_"I'm getting an error while migrating into or reading from the `GAMEWEEKS` table, something do do with dates (unsupported Scan, storing driver.Value type []uint8 into type \*time.Time)"_~~
 
-- In your .env's `DSN` variable, make sure to postfix it with `&parseTime=True&charset=utf8mb4`. This will read dates from mysql as time.Time types, not []uint8.
+~~- In your .env's `DSN` variable, make sure to postfix it with `&parseTime=True&charset=utf8mb4`. This will read dates from mysql as time.Time types, not []uint8.~~
+
+- This was only applied to when the Planetscale mysql database was used. As of April 2024, the [database has been migrated to postgres](https://github.com/kristo-og-logi/premKing/pull/44).

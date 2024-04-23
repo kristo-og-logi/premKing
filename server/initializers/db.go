@@ -174,6 +174,7 @@ func migrateFixturesToDB(db *gorm.DB) {
 				MatchDate:  fixture.Fixture.Date,
 				GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
 				Name:       utils.CreateFixtureName(homeTeam, awayTeam),
+				LongName:   fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
 			}
 
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
@@ -209,8 +210,7 @@ func migrateGameweeksToDB(db *gorm.DB) {
     SELECT DISTINCT f1.game_week,
     (SELECT match_date FROM fixtures f2 WHERE f2.game_week = f1.game_week ORDER BY f2.match_date ASC LIMIT 1) as first_fixture_date,
     (SELECT match_date FROM fixtures f3 WHERE f3.game_week = f1.game_week ORDER BY f3.match_date DESC LIMIT 1) as last_fixture_date
-    FROM fixtures f1
-`).Scan(&borders).Error
+    FROM fixtures f1`).Scan(&borders).Error
 
 	if err != nil {
 		log.Fatalf("error fetching first and last fixture dates from db: %s\n", err.Error())
