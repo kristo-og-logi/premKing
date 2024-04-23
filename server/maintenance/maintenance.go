@@ -68,7 +68,9 @@ func getFixturesFromDB() []models.Fixture {
 }
 
 func getJSONFixturesFromFile() []Fixture {
-	jsonFile, err := os.ReadFile("json/sportmonks/fixtures/combined_data.json")
+	// ensure that pages.json exists
+	// - it might have to be created by saveFixtures.py in the same directory
+	jsonFile, err := os.ReadFile("json/sportmonks/fixtures/pages.json")
 	if err != nil {
 		fmt.Printf("error reading json file: %s\n", err.Error())
 		os.Exit(1)
