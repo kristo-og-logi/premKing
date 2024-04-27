@@ -3,7 +3,7 @@
     "name": "premKing",
     "slug": "premking",
     "scheme": "premKing",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "orientation": "portrait",
     "icon": "./assets/IOS-LOGO-3x.png",
     "userInterfaceStyle": "dark",
@@ -16,7 +16,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kristo.premking",
-      "name": "pk-app",
       "config": {
         "usesNonExemptEncryption": false
       },
