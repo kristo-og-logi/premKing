@@ -47,7 +47,11 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           disabled={!betSlice.notFound}
           onPress={() => {
             teamExistsInBet(FixtureResult.HOME)
-              ? setBet(bet.filter((b) => b.result !== FixtureResult.HOME))
+              ? setBet(
+                  bet.filter(
+                    (b) => !(b.fixtureId === fixture.id && b.result === FixtureResult.HOME)
+                  )
+                )
               : fixtureExistsInBet()
                 ? changeFixtureInBet(FixtureResult.HOME)
                 : setBet([...bet, { fixtureId: fixture.id, result: FixtureResult.HOME }]);
@@ -85,7 +89,11 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           side={Side.RIGHT}
           onPress={() => {
             teamExistsInBet(FixtureResult.AWAY)
-              ? setBet(bet.filter((b) => b.result !== FixtureResult.AWAY))
+              ? setBet(
+                  bet.filter(
+                    (b) => !(b.fixtureId === fixture.id && b.result === FixtureResult.AWAY)
+                  )
+                )
               : fixtureExistsInBet()
                 ? changeFixtureInBet(FixtureResult.AWAY)
                 : setBet([...bet, { fixtureId: fixture.id, result: FixtureResult.AWAY }]);
