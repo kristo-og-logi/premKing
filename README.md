@@ -20,7 +20,7 @@ Then, to start the frontend, run
 npm run start
 ```
 
-**For more detailed instructions, setup and troubleshooting, visit the [frontend README](./frontend/README.md)**
+**For more detailed instructions, setup, deployment and troubleshooting, visit the [frontend README](./frontend/README.md)**
 
 ## Backend
 
