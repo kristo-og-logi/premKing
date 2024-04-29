@@ -20,6 +20,8 @@ Then, to start the frontend, run
 npm run start
 ```
 
+**For more detailed instructions, setup, deployment and troubleshooting, visit the [frontend README](./frontend/README.md)**
+
 ## Backend
 
 Made with gin, a Go framework, with gorm as an _orm_.
@@ -45,3 +47,5 @@ If running the backend in development, you **need to follow** the [`/server/READ
 ```
 CompileDaemon -command="./server"
 ```
+
+**For more detailed instructions, setup, endpoints and troubleshooting, visit the [server README](./server/README.md)**
