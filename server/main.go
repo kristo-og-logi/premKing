@@ -14,6 +14,7 @@ import (
 func init() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
+	initializers.CRON()
 }
 
 func main() {
