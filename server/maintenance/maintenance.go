@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 )
@@ -15,6 +17,67 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	CreateBets()
+}
+
+func CreateBets() {
+	fmt.Print("email: ")
+	userEmail, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+
+	user := getUser(string(userEmail))
+
+	for gw := 1; gw < 36; gw++ {
+		fixtures := getFixturesByGW(gw)
+		bets := createBets(user, fixtures, "1")
+		saveBets(bets)
+	}
+
+	fmt.Println("all bets saved :)")
+}
+
+func getUser(email string) *models.User {
+	user := &models.User{}
+
+	result := initializers.DB.Find(user, "email = ?", email)
+	if result.Error != nil {
+		fmt.Printf("error fetching user with email %s: %s", email, result.Error.Error())
+		return nil
+	}
+
+	return user
+}
+
+func createBets(user *models.User, fixtures []models.Fixture, result string) []models.Bet {
+	bets := []models.Bet{}
+
+	for _, fixture := range fixtures {
+		bet := models.Bet{ID: uuid.NewString(), UserId: user.ID, FixtureId: fixture.ID, Result: result, GameWeek: fixture.GameWeek}
+		bets = append(bets, bet)
+	}
+
+	return bets
+}
+
+func saveBets(bets []models.Bet) {
+	result := initializers.DB.Save(&bets)
+	if result.Error != nil {
+		fmt.Printf("error saving bet: %s", result.Error.Error())
+	}
+}
+
+func getFixturesByGW(gw int) (fixtures []models.Fixture) {
+	fixtures = []models.Fixture{}
+
+	result := initializers.DB.Find(&fixtures, "game_week = ?", gw)
+	if result.Error != nil {
+		fmt.Printf("error fetching fixtures with gw %d: %s", gw, result.Error.Error())
+		return nil
+	}
+
+	return fixtures
+}
+
+func UpdateFixturesFromAPI() {
 	dbFixtures := getFixturesFromDB()
 	jsonFixtures := getJSONFixturesFromFile()
 
@@ -84,7 +147,7 @@ func assignOdds(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) 
 	return
 }
 
-func assignId(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) {
+func AssignId(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) {
 	initializers.DB.Model(&dbFixture).Updates(models.Fixture{SportmonksID: jsonFixture.Id})
 }
 
