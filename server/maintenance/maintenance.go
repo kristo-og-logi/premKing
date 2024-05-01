@@ -11,19 +11,6 @@ import (
 	"github.com/kristo-og-logi/premKing/server/models"
 )
 
-type Fixture struct {
-	Id    uint32 `json:"id"`
-	Name  string `json:"name"`
-	Round struct {
-		Name string `json:"name"`
-	} `json:"round"`
-	Odds []struct {
-		Value         string `json:"value"`
-		OriginalLabel string `json:"original_label"`
-	} `json:"odds"`
-	StartingAt string `json:"starting_at"`
-}
-
 func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
@@ -49,7 +36,7 @@ func main() {
 	fmt.Printf("Updated %d rows\n", totalUpdated)
 }
 
-func updateDate(dbFixture models.Fixture, jsonFixture Fixture) (updated bool) {
+func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
 	updated = false
 
 	jsonTime, err := time.Parse("2006-01-02 15:04:05", jsonFixture.StartingAt)
@@ -66,7 +53,7 @@ func updateDate(dbFixture models.Fixture, jsonFixture Fixture) (updated bool) {
 	return
 }
 
-func assignOdds(dbFixture models.Fixture, jsonFixture Fixture) (updated bool) {
+func assignOdds(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
 	updated = false
 	// no need to reassign odds
 	if dbFixture.AwayOdds >= 0.1 || dbFixture.HomeOdds >= 0.1 || dbFixture.DrawOdds >= 0.1 {
@@ -97,7 +84,7 @@ func assignOdds(dbFixture models.Fixture, jsonFixture Fixture) (updated bool) {
 	return
 }
 
-func assignId(dbFixture models.Fixture, jsonFixture Fixture) {
+func assignId(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) {
 	initializers.DB.Model(&dbFixture).Updates(models.Fixture{SportmonksID: jsonFixture.Id})
 }
 
@@ -114,7 +101,7 @@ func getFixturesFromDB() []models.Fixture {
 	return fixtures
 }
 
-func getJSONFixturesFromFile() []Fixture {
+func getJSONFixturesFromFile() []models.SportmonksFixture {
 	// ensure that pages.json exists
 	// - it might have to be created by saveFixtures.py in the same directory
 	jsonFile, err := os.ReadFile("json/sportmonks/fixtures/pages.json")
@@ -123,7 +110,7 @@ func getJSONFixturesFromFile() []Fixture {
 		os.Exit(1)
 	}
 
-	jsonFixtures := []Fixture{}
+	jsonFixtures := []models.SportmonksFixture{}
 
 	err = json.Unmarshal(jsonFile, &jsonFixtures)
 	if err != nil {

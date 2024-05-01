@@ -58,3 +58,20 @@ type FixtureJSON struct {
 		Away uint8 `json:"away"`
 	} `json:"goals"`
 }
+
+type SportmonksFixture struct {
+	Id         uint32          `json:"id"`
+	Name       string          `json:"name"`
+	Round      SportmonksRound `json:"round"`
+	Odds       []SportmonksOdd `json:"odds"`
+	StartingAt string          `json:"starting_at"`
+}
+
+type SportmonksRound struct {
+	Name string `json:"name"`
+}
+
+type SportmonksOdd struct {
+	Value         string `json:"value"`
+	OriginalLabel string `json:"original_label"`
+}
