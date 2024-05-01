@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/kristo-og-logi/premKing/server/models"
-	"github.com/kristo-og-logi/premKing/server/utils"
 	"github.com/robfig/cron/v3"
 )
 
@@ -19,11 +19,82 @@ func CRON() {
 	c := cron.New()
 	// every function added to a cronjob runs in a separate goroutine,
 	// no need to do anything here
-	c.AddFunc("0 * * * *", fetchFixtures)
+	c.AddFunc("0 * * * *", updateFixtures)
 	c.Start()
 }
 
-func fetchFixtures() {
+func updateFixtures() {
+	fmt.Println("updating fixtures...")
+	fixtures := fetchFixtures()
+	dbFixtures := getFixturesFromDB()
+
+	totalUpdated := 0
+	for _, dbfix := range dbFixtures {
+		for _, jsonfix := range fixtures {
+			if dbfix.Name == jsonfix.Name {
+				updated := false
+				updated = assignOdds(dbfix, jsonfix) || updated
+				updated = updateDate(dbfix, jsonfix) || updated
+
+				if updated {
+					totalUpdated++
+				}
+				break
+			}
+		}
+	}
+	fmt.Printf("Updated %d rows\n", totalUpdated)
+}
+
+func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
+	updated = false
+
+	jsonTime, err := time.Parse("2006-01-02 15:04:05", jsonFixture.StartingAt)
+	if err != nil {
+		// fmt.Printf("err - %s\n", err.Error())
+		return
+	}
+
+	if jsonTime.Compare(dbFixture.MatchDate) != 0 {
+		// fmt.Printf("%s | from %s to %s\n", dbFixture.Name, dbFixture.MatchDate, jsonTime)
+		DB.Model(&dbFixture).Updates(models.Fixture{MatchDate: jsonTime})
+		updated = true
+	}
+	return
+}
+
+func assignOdds(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
+	updated = false
+	// no need to reassign odds
+	if dbFixture.AwayOdds >= 0.1 || dbFixture.HomeOdds >= 0.1 || dbFixture.DrawOdds >= 0.1 {
+		return
+	}
+	// if odds haven't appeard in API, don't update
+	if len(jsonFixture.Odds) == 0 {
+		return
+	}
+
+	var homeOdd, drawOdd, awayOdd float32
+	for _, odd := range jsonFixture.Odds {
+		if odd.OriginalLabel == "2" {
+			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
+			awayOdd = float32(oddValue)
+		} else if odd.OriginalLabel == "1" {
+			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
+			homeOdd = float32(oddValue)
+		} else if odd.OriginalLabel == "Draw" {
+			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
+			drawOdd = float32(oddValue)
+		} else {
+			panic(fmt.Sprintf("found odd with original_label: %v\n", odd.OriginalLabel))
+		}
+	}
+	DB.Model(&dbFixture).Updates(models.Fixture{HomeOdds: homeOdd, DrawOdds: drawOdd, AwayOdds: awayOdd})
+	updated = true
+	return
+}
+
+func fetchFixtures() []models.SportmonksFixture {
 	hasMore := true
 
 	fixtures := []models.SportmonksFixture{}
@@ -31,8 +102,6 @@ func fetchFixtures() {
 	for page := 1; hasMore; page++ {
 		req := createRequest(page)
 		res := getResponse(req)
-
-		fmt.Printf("page: %d | hasNext: %v\n", page, res.Pagination.HasMore)
 
 		if !res.Pagination.HasMore {
 			hasMore = false
@@ -45,7 +114,21 @@ func fetchFixtures() {
 	}
 
 	fmt.Printf("found %d fixtures\n", len(fixtures))
-	utils.PrettyPrint("", fixtures[0])
+
+	return fixtures
+}
+
+func getFixturesFromDB() []models.Fixture {
+	fixtures := []models.Fixture{}
+	result := DB.Find(&fixtures)
+	if result.Error != nil {
+		fmt.Printf("error: %s\n", result.Error.Error())
+		os.Exit(1)
+	}
+
+	fmt.Printf("%d fixtures in db!\n", len(fixtures))
+
+	return fixtures
 }
 
 func createRequest(page int) *http.Request {
