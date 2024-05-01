@@ -17,7 +17,8 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	CreateBets()
+	AddOddsAndWonToBets()
+	// CreateBets()
 }
 
 func CreateBets() {
@@ -33,6 +34,97 @@ func CreateBets() {
 	}
 
 	fmt.Println("all bets saved :)")
+}
+
+func UpdateFixturesFromAPI() {
+	dbFixtures := getFixturesFromDB()
+	jsonFixtures := getJSONFixturesFromFile()
+
+	totalUpdated := 0
+	for _, dbfix := range dbFixtures {
+		for _, jsonfix := range jsonFixtures {
+			if dbfix.Name == jsonfix.Name {
+				updated := false
+				updated = assignOdds(dbfix, jsonfix) || updated
+				updated = updateDate(dbfix, jsonfix) || updated
+
+				if updated {
+					totalUpdated++
+				}
+				break
+			}
+		}
+	}
+	fmt.Printf("Updated %d rows\n", totalUpdated)
+}
+
+func AddOddsAndWonToBets() {
+	allBets := getAllNonUpdatedBets()
+	allFixtures := getAllPastFixtures()
+
+	fmt.Printf("found %d bets\n", len(allBets))
+	fmt.Printf("found %d fixtures\n", len(allFixtures))
+
+	updateOddsAndWon(allFixtures, allBets)
+}
+
+func updateOddsAndWon(fx []models.Fixture, bts []models.Bet) {
+	updated := 0
+	for _, f := range fx {
+		for _, b := range bts {
+			if b.FixtureId == f.ID {
+				var odd float32
+				var won bool = false
+				switch b.Result {
+				case "1":
+					if f.Result == "1" {
+						won = true
+					}
+					odd = f.HomeOdds
+				case "X":
+					if f.Result == "X" {
+						won = true
+					}
+					odd = f.DrawOdds
+				case "2":
+					if f.Result == "2" {
+						won = true
+					}
+					odd = f.AwayOdds
+				}
+				// Use .Select() to explicitly update Won column
+				// , otherwise it doesn't update rows with won = false
+				initializers.DB.Model(&b).Select("Odd", "Won").Updates(models.Bet{Odd: odd, Won: won})
+				updated++
+			}
+		}
+	}
+
+	fmt.Printf("updated %d bets\n", updated)
+}
+
+func getAllNonUpdatedBets() []models.Bet {
+	bets := []models.Bet{}
+
+	result := initializers.DB.Find(&bets, "won is null")
+	if result.Error != nil {
+		fmt.Printf("error fetching all bets: %s", result.Error.Error())
+		return nil
+	}
+
+	return bets
+}
+
+func getAllPastFixtures() []models.Fixture {
+	fixtures := []models.Fixture{}
+
+	result := initializers.DB.Find(&fixtures, "home_odds is not null")
+	if result.Error != nil {
+		fmt.Printf("error fetching all fixtures: %s", result.Error.Error())
+		return nil
+	}
+
+	return fixtures
 }
 
 func getUser(email string) *models.User {
@@ -75,28 +167,6 @@ func getFixturesByGW(gw int) (fixtures []models.Fixture) {
 	}
 
 	return fixtures
-}
-
-func UpdateFixturesFromAPI() {
-	dbFixtures := getFixturesFromDB()
-	jsonFixtures := getJSONFixturesFromFile()
-
-	totalUpdated := 0
-	for _, dbfix := range dbFixtures {
-		for _, jsonfix := range jsonFixtures {
-			if dbfix.Name == jsonfix.Name {
-				updated := false
-				updated = assignOdds(dbfix, jsonfix) || updated
-				updated = updateDate(dbfix, jsonfix) || updated
-
-				if updated {
-					totalUpdated++
-				}
-				break
-			}
-		}
-	}
-	fmt.Printf("Updated %d rows\n", totalUpdated)
 }
 
 func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
