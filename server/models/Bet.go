@@ -14,6 +14,8 @@ type Bet struct {
 	Fixture   Fixture `gorm:"foreignKey:FixtureId" json:"fixture"`
 	FixtureId uint32  `gorm:"index" json:"fixtureId"`
 	Result    string  `json:"result"`
+	Odd       float32 `json:"odd"`
+	Won       bool    `json:"won"`
 }
 
 type BetResponse struct {
