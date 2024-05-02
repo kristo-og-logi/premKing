@@ -65,6 +65,8 @@ type SportmonksFixture struct {
 	Round      SportmonksRound `json:"round"`
 	Odds       []SportmonksOdd `json:"odds"`
 	StartingAt string          `json:"starting_at"`
+	Score      SportmonksScore `json:"score"`
+	State      string          `json:"state"`
 }
 
 type SportmonksRound struct {
@@ -74,4 +76,9 @@ type SportmonksRound struct {
 type SportmonksOdd struct {
 	Value         string `json:"value"`
 	OriginalLabel string `json:"original_label"`
+}
+
+type SportmonksScore struct {
+	Home int `json:"home"`
+	Away int `json:"away"`
 }
