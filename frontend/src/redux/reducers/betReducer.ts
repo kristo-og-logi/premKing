@@ -6,6 +6,7 @@ export interface BetState {
   bets: Bet[];
   notFound: boolean;
   selectedGameweek: number;
+  score: number;
   isLoading: boolean;
   hasError: boolean;
   createBetIsLoading: boolean;
@@ -16,6 +17,7 @@ const initialState: BetState = {
   bets: [],
   notFound: false,
   selectedGameweek: 1,
+  score: -1,
   isLoading: false,
   hasError: false,
   createBetIsLoading: false,
@@ -34,18 +36,22 @@ export const betSlice = createSlice({
       .addCase(getBets.rejected, (state) => {
         state.isLoading = false;
         state.hasError = true;
+        state.score = -1;
       })
       .addCase(
         getBets.fulfilled,
-        (state, action: PayloadAction<{ bets: Bet[]; gameweek: number }>) => {
+        (state, action: PayloadAction<{ response: GetBetsResponse; gameweek: number }>) => {
           state.isLoading = false;
-          if (action.payload.bets.length === 0) {
+          if (action.payload.response.bets.length === 0) {
             state.notFound = true;
           } else {
             state.notFound = false;
           }
-          state.bets = action.payload.bets;
+          state.bets = action.payload.response.bets;
+          state.score = action.payload.response.score;
           state.selectedGameweek = action.payload.gameweek;
+
+          console.log(`score for GW${state.selectedGameweek}: ${state.score}`);
         }
       )
       // submitBet
@@ -74,26 +80,31 @@ interface GetBetsRequest {
   token: string;
 }
 
-export const getBets = createAsyncThunk<{ bets: Bet[]; gameweek: number }, GetBetsRequest>(
-  'fixtures/getBets',
-  async ({ gameweek, token }) => {
-    const response = await fetch(`${backend}/users/me/bets/${gameweek}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+interface GetBetsResponse {
+  bets: Bet[];
+  score: number;
+}
 
-    if (!response.ok) {
-      if (response.status === 404) return { bets: [], gameweek };
-      const message: { error: string } = await response.json();
-      throw new Error(message.error);
-    }
+export const getBets = createAsyncThunk<
+  { response: GetBetsResponse; gameweek: number },
+  GetBetsRequest
+>('fixtures/getBets', async ({ gameweek, token }) => {
+  const resp = await fetch(`${backend}/users/me/bets/${gameweek}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    const bets: Bet[] = await response.json();
-    console.log(`Found bets for GW${gameweek}`);
-    return { bets, gameweek };
+  if (!resp.ok) {
+    if (resp.status === 404) return { response: { bets: [], score: 0 }, gameweek };
+    const message: { error: string } = await resp.json();
+    throw new Error(message.error);
   }
-);
+
+  const response: GetBetsResponse = await resp.json();
+  console.log(`Found bets for GW${gameweek}`);
+  return { response, gameweek };
+});
 
 interface SubmitBetRequest {
   bets: Bet[];

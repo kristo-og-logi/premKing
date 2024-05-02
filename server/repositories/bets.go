@@ -14,7 +14,7 @@ var ErrNotFound = errors.New("not found")
 func GetBetsByUserIdAndGameweek(userId string, gameweek int) ([]models.Bet, error) {
 	bets := []models.Bet{}
 
-	result := initializers.DB.Find(&bets, "user_id = ? AND game_week = ?", userId, gameweek)
+	result := initializers.DB.Preload("Fixture").Find(&bets, "user_id = ? AND game_week = ?", userId, gameweek)
 	if result.Error != nil {
 		return nil, result.Error
 	}

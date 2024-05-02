@@ -28,22 +28,62 @@ func updateFixtures() {
 	fixtures := fetchFixtures()
 	dbFixtures := getFixturesFromDB()
 
-	totalUpdated := 0
+	var totalOUpdated, totalDUpdated, totalSsUpdated, matches int = 0, 0, 0, 0
 	for _, dbfix := range dbFixtures {
 		for _, jsonfix := range fixtures {
-			if dbfix.Name == jsonfix.Name {
-				updated := false
-				updated = assignOdds(dbfix, jsonfix) || updated
-				updated = updateDate(dbfix, jsonfix) || updated
+			if dbfix.SportmonksID == jsonfix.Id {
+				matches++
 
-				if updated {
-					totalUpdated++
+				if assignOdds(dbfix, jsonfix) {
+					totalOUpdated++
 				}
+				if updateDate(dbfix, jsonfix) {
+					totalDUpdated++
+				}
+				if updateStatusAndScores(dbfix, jsonfix) {
+					totalSsUpdated++
+				}
+
 				break
 			}
 		}
 	}
-	fmt.Printf("Updated %d rows\n", totalUpdated)
+	fmt.Printf("%d matches found!\n", matches)
+	fmt.Printf("Updated %d odds\n", totalOUpdated)
+	fmt.Printf("Updated %d dates\n", totalDUpdated)
+	fmt.Printf("Updated %d statuses\n", totalSsUpdated)
+}
+
+func updateStatusAndScores(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
+	updated = false
+
+	if jsonFixture.State == "FT" && !dbFixture.Finished {
+
+		result := ""
+		if jsonFixture.Score.Home > jsonFixture.Score.Away {
+			result = "1"
+		} else if jsonFixture.Score.Home < jsonFixture.Score.Away {
+			result = "2"
+		} else {
+			result = "X"
+		}
+
+		response := DB.Model(&dbFixture).Select("Finished", "Result", "AwayGoals", "HomeGoals").Updates(models.Fixture{
+			Finished:  true,
+			HomeGoals: uint8(jsonFixture.Score.Home),
+			AwayGoals: uint8(jsonFixture.Score.Away),
+			Result:    result,
+		})
+
+		if response.Error != nil {
+			fmt.Printf("error saving new status and score to fixture: %s", response.Error.Error())
+			return
+		}
+
+		updated = true
+	}
+
+	return
 }
 
 func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
@@ -113,7 +153,7 @@ func fetchFixtures() []models.SportmonksFixture {
 		time.Sleep(1 * time.Second)
 	}
 
-	fmt.Printf("found %d fixtures\n", len(fixtures))
+	fmt.Printf("found %d fixtures from API\n", len(fixtures))
 
 	return fixtures
 }
@@ -186,7 +226,7 @@ func createUrl(page int) string {
 
 	params := map[string]string{
 		"filters":  "fixtureSeasons:21646;bookmakers:2;markets:1",
-		"include":  "round;odds",
+		"include":  "round;odds;scores;state",
 		"per_page": "50",
 		"page":     fmt.Sprint(page)}
 
@@ -203,28 +243,49 @@ func convert(res *SportmonksFixtureResponse) []models.SportmonksFixture {
 	fixtures := []models.SportmonksFixture{}
 
 	for _, match := range res.Data {
-		odds := []models.SportmonksOdd{}
-
-		for _, odd := range match.Odds {
-			newOdd := models.SportmonksOdd{
-				Value:         odd.Value,
-				OriginalLabel: odd.OriginalLabel,
-			}
-			odds = append(odds, newOdd)
-		}
-
 		newFixture := models.SportmonksFixture{
 			Id:   uint32(match.ID),
 			Name: match.Name,
 			Round: models.SportmonksRound{
 				Name: match.Round.Name,
 			},
-			Odds: odds,
+			Odds:  convertOdds(match.Odds),
+			State: match.State.State,
+			Score: convertScores(match.Scores),
 		}
 
 		fixtures = append(fixtures, newFixture)
 	}
 	return fixtures
+}
+
+func convertOdds(orgOdds []Odd) (odds []models.SportmonksOdd) {
+	odds = []models.SportmonksOdd{}
+
+	for _, odd := range orgOdds {
+		newOdd := models.SportmonksOdd{
+			Value:         odd.Value,
+			OriginalLabel: odd.OriginalLabel,
+		}
+		odds = append(odds, newOdd)
+	}
+	return
+}
+
+func convertScores(orgScores []ScoreDetail) (score models.SportmonksScore) {
+	score = models.SportmonksScore{}
+	for _, scr := range orgScores {
+		if scr.Description == "2ND_HALF" {
+			switch scr.Score.Participant {
+			case "home":
+				score.Home = scr.Score.Goals
+			case "away":
+				score.Away = scr.Score.Goals
+			}
+		}
+	}
+
+	return
 }
 
 type SportmonksFixtureResponse struct {
@@ -237,27 +298,29 @@ type SportmonksFixtureResponse struct {
 
 // Match represents each item in the "data" array
 type Match struct {
-	ID                  int     `json:"id"`
-	SportID             int     `json:"sport_id"`
-	LeagueID            int     `json:"league_id"`
-	SeasonID            int     `json:"season_id"`
-	StageID             int     `json:"stage_id"`
-	GroupID             *int    `json:"group_id"`     // Using pointer for nullable fields
-	AggregateID         *int    `json:"aggregate_id"` // Using pointer for nullable fields
-	RoundID             int     `json:"round_id"`
-	StateID             int     `json:"state_id"`
-	VenueID             int     `json:"venue_id"`
-	Name                string  `json:"name"`
-	StartingAt          string  `json:"starting_at"`
-	ResultInfo          string  `json:"result_info"`
-	Leg                 string  `json:"leg"`
-	Details             *string `json:"details"` // Using pointer for nullable fields
-	Length              int     `json:"length"`
-	Placeholder         bool    `json:"placeholder"`
-	HasOdds             bool    `json:"has_odds"`
-	StartingAtTimestamp int64   `json:"starting_at_timestamp"`
-	Round               Round   `json:"round"`
-	Odds                []Odd   `json:"odds"`
+	ID                  int           `json:"id"`
+	SportID             int           `json:"sport_id"`
+	LeagueID            int           `json:"league_id"`
+	SeasonID            int           `json:"season_id"`
+	StageID             int           `json:"stage_id"`
+	GroupID             *int          `json:"group_id"`     // Using pointer for nullable fields
+	AggregateID         *int          `json:"aggregate_id"` // Using pointer for nullable fields
+	RoundID             int           `json:"round_id"`
+	StateID             int           `json:"state_id"`
+	VenueID             int           `json:"venue_id"`
+	Name                string        `json:"name"`
+	StartingAt          string        `json:"starting_at"`
+	ResultInfo          string        `json:"result_info"`
+	Leg                 string        `json:"leg"`
+	Details             *string       `json:"details"` // Using pointer for nullable fields
+	Length              int           `json:"length"`
+	Placeholder         bool          `json:"placeholder"`
+	HasOdds             bool          `json:"has_odds"`
+	StartingAtTimestamp int64         `json:"starting_at_timestamp"`
+	Round               Round         `json:"round"`
+	Odds                []Odd         `json:"odds"`
+	Scores              []ScoreDetail `json:"scores"`
+	State               StateDetail   `json:"state"`
 }
 
 // Round represents the nested "round" object in each "data" item
@@ -297,6 +360,29 @@ type Odd struct {
 	CreatedAt             string   `json:"created_at"`
 	OriginalLabel         string   `json:"original_label"`
 	LatestBookmakerUpdate string   `json:"latest_bookmaker_update"`
+}
+
+type Score struct {
+	Goals       int    `json:"goals"`
+	Participant string `json:"participant"`
+}
+
+// ScoreDetail represents each score entry.
+type ScoreDetail struct {
+	ID            int    `json:"id"`
+	FixtureID     int    `json:"fixture_id"`
+	TypeID        int    `json:"type_id"`
+	ParticipantID int    `json:"participant_id"`
+	Score         Score  `json:"score"`
+	Description   string `json:"description"`
+}
+
+type StateDetail struct {
+	ID            int    `json:"id"`
+	State         string `json:"state"`
+	Name          string `json:"name"`
+	ShortName     string `json:"short_name"`
+	DeveloperName string `json:"developer_name"`
 }
 
 // Pagination details

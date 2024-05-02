@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -12,6 +13,11 @@ import (
 	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
+
+type MyBetsResponse struct {
+	Bets  []models.Bet `json:"bets"`
+	Score float32      `json:"score"`
+}
 
 func GetMyBetByGameweek(c *gin.Context) {
 	gameweekParam := c.Param("gameweek")
@@ -42,7 +48,33 @@ func GetMyBetByGameweek(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, bets)
+	gw, err := repositories.GetGameweekById(gameweek)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("internal error: %s", err.Error())})
+		return
+	}
+
+	// If the gameweek is finished, we can calculate a score
+	if !gw.Finishes.Before(time.Now()) {
+		// if !gw.IsFinished {
+		c.IndentedJSON(http.StatusOK, &MyBetsResponse{Bets: bets, Score: -1})
+		return
+		// }
+	}
+
+	score := CalculateTicketScore(bets)
+	c.IndentedJSON(http.StatusOK, &MyBetsResponse{Bets: bets, Score: score})
+}
+
+func CalculateTicketScore(bets []models.Bet) float32 {
+	var score float32 = 0.0
+
+	for _, bet := range bets {
+		if bet.Won {
+			score += bet.Odd
+		}
+	}
+	return score
 }
 
 type BetCreator struct {

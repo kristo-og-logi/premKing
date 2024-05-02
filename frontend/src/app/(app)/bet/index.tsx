@@ -34,18 +34,20 @@ const BetScreen = () => {
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    console.log(`betSlice.bets updated to: ${betSlice.bets}`);
     setBet(betSlice.bets);
   }, [betSlice.bets]);
-
-  useEffect(() => {
-    console.log('bet: ', bet);
-  }, [bet]);
 
   return (
     <View style={globalStyles.container}>
       <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+      {betSlice.score && !betSlice.isLoading ? (
+        <View style={{ marginBottom: 8, marginTop: -8 }}>
+          <PremText centered order={2}>{`score: x${betSlice.score.toFixed(2)}`}</PremText>
+        </View>
+      ) : (
+        <></>
+      )}
+      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
         {fixtureSlice.isLoading ? (
           <PremText>loading...</PremText>
         ) : fixtureSlice.hasError ? (
