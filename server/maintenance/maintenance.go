@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -71,23 +70,20 @@ func AddOddsAndWonToBets() {
 
 func updateOddsAndWon(fx []models.Fixture, bts []models.Bet) {
 	updated := 0
-	wg := sync.WaitGroup{}
 
 	for _, f := range fx {
 		for _, b := range bts {
 			if b.FixtureId == f.ID {
-				wg.Add(1)
-				go saveFixture(&wg, b, f)
+				saveFixture(b, f)
 				updated++
 			}
 		}
 	}
 
-	wg.Wait()
 	fmt.Printf("updated %d bets\n", updated)
 }
 
-func saveFixture(wg *sync.WaitGroup, b models.Bet, f models.Fixture) {
+func saveFixture(b models.Bet, f models.Fixture) {
 	var odd float32
 	var won bool = false
 	switch b.Result {
@@ -110,8 +106,6 @@ func saveFixture(wg *sync.WaitGroup, b models.Bet, f models.Fixture) {
 	// Use .Select() to explicitly update Won column
 	// , otherwise it doesn't update rows with won = false
 	initializers.DB.Model(&b).Select("Odd", "Won").Updates(models.Bet{Odd: odd, Won: won})
-
-	wg.Done()
 }
 
 func getAllNonUpdatedBets() []models.Bet {
