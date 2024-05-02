@@ -11,6 +11,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func autoMigrateDB(db *gorm.DB) {
@@ -29,8 +30,15 @@ func ConnectDB() {
 		log.Fatal("environment variable DSN not found")
 	}
 
+	dbLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: 0, // 0 seems to disable the threshold - I'm sick of it
+		},
+	)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: false,
+		Logger: dbLogger,
 	})
 	if err != nil {
 		log.Fatal("Failed to connect to database ", err)
