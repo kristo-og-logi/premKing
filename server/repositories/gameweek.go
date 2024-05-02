@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"sort"
 	"time"
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
@@ -22,6 +23,11 @@ func GetAllGameWeeks() ([]models.Gameweek, error) {
 		}
 	}
 
+	// Ensure that gameweek slice is sorted
+	sort.Slice(gameweeks, func(i, j int) bool {
+		return gameweeks[i].Gameweek < gameweeks[j].Gameweek
+	})
+
 	return gameweeks, nil
 }
 
@@ -35,8 +41,9 @@ func GetCurrentGameWeek() (*models.Gameweek, error) {
 	now := time.Now()
 
 	for index, gw := range gameweeks {
-		if index == len(gameweeks) || gw.Opens.Before(now) && gameweeks[index+1].Opens.After(now) {
+		if index == len(gameweeks)-1 || gw.Opens.Before(now) && gameweeks[index+1].Opens.After(now) {
 			currentGameweek = gw
+			break
 		}
 	}
 
