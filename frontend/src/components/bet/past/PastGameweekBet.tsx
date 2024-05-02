@@ -10,7 +10,7 @@ const PastGameweekBet = () => {
   const bets: Bet[] = betSlice.bets;
 
   return (
-    <View style={styles.fixtureList}>
+    <View style={[styles.fixtureList]}>
       {fixtureSlice.fixtures.map((fixture) => (
         <PastMatchUp
           bet={bets.find((b) => b.fixtureId === fixture.id)}

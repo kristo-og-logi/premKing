@@ -6,6 +6,7 @@ export interface BetState {
   bets: Bet[];
   notFound: boolean;
   selectedGameweek: number;
+  score: number;
   isLoading: boolean;
   hasError: boolean;
   createBetIsLoading: boolean;
@@ -16,6 +17,7 @@ const initialState: BetState = {
   bets: [],
   notFound: false,
   selectedGameweek: 1,
+  score: -1,
   isLoading: false,
   hasError: false,
   createBetIsLoading: false,
@@ -34,6 +36,7 @@ export const betSlice = createSlice({
       .addCase(getBets.rejected, (state) => {
         state.isLoading = false;
         state.hasError = true;
+        state.score = -1;
       })
       .addCase(
         getBets.fulfilled,
@@ -45,7 +48,10 @@ export const betSlice = createSlice({
             state.notFound = false;
           }
           state.bets = action.payload.response.bets;
+          state.score = action.payload.response.score;
           state.selectedGameweek = action.payload.gameweek;
+
+          console.log(`score for GW${state.selectedGameweek}: ${state.score}`);
         }
       )
       // submitBet
