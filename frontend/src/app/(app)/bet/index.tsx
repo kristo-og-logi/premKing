@@ -40,7 +40,7 @@ const BetScreen = () => {
   return (
     <View style={globalStyles.container}>
       <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-      {betSlice.score && !betSlice.isLoading ? (
+      {betSlice.score && !betSlice.isLoading && betSlice.score != -1 ? (
         <View style={{ marginBottom: 8, marginTop: -8 }}>
           <PremText centered order={2}>{`score: x${betSlice.score.toFixed(2)}`}</PremText>
         </View>
