@@ -17,8 +17,8 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const selectedGWIsCurrent = selectedGW == gameweekSlice.gameweek;
-  const selectedGWIsInPast = selectedGW < gameweekSlice.gameweek;
+  const selectedGWIsCurrent = selectedGW == gameweekSlice.currentGameweek;
+  const selectedGWIsInPast = selectedGW < gameweekSlice.currentGameweek;
 
   return selectedGWIsInPast ? (
     <PremButton

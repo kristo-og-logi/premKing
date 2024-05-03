@@ -102,7 +102,6 @@ export const getBets = createAsyncThunk<
   }
 
   const response: GetBetsResponse = await resp.json();
-  console.log(`Found bets for GW${gameweek}`);
   return { response, gameweek };
 });
 

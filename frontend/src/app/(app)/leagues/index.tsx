@@ -25,7 +25,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const leagueSlice = useAppSelector((state) => state.leagues);
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
   const authSlice = useAppSelector((state) => state.auth);
 
   useEffect(() => {
@@ -33,8 +33,8 @@ export default function Page() {
   }, [authSlice.token]);
 
   useEffect(() => {
-    setSelectedGW(gameweekSlice.gameweek);
-  }, [gameweekSlice.gameweek]);
+    setSelectedGW(gameweekSlice.currentGameweek);
+  }, [gameweekSlice.currentGameweek]);
 
   return (
     <View style={[styles.leagueScreen, globalStyles.container]}>
@@ -47,18 +47,18 @@ export default function Page() {
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
         )}
         <View style={[styles.gwScores]}>
-          <View style={[styles.secondaryCard, globalStyles.shadow]}>
+          {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
             <PremText order={4}>Avg</PremText>
             <PremText>x5.12</PremText>
-          </View>
+          </View> */}
           <View style={[styles.mainCard, globalStyles.shadow]}>
             <PremText>My score</PremText>
             <PremText order={2}>x4.69</PremText>
           </View>
-          <View style={[styles.secondaryCard, globalStyles.shadow]}>
+          {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
             <PremText order={4}>Max</PremText>
             <PremText order={3}>x12.19</PremText>
-          </View>
+          </View> */}
         </View>
       </View>
       {leagueSlice.isLoading ? (

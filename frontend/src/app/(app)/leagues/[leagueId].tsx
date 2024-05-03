@@ -141,7 +141,7 @@ const LeagueView = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   // const [league, setLeague] = useState<SelectedLeague>();
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
   // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
 
   useEffect(() => {
