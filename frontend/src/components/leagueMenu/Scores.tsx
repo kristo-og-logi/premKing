@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import PremText from '../basic/PremText';
 import { colors, globalStyles } from '../../styles/styles';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { getScore } from '../../redux/reducers/scoreReducer';
 
 interface Props {
   selectedGW: number;
 }
 
 const Scores = ({ selectedGW }: Props) => {
-  const [score, setScore] = useState(0);
+  const token = useAppSelector((state) => state.auth).token;
+  const scoreSlice = useAppSelector((state) => state.scores);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
-    setScore(selectedGW / 13);
-    console.log(`fetching scores for GW${selectedGW}`);
+    dispatch(getScore({ gameweek: selectedGW, token }));
   }, [selectedGW]);
 
   return (
@@ -22,7 +27,13 @@ const Scores = ({ selectedGW }: Props) => {
     </View> */}
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
-        <PremText order={2}>{`x${score.toFixed(2)}`}</PremText>
+        <PremText order={2}>
+          {scoreSlice.isLoading
+            ? '...'
+            : scoreSlice.score === -1
+              ? '??'
+              : `x${scoreSlice.score.toFixed(2)}`}
+        </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
       <PremText order={4}>Max</PremText>
