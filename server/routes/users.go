@@ -7,22 +7,24 @@ import (
 )
 
 func SetupUserRoutes(router *gin.Engine, prefix string) {
-	var leagueGroup = router.Group(prefix + "/users")
+	var userGroup = router.Group(prefix + "/users")
 	{
-		leagueGroup.GET("", controllers.GetAllUsers)
-		leagueGroup.POST("", controllers.CreateUser)
+		userGroup.GET("", controllers.GetAllUsers)
+		userGroup.POST("", controllers.CreateUser)
 
-		leagueGroup.GET("/:id", controllers.GetUserById)
-		leagueGroup.DELETE("/:id", controllers.DeleteUserById)
+		userGroup.GET("/:id", controllers.GetUserById)
+		userGroup.DELETE("/:id", controllers.DeleteUserById)
 
-		leagueGroup.GET("/:id/leagues", controllers.GetUsersLeaguesByUserId)
-		leagueGroup.POST("/:id/leagues", controllers.JoinLeagueByUserId)
+		userGroup.GET("/:id/leagues", controllers.GetUsersLeaguesByUserId)
+		userGroup.POST("/:id/leagues", controllers.JoinLeagueByUserId)
 
 		// /me/... require token
-		leagueGroup.GET("/me/leagues", middleware.Authenticate, controllers.GetMyLeagues)
-		leagueGroup.POST("/me/leagues", middleware.Authenticate, controllers.CreateMyLeague)
+		userGroup.GET("/me/leagues", middleware.Authenticate, controllers.GetMyLeagues)
+		userGroup.POST("/me/leagues", middleware.Authenticate, controllers.CreateMyLeague)
 
-		leagueGroup.GET("/me/bets/:gameweek", middleware.Authenticate, controllers.GetMyBetByGameweek)
-		leagueGroup.POST("/me/bets/:gameweek", middleware.Authenticate, controllers.PlaceMyBetForGameweek)
+		userGroup.GET("/me/bets/:gameweek", middleware.Authenticate, controllers.GetMyBetByGameweek)
+		userGroup.POST("/me/bets/:gameweek", middleware.Authenticate, controllers.PlaceMyBetForGameweek)
+
+		userGroup.GET("/me/scores", middleware.Authenticate, controllers.GetMyScores)
 	}
 }
