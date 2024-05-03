@@ -30,9 +30,9 @@ const Scores = ({ selectedGW }: Props) => {
         <PremText order={2}>
           {scoreSlice.isLoading
             ? '...'
-            : scoreSlice.score === -1
+            : scoreSlice.scores[scoreSlice.selectedGameweek - 1] === -1
               ? '??'
-              : `x${scoreSlice.score.toFixed(2)}`}
+              : `x${scoreSlice.scores[scoreSlice.selectedGameweek - 1].toFixed(2)}`}
         </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
