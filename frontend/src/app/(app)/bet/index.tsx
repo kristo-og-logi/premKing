@@ -20,7 +20,7 @@ const BetScreen = () => {
   const authSlice = useAppSelector((state) => state.auth);
   const betSlice = useAppSelector((state) => state.bets);
 
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
@@ -28,19 +28,19 @@ const BetScreen = () => {
   }, [selectedGW]);
 
   useEffect(() => {
-    setSelectedGW(gameweekSlice.gameweek);
-  }, [gameweekSlice.gameweek]);
+    setSelectedGW(gameweekSlice.currentGameweek);
+  }, [gameweekSlice.currentGameweek]);
 
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    setBet(betSlice.bets);
+    setBet(betSlice.bets[betSlice.selectedGameweek - 1] || []);
   }, [betSlice.bets]);
 
   return (
     <View style={globalStyles.container}>
       <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-      {betSlice.score && !betSlice.isLoading ? (
+      {betSlice.score && !betSlice.isLoading && betSlice.score != -1 ? (
         <View style={{ marginBottom: 8, marginTop: -8 }}>
           <PremText centered order={2}>{`score: x${betSlice.score.toFixed(2)}`}</PremText>
         </View>
@@ -54,9 +54,9 @@ const BetScreen = () => {
           <PremText>Error</PremText>
         ) : fixtureSlice.fixtures.length == 0 ? (
           <PremText>no fixture for this gameweek</PremText>
-        ) : selectedGW === gameweekSlice.gameweek ? (
+        ) : selectedGW === gameweekSlice.currentGameweek ? (
           <CurrentGameweekBet bet={bet} setBet={setBet} />
-        ) : selectedGW >= gameweekSlice.gameweek ? (
+        ) : selectedGW >= gameweekSlice.currentGameweek ? (
           <FutureGameweekBet />
         ) : (
           <PastGameweekBet />

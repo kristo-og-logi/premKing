@@ -3,7 +3,7 @@ import { backend } from '../../utils/constants';
 import Gameweek from '../../types/Gameweek';
 
 export interface GameweekState {
-  gameweek: number;
+  currentGameweek: number;
   isLoading: boolean;
   hasError: boolean;
   opens: string;
@@ -15,7 +15,7 @@ export interface GameweekState {
 }
 
 const initialState: GameweekState = {
-  gameweek: 0,
+  currentGameweek: 0,
   isLoading: false,
   hasError: false,
   opens: new Date().setDate(1000000).toString(),
@@ -45,7 +45,7 @@ const gameweekSlice = createSlice({
         state.opens = action.payload.opens;
         state.closes = action.payload.closes;
         state.finishes = action.payload.finishes;
-        state.gameweek = action.payload.gameweek;
+        state.currentGameweek = action.payload.gameweek;
       })
       // getAllGameweeks
       .addCase(getAllGameweeks.pending, (state) => {

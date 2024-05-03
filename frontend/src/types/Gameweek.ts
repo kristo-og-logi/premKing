@@ -9,3 +9,10 @@ export default interface Gameweek {
   hasFixtures: boolean;
   fixtures: Fixture[];
 }
+
+export enum GameweekStatus {
+  BEFORE,
+  OPEN,
+  CLOSED,
+  FINISHED,
+}

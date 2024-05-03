@@ -1,9 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
 import { Bet } from '../../types/Bet';
+import { RootState } from '../store';
 
 export interface BetState {
-  bets: Bet[];
+  bets: Bet[][];
   notFound: boolean;
   selectedGameweek: number;
   score: number;
@@ -14,11 +15,11 @@ export interface BetState {
 }
 
 const initialState: BetState = {
-  bets: [],
+  bets: new Array(38),
   notFound: false,
   selectedGameweek: 1,
   score: -1,
-  isLoading: false,
+  isLoading: true,
   hasError: false,
   createBetIsLoading: false,
   createBetHasError: false,
@@ -47,7 +48,7 @@ export const betSlice = createSlice({
           } else {
             state.notFound = false;
           }
-          state.bets = action.payload.response.bets;
+          state.bets[action.payload.gameweek - 1] = action.payload.response.bets;
           state.score = action.payload.response.score;
           state.selectedGameweek = action.payload.gameweek;
 
@@ -67,7 +68,7 @@ export const betSlice = createSlice({
         (state, action: PayloadAction<{ createdBets: Bet[]; gameweek: number }>) => {
           state.createBetIsLoading = false;
           state.createBetHasError = false;
-          state.bets = action.payload.createdBets;
+          state.bets[action.payload.gameweek - 1] = action.payload.createdBets;
           state.notFound = false;
           state.selectedGameweek = action.payload.gameweek;
         }
@@ -102,7 +103,6 @@ export const getBets = createAsyncThunk<
   }
 
   const response: GetBetsResponse = await resp.json();
-  console.log(`Found bets for GW${gameweek}`);
   return { response, gameweek };
 });
 
@@ -114,8 +114,16 @@ interface SubmitBetRequest {
 
 export const submitBet = createAsyncThunk<
   { createdBets: Bet[]; gameweek: number },
-  SubmitBetRequest
->('fixtures/submitBet', async ({ bets, gameweek, token }) => {
+  SubmitBetRequest,
+  { state: RootState }
+>('fixtures/submitBet', async ({ bets, gameweek, token }, thunkAPI) => {
+  const orgBets = thunkAPI.getState().bets;
+
+  // If we already have fetched and stored the bets, just return them
+  if (Array.isArray(orgBets.bets[gameweek - 1])) {
+    return { createdBets: orgBets.bets[gameweek - 1], gameweek: gameweek };
+  }
+
   console.log(`{ "bets": ${JSON.stringify(bets)} }`);
   const response = await fetch(`${backend}/users/me/bets/${gameweek}`, {
     method: 'POST',

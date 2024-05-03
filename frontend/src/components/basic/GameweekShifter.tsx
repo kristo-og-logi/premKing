@@ -3,7 +3,6 @@ import React from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../../styles/styles';
 import PremText from './PremText';
-import { useAppSelector } from '../../redux/hooks';
 
 interface Props {
   selectedGW: number;
@@ -11,8 +10,6 @@ interface Props {
 }
 
 const GameweekShifter = ({ setSelectedGW, selectedGW }: Props) => {
-  const gameweekSlice = useAppSelector((state) => state.gameweek);
-
   return (
     <View style={styles.gameweekSection}>
       <AntDesign

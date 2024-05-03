@@ -4,12 +4,11 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import PremText from '../basic/PremText';
 import { colors, scoreboardWidths } from '../../styles/styles';
-// import { ScoreboardPlayer } from '../../types/Player';
 import User from '../../types/User';
 
 interface Props {
   player: User;
-  userId: string;
+  userId?: string;
   position: number;
   gw: number;
   leagueSize: number;

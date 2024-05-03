@@ -10,6 +10,7 @@ import { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
+import Scores from '../../../components/leagueMenu/Scores';
 
 const renderLeagues = (leagues: League[]) => {
   return leagues.map((league) => (
@@ -25,7 +26,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const leagueSlice = useAppSelector((state) => state.leagues);
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.gameweek);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
   const authSlice = useAppSelector((state) => state.auth);
 
   useEffect(() => {
@@ -33,8 +34,8 @@ export default function Page() {
   }, [authSlice.token]);
 
   useEffect(() => {
-    setSelectedGW(gameweekSlice.gameweek);
-  }, [gameweekSlice.gameweek]);
+    setSelectedGW(gameweekSlice.currentGameweek);
+  }, [gameweekSlice.currentGameweek]);
 
   return (
     <View style={[styles.leagueScreen, globalStyles.container]}>
@@ -44,22 +45,11 @@ export default function Page() {
         ) : gameweekSlice.hasError ? (
           <PremText>Error occurred</PremText>
         ) : (
-          <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+          <>
+            <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+            <Scores selectedGW={selectedGW} />
+          </>
         )}
-        <View style={[styles.gwScores]}>
-          <View style={[styles.secondaryCard, globalStyles.shadow]}>
-            <PremText order={4}>Avg</PremText>
-            <PremText>x5.12</PremText>
-          </View>
-          <View style={[styles.mainCard, globalStyles.shadow]}>
-            <PremText>My score</PremText>
-            <PremText order={2}>x4.69</PremText>
-          </View>
-          <View style={[styles.secondaryCard, globalStyles.shadow]}>
-            <PremText order={4}>Max</PremText>
-            <PremText order={3}>x12.19</PremText>
-          </View>
-        </View>
       </View>
       {leagueSlice.isLoading ? (
         <PremText>Loading leagues...</PremText>
@@ -104,13 +94,6 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
-  gwScores: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    marginVertical: 12,
-  },
   secondaryCard: {
     height: 60,
     width: 80,
@@ -118,16 +101,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.charcoal[2],
-    borderRadius: 4,
-  },
-
-  mainCard: {
-    height: 72,
-    width: 108,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.charcoal[3],
     borderRadius: 4,
   },
 
