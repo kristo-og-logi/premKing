@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
 import { Bet } from '../../../types/Bet';
-import MatchUpBet from './CurrentMatchUpBet';
+import CurrentMatchUpBet from './CurrentMatchUpBet';
 
 interface Props {
   bet: Bet[];
@@ -14,7 +14,7 @@ const CurrentGameweekBet = ({ bet, setBet }: Props) => {
   return (
     <View style={styles.fixtureList}>
       {fixtureSlice.fixtures.map((fixture) => (
-        <MatchUpBet bet={bet} setBet={setBet} key={fixture.id} fixture={fixture} />
+        <CurrentMatchUpBet bet={bet} setBet={setBet} key={fixture.id} fixture={fixture} />
       ))}
     </View>
   );

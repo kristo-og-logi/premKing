@@ -25,16 +25,19 @@ export const calculateTimeUntilGW = (gameweek: Gameweek) => {
   const finishes = new Date(gameweek.finishes);
 
   // "now" can be inbetween any of these 3 times, giving us four cases
-  // opens - closes - finishes
+  // (1) opens (2) closes (3) finishes (4)
   if (now < opens)
-    return `Opens on ${opens.toDateString()}, ${opens.getHours()}:${opens.getMinutes()}`;
+    return `Opens on ${opens.toDateString()}, ${opens.getHours()}:${opens.getMinutes().toString().padStart(2, '0')}`;
+
+  if (now < closes) return `Open`;
+
+  if (now < finishes)
+    return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes().toString().padStart(2, '0')}`;
 
   if (finishes < now)
-    return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes()}`;
+    return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes().toString().padStart(2, '0')}`;
 
-  if (now < closes) return `Closes at ${closes.toDateString()}`;
-
-  return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes()}`;
+  return `unknown`;
 };
 
 const calculatePoints = (points: PlayerPoints[], gw: number) => {

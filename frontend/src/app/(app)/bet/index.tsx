@@ -34,7 +34,7 @@ const BetScreen = () => {
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    setBet(betSlice.bets);
+    setBet(betSlice.bets[betSlice.selectedGameweek - 1] || []);
   }, [betSlice.bets]);
 
   return (

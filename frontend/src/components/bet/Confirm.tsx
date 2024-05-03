@@ -20,6 +20,13 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
   const selectedGWIsCurrent = selectedGW == gameweekSlice.currentGameweek;
   const selectedGWIsInPast = selectedGW < gameweekSlice.currentGameweek;
 
+  if (betSlice.isLoading)
+    return (
+      <PremButton fullWidth disabled onPress={() => {}}>
+        loading...
+      </PremButton>
+    );
+
   return selectedGWIsInPast ? (
     <PremButton
       extraStyles={{ backgroundColor: betSlice.notFound ? colors.red : colors.green }}
@@ -31,14 +38,21 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
     </PremButton>
   ) : selectedGWIsCurrent ? (
     <PremButton
-      extraStyles={betSlice.bets.length > 0 ? { backgroundColor: colors.green } : undefined}
+      extraStyles={
+        betSlice.bets[betSlice.selectedGameweek - 1].length > 0
+          ? { backgroundColor: colors.green }
+          : undefined
+      }
       fullWidth
-      disabled={betSlice.bets.length > 0 || fixtureSlice.fixtures.length > bet.length}
+      disabled={
+        betSlice.bets[betSlice.selectedGameweek - 1].length > 0 ||
+        fixtureSlice.fixtures.length > bet.length
+      }
       onPress={() =>
         dispatch(submitBet({ bets: bet, gameweek: selectedGW, token: authSlice.token }))
       }
     >
-      {betSlice.bets.length > 0
+      {betSlice.bets[betSlice.selectedGameweek - 1].length > 0
         ? 'Bet placed'
         : betSlice.createBetIsLoading
           ? 'Loading...'

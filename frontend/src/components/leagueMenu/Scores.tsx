@@ -28,7 +28,7 @@ const Scores = ({ selectedGW }: Props) => {
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
         <PremText order={2}>
-          {scoreSlice.isLoading
+          {scoreSlice.isLoading || scoreSlice.scores[scoreSlice.selectedGameweek - 1] === undefined
             ? '...'
             : scoreSlice.scores[scoreSlice.selectedGameweek - 1] === -1
               ? '??'
