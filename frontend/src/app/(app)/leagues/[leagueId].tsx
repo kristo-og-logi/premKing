@@ -18,6 +18,7 @@ const LeagueView = () => {
   const auth = useAppSelector((state) => state.auth);
   const leagueSlice = useAppSelector((state) => state.leagues);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
+  const betSlice = useAppSelector((state) => state.bets);
 
   // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
@@ -72,7 +73,7 @@ const LeagueView = () => {
       ) : (
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-          <BetInfo selectedGW={selectedGW} />
+          <BetInfo selectedGW={selectedGW} bets={betSlice.bets[selectedGW - 1] || []} />
           <Scoreboard
             players={leagueSlice.selectedLeague.users}
             gw={selectedGW}
