@@ -5,8 +5,15 @@ import { colors, scoreboardWidths } from '../../styles/styles';
 import User from '../../types/User';
 import PremText from '../basic/PremText';
 import PlayerScore from './PlayerScore';
+import ScoreboardFooter from './ScoreboardFooter';
 
-const Scoreboard = (players: User[], gw: number, myId: string) => {
+interface Props {
+  players: User[];
+  gw: number;
+  myId?: string;
+}
+
+const Scoreboard = ({ players, gw, myId }: Props) => {
   const playerItems = players.map((player, index) => (
     <PlayerScore
       position={index + 1}
@@ -19,35 +26,37 @@ const Scoreboard = (players: User[], gw: number, myId: string) => {
   ));
 
   return (
-    <View style={styles.scoreboard}>
-      <View style={styles.scoreboardHeader}>
-        <PremText centered>Scoreboard</PremText>
-      </View>
-      <View style={styles.header}>
-        <View style={[styles.textWrapper]}>
-          <View
-            style={[
-              styles.textWrapper,
-              // globalStyles.border,
-              players.length >= 10
-                ? scoreboardWidths.between10and100WrapperWidth
-                : scoreboardWidths.under10WrapperWidth,
-            ]}
-          >
-            <PremText order={4}>pos</PremText>
-            <PremText order={4}>+/-</PremText>
+    <>
+      <View style={styles.scoreboard}>
+        <View style={styles.scoreboardHeader}>
+          <PremText centered>Scoreboard</PremText>
+        </View>
+        <View style={styles.header}>
+          <View style={[styles.textWrapper]}>
+            <View
+              style={[
+                styles.textWrapper,
+                players.length >= 10
+                  ? scoreboardWidths.between10and100WrapperWidth
+                  : scoreboardWidths.under10WrapperWidth,
+              ]}
+            >
+              <PremText order={4}>pos</PremText>
+              <PremText order={4}>+/-</PremText>
+            </View>
+            <PremText order={4}>name</PremText>
           </View>
-          <PremText order={4}>name</PremText>
+          <View style={[styles.textWrapper, scoreboardWidths.pointsWidth]}>
+            <PremText order={4}>{`gw${gw}`}</PremText>
+            <PremText order={4}>points</PremText>
+          </View>
         </View>
-        <View style={[styles.textWrapper, scoreboardWidths.pointsWidth]}>
-          <PremText order={4}>{`gw${gw}`}</PremText>
-          <PremText order={4}>points</PremText>
-        </View>
+        <ScrollView style={{ maxHeight: 400 }}>
+          <View style={styles.scoreboardScrollWrapper}>{playerItems}</View>
+        </ScrollView>
       </View>
-      <ScrollView style={{ maxHeight: 400 }}>
-        <View style={styles.scoreboardScrollWrapper}>{playerItems}</View>
-      </ScrollView>
-    </View>
+      <ScoreboardFooter players={players} myId={myId} />
+    </>
   );
 };
 

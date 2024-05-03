@@ -2,10 +2,7 @@ import Gameweek from '../types/Gameweek';
 import { PlayerPoints, Player, ScoreboardPlayer } from '../types/Player';
 import User from '../types/User';
 
-// const calculateYourPlace = (players: ScoreboardPlayer[], userId: string) => {
-//   return players.findIndex((player) => player.id === userId) + 1;
-// };
-export const calculateYourPlace = (players: User[], userId: string) => {
+export const calculateYourPlace = (players: User[], userId?: string) => {
   return players.findIndex((player) => player.id === userId) + 1;
 };
 

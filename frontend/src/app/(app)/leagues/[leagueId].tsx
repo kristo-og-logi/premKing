@@ -1,23 +1,16 @@
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { BackHandler, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 
 import { globalStyles } from '../../../styles/styles';
 import PremText from '../../../components/basic/PremText';
-import PremButton from '../../../components/basic/PremButton';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
 import Scoreboard from '../../../components/leagueId/Scoreboard';
-import {
-  calculateGwAction,
-  calculateTimeUntilGW,
-  calculateYourPlace,
-  isOpen,
-} from '../../../utils/leagueUtils';
+import BetInfo from '../../../components/leagueId/BetInfo';
 
 const LeagueView = () => {
-  const router = useRouter();
   const navigation = useNavigation();
   const { leagueId } = useLocalSearchParams();
 
@@ -79,56 +72,16 @@ const LeagueView = () => {
       ) : (
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-          <View style={styles.betWrapper}>
-            <PremText centered>
-              {calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}
-            </PremText>
-            <PremButton
-              disabled={!isOpen(gameweekSlice.allGameweeks[selectedGW - 1])}
-              onPress={() => {
-                router.replace('bet');
-              }}
-            >
-              {calculateGwAction(gameweekSlice.allGameweeks[selectedGW - 1])}
-            </PremButton>
-          </View>
-          {Scoreboard(leagueSlice.selectedLeague.users, selectedGW, auth.user.id)}
-          <View style={styles.statsWrapper}>
-            <PremText order={4}>{`your position: ${calculateYourPlace(
-              leagueSlice.selectedLeague.users,
-              auth.user?.id
-            )}`}</PremText>
-            <PremText
-              order={4}
-            >{`total players: ${leagueSlice.selectedLeague.users.length}`}</PremText>
-          </View>
+          <BetInfo selectedGW={selectedGW} />
+          <Scoreboard
+            players={leagueSlice.selectedLeague.users}
+            gw={selectedGW}
+            myId={auth.user?.id}
+          />
         </>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  betWrapper: {
-    padding: 12,
-    display: 'flex',
-    gap: 4,
-    alignItems: 'center',
-  },
-
-  statsWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 4,
-  },
-
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 8,
-  },
-});
 
 export default LeagueView;
