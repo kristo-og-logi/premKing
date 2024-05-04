@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -96,6 +97,35 @@ func GetLeagueById(c *gin.Context) {
 			Email:  user.Email,
 			Scores: scores,
 		})
+	}
+
+	type Pos struct {
+		Id    string
+		Total float64
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		positions := []Pos{}
+
+		for _, user := range resp.Users {
+			positions = append(positions, Pos{Id: user.Id,
+				Total: user.Scores[gw-1].Total})
+		}
+
+		// sort the users by their points
+		sort.Slice(positions, func(i, j int) bool {
+			return positions[i].Total > positions[j].Total
+		})
+
+		for idx, user := range resp.Users {
+			place := 0
+			for pIdx, pos := range positions {
+				if pos.Id == user.Id {
+					place = pIdx + 1
+				}
+			}
+			resp.Users[idx].Scores[gw-1].Place = place
+		}
 	}
 
 	c.IndentedJSON(http.StatusOK, resp)

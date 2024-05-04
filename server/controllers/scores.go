@@ -14,6 +14,7 @@ type Score struct {
 	Gameweek int     `json:"gameweek"`
 	Score    float64 `json:"score"`
 	Total    float64 `json:"total"`
+	Place    int     `json:"place"`
 }
 
 func GetMyScores(c *gin.Context) {
