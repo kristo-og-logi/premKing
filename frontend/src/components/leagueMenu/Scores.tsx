@@ -4,7 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import PremText from '../basic/PremText';
 import { colors, globalStyles } from '../../styles/styles';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { getScore } from '../../redux/reducers/scoreReducer';
+import { fetchScores } from '../../redux/reducers/scoreReducer';
 
 interface Props {
   selectedGW: number;
@@ -16,23 +16,23 @@ const Scores = ({ selectedGW }: Props) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getScore({ gameweek: selectedGW, token }));
-  }, [selectedGW]);
+    dispatch(fetchScores(token));
+  }, []);
 
   return (
     <View style={[styles.gwScores]}>
-      {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
-      <PremText order={4}>Avg</PremText>
-      <PremText>x5.12</PremText>
-    </View> */}
+      <View style={[styles.secondaryCard, globalStyles.shadow]}>
+        <PremText order={4}>Total</PremText>
+        <PremText>
+          {scoreSlice.isLoading ? '...' : `x${scoreSlice.scores[selectedGW - 1].total.toFixed(2)}`}
+        </PremText>
+      </View>
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
         <PremText order={2}>
-          {scoreSlice.isLoading || scoreSlice.scores[scoreSlice.selectedGameweek - 1] === undefined
+          {scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined
             ? '...'
-            : scoreSlice.scores[scoreSlice.selectedGameweek - 1] === -1
-              ? '??'
-              : `x${scoreSlice.scores[scoreSlice.selectedGameweek - 1].toFixed(2)}`}
+            : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
         </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
@@ -58,6 +58,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.charcoal[3],
+    borderRadius: 4,
+  },
+  secondaryCard: {
+    height: 60,
+    width: 80,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.charcoal[2],
     borderRadius: 4,
   },
 });
