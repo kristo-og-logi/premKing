@@ -1,12 +1,9 @@
+import Score from './Scores';
+
 export type Player = {
   id: string;
   name: string;
-  points: PlayerPoints[];
-};
-
-export type PlayerPoints = {
-  gw: number;
-  points: number;
+  scores: Score[];
 };
 
 export type ScoreboardPlayer = {

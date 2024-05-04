@@ -37,19 +37,15 @@ export const calculateGwAction = (gameweek: Gameweek, bets: Bet[]): BetStatus =>
   switch (gwStatus) {
     case GameweekStatus.BEFORE:
       message = BetStatus.LOCKED;
-      console.log('before');
       break;
     case GameweekStatus.OPEN:
-      console.log('open');
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.OPEN);
       break;
     case GameweekStatus.CLOSED:
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.LOCKED);
-      console.log('closed');
       break;
     case GameweekStatus.FINISHED:
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.LOCKED);
-      console.log('finished');
       break;
   }
 
