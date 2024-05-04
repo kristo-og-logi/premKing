@@ -24,6 +24,7 @@ type Fixture struct {
 	Name         string    `json:"name"`
 	LongName     string    `json:"longName"`
 	SportmonksID uint32    `gorm:"unique" json:"sportmonksId"`
+	IsNormal     bool      `json:"isNormal"`
 }
 
 type FixturesResponse struct {
