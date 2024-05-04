@@ -123,7 +123,6 @@ export const getSelectedLeague = createAsyncThunk<SelectedLeague, GetSelectedLea
       }
 
       const data: SelectedLeague = await response.json();
-      console.log(`fetched league: ${JSON.stringify(data)}`);
       return data;
     } catch (error) {
       console.log('ERROR: ', error);

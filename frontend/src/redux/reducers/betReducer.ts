@@ -1,7 +1,6 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
 import { Bet } from '../../types/Bet';
-import { RootState } from '../store';
 
 export interface BetState {
   bets: Bet[][];
@@ -114,17 +113,8 @@ interface SubmitBetRequest {
 
 export const submitBet = createAsyncThunk<
   { createdBets: Bet[]; gameweek: number },
-  SubmitBetRequest,
-  { state: RootState }
->('fixtures/submitBet', async ({ bets, gameweek, token }, thunkAPI) => {
-  const orgBets = thunkAPI.getState().bets;
-
-  // If we already have fetched and stored the bets, just return them
-  if (Array.isArray(orgBets.bets[gameweek - 1])) {
-    return { createdBets: orgBets.bets[gameweek - 1], gameweek: gameweek };
-  }
-
-  console.log(`{ "bets": ${JSON.stringify(bets)} }`);
+  SubmitBetRequest
+>('fixtures/submitBet', async ({ bets, gameweek, token }) => {
   const response = await fetch(`${backend}/users/me/bets/${gameweek}`, {
     method: 'POST',
     headers: {
