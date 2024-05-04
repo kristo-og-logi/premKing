@@ -10,7 +10,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
-type GetMyScoresResponse struct {
+type Score struct {
 	Gameweek int     `json:"gameweek"`
 	Score    float64 `json:"score"`
 	Total    float64 `json:"total"`
@@ -23,18 +23,27 @@ func GetMyScores(c *gin.Context) {
 		return
 	}
 
-	bets, err := repositories.GetAllBetsById(user.ID)
+	scores, err := GetScoreById(user.ID)
 	if err != nil {
-		fmt.Printf("Error fetching bets from user with ID %v: %s", user.ID, err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
+	}
+
+	c.IndentedJSON(http.StatusOK, scores)
+}
+
+func GetScoreById(userId string) ([]Score, error) {
+	bets, err := repositories.GetAllBetsById(userId)
+	if err != nil {
+		fmt.Printf("Error fetching bets from user with ID %v: %s", userId, err.Error())
+		return nil, err
 	}
 
 	sort.Slice(bets, func(i, j int) bool {
 		return bets[i].GameWeek <= bets[j].GameWeek
 	})
 
-	resp := []GetMyScoresResponse{}
+	resp := []Score{}
 
 	totalScore := 0.0
 	for gw := 1; gw <= 38; gw++ {
@@ -48,14 +57,13 @@ func GetMyScores(c *gin.Context) {
 			}
 		}
 
-		resp = append(resp, GetMyScoresResponse{
+		resp = append(resp, Score{
 			Gameweek: gw,
 			Score:    gwScore,
 			Total:    totalScore + gwScore,
 		})
 		totalScore += gwScore
-
 	}
 
-	c.IndentedJSON(http.StatusOK, resp)
+	return resp, nil
 }

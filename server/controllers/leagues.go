@@ -48,6 +48,20 @@ func CreateLeague(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newLeague)
 }
 
+type GetLeagueByIdResponse struct {
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	OwnerId string    `json:"ownerId"`
+	Users   []UserDTO `json:"users"`
+}
+
+type UserDTO struct {
+	Id     string  `json:"id"`
+	Name   string  `json:"name"`
+	Email  string  `json:"email"`
+	Scores []Score `json:"scores"`
+}
+
 func GetLeagueById(c *gin.Context) {
 	user := utils.GetUserFromContext(c)
 	if user == nil {
@@ -68,7 +82,23 @@ func GetLeagueById(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, league)
+	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
+
+	for _, user := range league.Users {
+		scores, err := GetScoreById(user.ID)
+		if err != nil {
+			scores = []Score{}
+		}
+
+		resp.Users = append(resp.Users, UserDTO{
+			Id:     user.ID,
+			Name:   user.Name,
+			Email:  user.Email,
+			Scores: scores,
+		})
+	}
+
+	c.IndentedJSON(http.StatusOK, resp)
 }
 
 func JoinLeague(c *gin.Context) {
