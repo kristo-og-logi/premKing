@@ -1,61 +1,41 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 
-import { colors, scoreboardWidths } from '../../styles/styles';
-import User from '../../types/User';
-import PremText from '../basic/PremText';
+import { colors } from '../../styles/styles';
 import PlayerScore from './PlayerScore';
 import ScoreboardFooter from './ScoreboardFooter';
+import { Player } from '../../types/Player';
+import ScoreboardHeader from './ScoreboardHeader';
 
 interface Props {
-  players: User[];
+  players: Player[];
   gw: number;
   myId?: string;
 }
 
 const Scoreboard = ({ players, gw, myId }: Props) => {
-  const playerItems = players.map((player, index) => (
-    <PlayerScore
-      position={index + 1}
-      player={player}
-      userId={myId}
-      key={player.id}
-      gw={gw}
-      leagueSize={players.length}
-    />
-  ));
+  const playerItems = [...players]
+    .sort((a, b) => (a.scores[gw - 1].place > b.scores[gw - 1].place ? 1 : -1))
+    .map((player, index) => (
+      <PlayerScore
+        position={index + 1}
+        player={player}
+        userId={myId}
+        key={player.id}
+        gw={gw}
+        leagueSize={players.length}
+      />
+    ));
 
   return (
     <>
       <View style={styles.scoreboard}>
-        <View style={styles.scoreboardHeader}>
-          <PremText centered>Scoreboard</PremText>
-        </View>
-        <View style={styles.header}>
-          <View style={[styles.textWrapper]}>
-            <View
-              style={[
-                styles.textWrapper,
-                players.length >= 10
-                  ? scoreboardWidths.between10and100WrapperWidth
-                  : scoreboardWidths.under10WrapperWidth,
-              ]}
-            >
-              <PremText order={4}>pos</PremText>
-              <PremText order={4}>+/-</PremText>
-            </View>
-            <PremText order={4}>name</PremText>
-          </View>
-          <View style={[styles.textWrapper, scoreboardWidths.pointsWidth]}>
-            <PremText order={4}>{`gw${gw}`}</PremText>
-            <PremText order={4}>points</PremText>
-          </View>
-        </View>
+        <ScoreboardHeader gw={gw} players={players} />
         <ScrollView style={{ maxHeight: 400 }}>
           <View style={styles.scoreboardScrollWrapper}>{playerItems}</View>
         </ScrollView>
       </View>
-      <ScoreboardFooter players={players} myId={myId} />
+      <ScoreboardFooter gw={gw} players={players} myId={myId} />
     </>
   );
 };
@@ -69,14 +49,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     gap: 8,
   },
-  scoreboardHeader: {
-    padding: 4,
-  },
-  textWrapper: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+
   header: {
     display: 'flex',
     flexDirection: 'row',

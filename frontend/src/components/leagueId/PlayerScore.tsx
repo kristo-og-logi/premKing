@@ -4,29 +4,36 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import PremText from '../basic/PremText';
 import { colors, scoreboardWidths } from '../../styles/styles';
-import User from '../../types/User';
+import { Player } from '../../types/Player';
 
 interface Props {
-  player: User;
+  player: Player;
   userId?: string;
   position: number;
   gw: number;
   leagueSize: number;
 }
 
-const renderPointChange = (points: number, prevPoints: number) => {
-  return <PremText order={4}>{points === prevPoints ? '' : `+${points - prevPoints}`}</PremText>;
+const renderPointChange = (gw: number, player: Player) => {
+  const increase = player.scores[gw - 1].score;
+
+  return <PremText order={4}>{increase === 0 ? '' : `+ x${increase.toFixed(2)}`}</PremText>;
 };
 
-const renderPositionChange = (posChange: number, gw: number) => {
+const renderPositionChange = (player: Player, gw: number) => {
+  const posChange = (player: Player, gw: number) => {
+    return player.scores[gw - 2].place - player.scores[gw - 1].place;
+  };
   return (
     <View style={styles.positionChangeWrapper}>
-      {gw === 1 || posChange === 0 ? (
+      {gw === 1 || posChange(player, gw) === 0 ? (
         <></>
       ) : (
         <>
-          {Math.abs(posChange) !== 1 && <PremText order={4}>{Math.abs(posChange)}</PremText>}
-          {posChange > 0 ? (
+          {Math.abs(posChange(player, gw)) !== 1 && (
+            <PremText order={4}>{Math.abs(posChange(player, gw))}</PremText>
+          )}
+          {posChange(player, gw) > 0 ? (
             <FontAwesome name="circle" size={8} color={colors.green} />
           ) : (
             <FontAwesome name="circle" size={8} color={colors.red} />
@@ -38,9 +45,6 @@ const renderPositionChange = (posChange: number, gw: number) => {
 };
 
 const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
-  // console.log(
-  //   `player ${player.name}, position ${position}, posChange ${player.posChange}, prevPos: ${player.prevPosition}`
-  // );
   return (
     <View style={[styles.container, player.id === userId && styles.myScore]}>
       <View style={[styles.scoreWrapper, styles.shrinker]}>
@@ -63,8 +67,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
           >
             <PremText>{position}</PremText>
           </View>
-          {/* {renderPositionChange(player.posChange, gw)} */}
-          {renderPositionChange(0, gw)}
+          {renderPositionChange(player, gw)}
         </View>
 
         <View style={[styles.shrinker]}>
@@ -73,10 +76,8 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
       </View>
 
       <View style={[styles.scoreWrapper, styles.rightSide, scoreboardWidths.pointsWidth]}>
-        {/* {renderPointChange(player.points, player.prevPoints)} */}
-        {renderPointChange(1, 0)}
-        {/* <PremText>{player.points}</PremText> */}
-        <PremText>{0}</PremText>
+        {renderPointChange(gw, player)}
+        <PremText>{`x${player.scores[gw - 1].total < 10 ? player.scores[gw - 1].total.toFixed(2) : player.scores[gw - 1].total.toFixed(1)}`}</PremText>
       </View>
     </View>
   );
