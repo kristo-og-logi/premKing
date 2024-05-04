@@ -1,10 +1,10 @@
 import { Bet } from '../types/Bet';
 import Gameweek, { GameweekStatus } from '../types/Gameweek';
-import { PlayerPoints, Player, ScoreboardPlayer } from '../types/Player';
-import User from '../types/User';
+import { Player, ScoreboardPlayer } from '../types/Player';
 
-export const calculateYourPlace = (players: User[], userId?: string) => {
-  return players.findIndex((player) => player.id === userId) + 1;
+export const calculateYourPlace = (players: Player[], gw: number, userId?: string): string => {
+  const me = players.find((p) => p.id === userId);
+  return me ? me.scores[gw - 1].place.toString() : '?';
 };
 
 export const getGameweekStatus = (gameweek: Gameweek): GameweekStatus => {
@@ -37,19 +37,15 @@ export const calculateGwAction = (gameweek: Gameweek, bets: Bet[]): BetStatus =>
   switch (gwStatus) {
     case GameweekStatus.BEFORE:
       message = BetStatus.LOCKED;
-      console.log('before');
       break;
     case GameweekStatus.OPEN:
-      console.log('open');
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.OPEN);
       break;
     case GameweekStatus.CLOSED:
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.LOCKED);
-      console.log('closed');
       break;
     case GameweekStatus.FINISHED:
       bets.length > 0 ? (message = BetStatus.PLACED) : (message = BetStatus.LOCKED);
-      console.log('finished');
       break;
   }
 

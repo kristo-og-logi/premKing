@@ -79,7 +79,7 @@ export const globalStyles = StyleSheet.create({
 
 export const scoreboardWidths = StyleSheet.create({
   pointsWidth: {
-    width: 70,
+    width: 100,
   },
   positionWidth: {
     width: 65,

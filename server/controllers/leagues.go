@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -48,6 +49,20 @@ func CreateLeague(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newLeague)
 }
 
+type GetLeagueByIdResponse struct {
+	Id      string    `json:"id"`
+	Name    string    `json:"name"`
+	OwnerId string    `json:"ownerId"`
+	Users   []UserDTO `json:"users"`
+}
+
+type UserDTO struct {
+	Id     string  `json:"id"`
+	Name   string  `json:"name"`
+	Email  string  `json:"email"`
+	Scores []Score `json:"scores"`
+}
+
 func GetLeagueById(c *gin.Context) {
 	user := utils.GetUserFromContext(c)
 	if user == nil {
@@ -64,11 +79,56 @@ func GetLeagueById(c *gin.Context) {
 	league := models.League{}
 	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", id)})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, league)
+	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
+
+	for _, user := range league.Users {
+		scores, err := GetScoreById(user.ID)
+		if err != nil {
+			scores = []Score{}
+		}
+
+		resp.Users = append(resp.Users, UserDTO{
+			Id:     user.ID,
+			Name:   user.Name,
+			Email:  user.Email,
+			Scores: scores,
+		})
+	}
+
+	type Pos struct {
+		Id    string
+		Total float64
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		positions := []Pos{}
+
+		for _, user := range resp.Users {
+			positions = append(positions, Pos{Id: user.Id,
+				Total: user.Scores[gw-1].Total})
+		}
+
+		// sort the users by their points
+		sort.Slice(positions, func(i, j int) bool {
+			return positions[i].Total > positions[j].Total
+		})
+
+		for idx, user := range resp.Users {
+			place := 0
+			for pIdx, pos := range positions {
+				if pos.Id == user.Id {
+					place = pIdx + 1
+				}
+			}
+			resp.Users[idx].Scores[gw-1].Place = place
+		}
+	}
+
+	c.IndentedJSON(http.StatusOK, resp)
 }
 
 func JoinLeague(c *gin.Context) {

@@ -17,8 +17,8 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	AddOddsAndWonToBets()
-	// CreateBets()
+	// AddOddsAndWonToBets()
+	CreateBets()
 }
 
 func CreateBets() {
@@ -147,8 +147,27 @@ func getUser(email string) *models.User {
 func createBets(user *models.User, fixtures []models.Fixture, result string) []models.Bet {
 	bets := []models.Bet{}
 
-	for _, fixture := range fixtures {
-		bet := models.Bet{ID: uuid.NewString(), UserId: user.ID, FixtureId: fixture.ID, Result: result, GameWeek: fixture.GameWeek}
+	for _, fix := range fixtures {
+		var odd float32
+		var won bool = false
+		switch result {
+		case "1":
+			if fix.Result == "1" {
+				won = true
+			}
+			odd = fix.HomeOdds
+		case "X":
+			if fix.Result == "X" {
+				won = true
+			}
+			odd = fix.DrawOdds
+		case "2":
+			if fix.Result == "2" {
+				won = true
+			}
+			odd = fix.AwayOdds
+		}
+		bet := models.Bet{ID: uuid.NewString(), UserId: user.ID, FixtureId: fix.ID, Result: result, GameWeek: fix.GameWeek, Won: won, Odd: odd}
 		bets = append(bets, bet)
 	}
 

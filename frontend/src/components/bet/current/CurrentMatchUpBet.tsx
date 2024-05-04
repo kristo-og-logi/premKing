@@ -33,10 +33,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
   };
 
   const isSelected = (result: FixtureResult) => {
-    return (
-      (fixture.finished && fixture.result == result) ||
-      bet.some((b) => b.fixtureId == fixture.id && b.result == result)
-    );
+    return bet.some((b) => b.fixtureId == fixture.id && b.result == result);
   };
 
   const handlePress = (result: FixtureResult) => {

@@ -47,7 +47,7 @@ func GetAuth(c *gin.Context) {
 	}
 	utils.PrettyPrint("Token info: %s\n", tokenInfo)
 
-	userInfo, authError := googleAuthenticate(c, authReq.GoogleToken)
+	userInfo, authError := googleAuthenticate(authReq.GoogleToken)
 
 	if authError != nil {
 		c.IndentedJSON(authError.StatusCode, gin.H{"error": authError.Err.Error()})
@@ -100,7 +100,7 @@ type AuthError struct {
 	Err        error
 }
 
-func googleAuthenticate(c *gin.Context, token string) (*GoogleUserInfo, *AuthError) {
+func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	userInfoURL := "https://www.googleapis.com/oauth2/v3/userinfo"
 
 	// Create a new HTTP request with the token included in the Authorization header

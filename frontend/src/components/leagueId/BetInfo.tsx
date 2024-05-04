@@ -2,11 +2,16 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { calculateTimeUntilGW, calculateGwAction } from '../../utils/leagueUtils';
+import {
+  calculateTimeUntilGW,
+  calculateGwAction,
+  getGameweekStatus,
+} from '../../utils/leagueUtils';
 import PremButton from '../basic/PremButton';
 import PremText from '../basic/PremText';
 import { useAppSelector } from '../../redux/hooks';
 import { Bet } from '../../types/Bet';
+import { GameweekStatus } from '../../types/Gameweek';
 
 interface Props {
   selectedGW: number;
@@ -24,12 +29,12 @@ const BetInfo = ({ selectedGW, bets }: Props) => {
         {calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}
       </PremText>
       <PremButton
-        // disabled={
-        //   !(
-        //     getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]) === GameweekStatus.OPEN &&
-        //     bets.length === 0
-        //   )
-        // }
+        disabled={
+          !(
+            getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]) === GameweekStatus.OPEN &&
+            bets.length === 0
+          )
+        }
         onPress={() => {
           router.replace('bet');
         }}
