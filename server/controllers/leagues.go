@@ -64,7 +64,7 @@ func GetLeagueById(c *gin.Context) {
 	league := models.League{}
 	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("user with id %s not found", id)})
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", id)})
 		return
 	}
 
