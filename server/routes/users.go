@@ -9,14 +9,12 @@ import (
 func SetupUserRoutes(router *gin.Engine, prefix string) {
 	var userGroup = router.Group(prefix + "/users")
 	{
-		userGroup.GET("", controllers.GetAllUsers)
-		userGroup.POST("", controllers.CreateUser)
+		userGroup.GET("", middleware.Admin, controllers.GetAllUsers)
 
 		userGroup.GET("/:id", controllers.GetUserById)
-		userGroup.DELETE("/:id", controllers.DeleteUserById)
+		// userGroup.DELETE("/:id", middleware.Admin, controllers.DeleteUserById)
 
-		userGroup.GET("/:id/leagues", controllers.GetUsersLeaguesByUserId)
-		userGroup.POST("/:id/leagues", controllers.JoinLeagueByUserId)
+		userGroup.GET("/:id/leagues", middleware.Admin, controllers.GetUsersLeaguesByUserId)
 
 		// /me/... require token
 		userGroup.GET("/me/leagues", middleware.Authenticate, controllers.GetMyLeagues)

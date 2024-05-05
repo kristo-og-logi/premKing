@@ -51,32 +51,6 @@ type CreateUserRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-func CreateUser(c *gin.Context) {
-	var createUserRequest CreateUserRequest
-
-	if err := c.ShouldBindJSON(&createUserRequest); err != nil {
-		if err == io.EOF {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body empty"})
-			return
-		}
-		if createUserRequest.Name == "" {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "attribute `name` missing in body"})
-			return
-		}
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
-
-	newUser, err := repositories.CreateUser(createUserRequest.Name, "unknown@email.com")
-	if err != nil {
-		fmt.Printf("failed to create user:" + err.Error())
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-		return
-	}
-
-	c.IndentedJSON(http.StatusCreated, newUser)
-}
-
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
@@ -150,52 +124,6 @@ func GetUsersLeaguesByUserId(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user.Leagues)
 }
 
-func JoinLeagueByUserId(c *gin.Context) {
-	// get the user id from params
-	id := c.Param("id")
-
-	if !utils.IsValidUuid(id) {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("user id in params: %s, is invalid uuid", id)})
-		return
-	}
-
-	// get the valid league id from req body
-	var body struct {
-		LeagueId string `json:"leagueId" binding:"required"`
-	}
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body must include leagueId (string)"})
-		return
-	}
-
-	if !utils.IsValidUuid(body.LeagueId) {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("leagueId: %s is invalid uuid", body.LeagueId)})
-		return
-	}
-
-	//get the league
-	var league models.League
-	if err := initializers.DB.Where("id = ?", body.LeagueId).First(&league).Error; err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("League with id %s not found", body.LeagueId)})
-		return
-	}
-
-	// get the user
-	var user models.User
-	if err := initializers.DB.Where("id = ?", id).Preload("Leagues").First(&user).Error; err != nil {
-		c.IndentedJSON(404, gin.H{"error": fmt.Sprintf("User with id %s not found", id)})
-		return
-	}
-
-	//TODO test if user already has joined this league
-
-	// add the league to the user
-	initializers.DB.Model(&user).Association("Leagues").Append(&league)
-
-	c.IndentedJSON(201, "user successfully joined league")
-}
-
 func UserExistsByEmail(email string) (bool, error) {
 	var user models.User
 	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
@@ -231,6 +159,18 @@ func UserExistsById(id string) (bool, error) {
 	return true, nil
 }
 
+type MyLeaguesResponse struct {
+	Id       string        `json:"id"`
+	Name     string        `json:"name"`
+	OwnerId  string        `json:"ownerId"`
+	Position []PositionDTO `json:"position"`
+	Members  int           `json:"members"`
+}
+type PositionDTO struct {
+	Gameweek int `json:"gameweek"`
+	Position int `json:"position"`
+}
+
 func GetMyLeagues(c *gin.Context) {
 	currentUser := utils.GetUserFromContext(c)
 	if currentUser == nil {
@@ -239,13 +179,44 @@ func GetMyLeagues(c *gin.Context) {
 	}
 
 	leagues, err := repositories.GetAllUserLeaguesById(currentUser.ID)
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, leagues)
+	resp := []MyLeaguesResponse{}
+	for _, l := range leagues {
+		users := CalculateUsersWithScoresAndPosition(l)
+		leagueResp := MyLeaguesResponse{
+			Id:       l.ID,
+			Name:     l.Name,
+			OwnerId:  l.OwnerID,
+			Members:  len(l.Users),
+			Position: calculatePositions(users, currentUser.ID),
+		}
+		resp = append(resp, leagueResp)
+	}
+
+	c.IndentedJSON(http.StatusOK, resp)
+}
+
+func calculatePositions(users []UserDTO, myId string) []PositionDTO {
+	positions := []PositionDTO{}
+
+	for _, u := range users {
+		if u.Id == myId {
+
+			for _, score := range u.Scores {
+				pos := PositionDTO{
+					Gameweek: score.Gameweek,
+					Position: score.Place,
+				}
+				positions = append(positions, pos)
+			}
+		}
+	}
+
+	return positions
 }
 
 type CreateMyLeagueRequestBody struct {

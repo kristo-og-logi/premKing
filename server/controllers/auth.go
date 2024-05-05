@@ -48,16 +48,12 @@ func GetAuth(c *gin.Context) {
 	utils.PrettyPrint("Token info: %s\n", tokenInfo)
 
 	userInfo, authError := googleAuthenticate(authReq.GoogleToken)
-
 	if authError != nil {
 		c.IndentedJSON(authError.StatusCode, gin.H{"error": authError.Err.Error()})
 		return
 	}
 
-	// utils.PrettyPrint("User info: %s", userInfo)
-
 	userExists, err := UserExistsByEmail(userInfo.Email)
-
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error while checking whether user email exists in db"})
 		return
@@ -72,7 +68,6 @@ func GetAuth(c *gin.Context) {
 		}
 
 		tokenString, err := utils.CreateToken(*createdUser)
-
 		if err != nil {
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
 			return

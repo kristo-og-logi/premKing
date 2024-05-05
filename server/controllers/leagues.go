@@ -6,48 +6,11 @@ import (
 	"sort"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
-
-func GetAllLeagues(c *gin.Context) {
-	var leagues []models.League
-	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
-
-	if result.Error != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, leagues)
-}
-
-func CreateLeague(c *gin.Context) {
-
-	type CreateLeagueBody struct {
-		Name string `json:"name" binding:"required"`
-	}
-
-	var body CreateLeagueBody
-
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body must include name (string)"})
-		return
-	}
-
-	newLeague := models.League{ID: uuid.New().String(), Name: body.Name}
-	result := initializers.DB.Create(&newLeague)
-	if result.Error != nil {
-		fmt.Print("Failed to create league: " + result.Error.Error())
-		c.IndentedJSON(http.StatusBadRequest, "Failed to create league")
-		return
-	}
-
-	c.IndentedJSON(http.StatusCreated, newLeague)
-}
 
 type GetLeagueByIdResponse struct {
 	Id      string    `json:"id"`
@@ -61,6 +24,18 @@ type UserDTO struct {
 	Name   string  `json:"name"`
 	Email  string  `json:"email"`
 	Scores []Score `json:"scores"`
+}
+
+func GetAllLeagues(c *gin.Context) {
+	var leagues []models.League
+	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, leagues)
 }
 
 func GetLeagueById(c *gin.Context) {
@@ -84,6 +59,13 @@ func GetLeagueById(c *gin.Context) {
 	}
 
 	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
+	resp.Users = CalculateUsersWithScoresAndPosition(league)
+
+	c.IndentedJSON(http.StatusOK, resp)
+}
+
+func CalculateUsersWithScoresAndPosition(league models.League) []UserDTO {
+	users := []UserDTO{}
 
 	for _, user := range league.Users {
 		scores, err := GetScoreById(user.ID)
@@ -91,7 +73,7 @@ func GetLeagueById(c *gin.Context) {
 			scores = []Score{}
 		}
 
-		resp.Users = append(resp.Users, UserDTO{
+		users = append(users, UserDTO{
 			Id:     user.ID,
 			Name:   user.Name,
 			Email:  user.Email,
@@ -107,7 +89,7 @@ func GetLeagueById(c *gin.Context) {
 	for gw := 1; gw <= 38; gw++ {
 		positions := []Pos{}
 
-		for _, user := range resp.Users {
+		for _, user := range users {
 			positions = append(positions, Pos{Id: user.Id,
 				Total: user.Scores[gw-1].Total})
 		}
@@ -117,18 +99,18 @@ func GetLeagueById(c *gin.Context) {
 			return positions[i].Total > positions[j].Total
 		})
 
-		for idx, user := range resp.Users {
+		for idx, user := range users {
 			place := 0
 			for pIdx, pos := range positions {
 				if pos.Id == user.Id {
 					place = pIdx + 1
 				}
 			}
-			resp.Users[idx].Scores[gw-1].Place = place
+			users[idx].Scores[gw-1].Place = place
 		}
 	}
 
-	c.IndentedJSON(http.StatusOK, resp)
+	return users
 }
 
 func JoinLeague(c *gin.Context) {

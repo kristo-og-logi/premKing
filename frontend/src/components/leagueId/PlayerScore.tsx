@@ -24,19 +24,26 @@ const renderPositionChange = (player: Player, gw: number) => {
   const posChange = (player: Player, gw: number) => {
     return player.scores[gw - 2].place - player.scores[gw - 1].place;
   };
+  return renderChange(posChange(player, gw), gw);
+};
+
+export const renderChange = (posChange: number, gw: number, opposite: boolean = false) => {
   return (
     <View style={styles.positionChangeWrapper}>
-      {gw === 1 || posChange(player, gw) === 0 ? (
+      {gw === 1 || posChange === 0 ? (
         <></>
       ) : (
         <>
-          {Math.abs(posChange(player, gw)) !== 1 && (
-            <PremText order={4}>{Math.abs(posChange(player, gw))}</PremText>
+          {Math.abs(posChange) !== 1 && !opposite && (
+            <PremText order={4}>{Math.abs(posChange)}</PremText>
           )}
-          {posChange(player, gw) > 0 ? (
+          {posChange > 0 ? (
             <FontAwesome name="circle" size={8} color={colors.green} />
           ) : (
             <FontAwesome name="circle" size={8} color={colors.red} />
+          )}
+          {Math.abs(posChange) !== 1 && opposite && (
+            <PremText order={4}>{Math.abs(posChange)}</PremText>
           )}
         </>
       )}
