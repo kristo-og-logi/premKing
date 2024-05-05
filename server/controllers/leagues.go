@@ -59,6 +59,13 @@ func GetLeagueById(c *gin.Context) {
 	}
 
 	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
+	resp.Users = CalculateUsersWithScoresAndPosition(league)
+
+	c.IndentedJSON(http.StatusOK, resp)
+}
+
+func CalculateUsersWithScoresAndPosition(league models.League) []UserDTO {
+	users := []UserDTO{}
 
 	for _, user := range league.Users {
 		scores, err := GetScoreById(user.ID)
@@ -66,7 +73,7 @@ func GetLeagueById(c *gin.Context) {
 			scores = []Score{}
 		}
 
-		resp.Users = append(resp.Users, UserDTO{
+		users = append(users, UserDTO{
 			Id:     user.ID,
 			Name:   user.Name,
 			Email:  user.Email,
@@ -82,7 +89,7 @@ func GetLeagueById(c *gin.Context) {
 	for gw := 1; gw <= 38; gw++ {
 		positions := []Pos{}
 
-		for _, user := range resp.Users {
+		for _, user := range users {
 			positions = append(positions, Pos{Id: user.Id,
 				Total: user.Scores[gw-1].Total})
 		}
@@ -92,18 +99,18 @@ func GetLeagueById(c *gin.Context) {
 			return positions[i].Total > positions[j].Total
 		})
 
-		for idx, user := range resp.Users {
+		for idx, user := range users {
 			place := 0
 			for pIdx, pos := range positions {
 				if pos.Id == user.Id {
 					place = pIdx + 1
 				}
 			}
-			resp.Users[idx].Scores[gw-1].Place = place
+			users[idx].Scores[gw-1].Place = place
 		}
 	}
 
-	c.IndentedJSON(http.StatusOK, resp)
+	return users
 }
 
 func JoinLeague(c *gin.Context) {

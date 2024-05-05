@@ -25,12 +25,12 @@ const LeagueItem = ({ league, onPress }: Props) => {
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>members</PremText>
-            <PremText>{league.users.length ?? '?'}</PremText>
+            <PremText>{league.members}</PremText>
           </View>
 
           <View style={styles.horizontalWrapper}>
             <PremText order={4}>position</PremText>
-            <PremText>{league.users.findIndex((user) => user.id === me.id) + 1 || '?'}</PremText>
+            <PremText>{league.position}</PremText>
           </View>
         </View>
       </View>
