@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
 import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
 import { getAllBets } from '../../redux/reducers/betReducer';
+import { fetchScores } from '../../redux/reducers/scoreReducer';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
@@ -19,6 +20,7 @@ export default function MainLayout() {
     if (!authSlice.token) return;
 
     dispatch(getAllBets(authSlice.token));
+    dispatch(fetchScores(authSlice.token));
   }, [authSlice.token]);
 
   if (!authSlice.isLoading && !authSlice.user) {

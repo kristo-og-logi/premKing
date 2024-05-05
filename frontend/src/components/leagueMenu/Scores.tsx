@@ -1,24 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import PremText from '../basic/PremText';
 import { colors, globalStyles } from '../../styles/styles';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchScores } from '../../redux/reducers/scoreReducer';
+import { useAppSelector } from '../../redux/hooks';
 
 interface Props {
   selectedGW: number;
 }
 
 const Scores = ({ selectedGW }: Props) => {
-  const token = useAppSelector((state) => state.auth).token;
   const scoreSlice = useAppSelector((state) => state.scores);
   const betSlice = useAppSelector((state) => state.bets);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchScores(token));
-  }, []);
 
   return (
     <View style={[styles.gwScores]}>
