@@ -5,6 +5,7 @@ import { Bet } from '../../../types/Bet';
 import TeamColumn, { Side } from '../TeamColumn';
 import DrawColumn from '../DrawColumn';
 import { useAppSelector } from '../../../redux/hooks';
+import { dateFormatter } from '../../../utils/constants';
 
 interface Props {
   fixture: Fixture;
@@ -58,7 +59,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
         />
         <DrawColumn
           selected={isSelected(FixtureResult.DRAW)}
-          date={new Date(fixture.matchDate).toDateString()}
+          date={dateFormatter.format(new Date(fixture.matchDate))}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
           disabled={!betSlice.notFound}
           isNormal={fixture.isNormal}

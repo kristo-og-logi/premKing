@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import Fixture from '../../../types/Fixture';
 import TeamColumn, { Side } from '../TeamColumn';
 import DrawColumn from '../DrawColumn';
+import { dateFormatter } from '../../../utils/constants';
 
 interface Props {
   fixture: Fixture;
@@ -23,7 +24,7 @@ const FutureMatchUp = ({ fixture }: Props) => {
         <DrawColumn
           selectable={false}
           disabled={true}
-          date={new Date(fixture.matchDate).toDateString()}
+          date={dateFormatter.format(new Date(fixture.matchDate))}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
           isNormal={fixture.isNormal}
         />

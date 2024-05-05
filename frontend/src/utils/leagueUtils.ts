@@ -1,6 +1,7 @@
 import { Bet } from '../types/Bet';
 import Gameweek, { GameweekStatus } from '../types/Gameweek';
 import { Player } from '../types/Player';
+import { dateFormatter } from './constants';
 
 export const calculateYourPlace = (players: Player[], gw: number, userId?: string): string => {
   const me = players.find((p) => p.id === userId);
@@ -58,16 +59,10 @@ export const calculateTimeUntilGW = (gameweek: Gameweek) => {
   const closes = new Date(gameweek.closes);
   const finishes = new Date(gameweek.finishes);
 
-  if (now < opens)
-    return `Opens on ${opens.toDateString()}, ${opens.getHours()}:${opens.getMinutes().toString().padStart(2, '0')}`;
-
+  if (now < opens) return `Opens on ${dateFormatter.format(opens)}`;
   if (now < closes) return `Open`;
-
-  if (now < finishes)
-    return `Closed on ${closes.toDateString()}, ${closes.getHours()}:${closes.getMinutes().toString().padStart(2, '0')}`;
-
-  if (finishes < now)
-    return `Finished on ${finishes.toDateString()}, ${finishes.getHours()}:${finishes.getMinutes().toString().padStart(2, '0')}`;
+  if (now < finishes) return `Ongoing`;
+  if (finishes < now) return `Finished on ${dateFormatter.format(finishes)}`;
 
   return `unknown`;
 };
