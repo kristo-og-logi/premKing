@@ -149,6 +149,11 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		return
 	}
 
+	if currentGW.Closes.Before(time.Now()) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "current gameweek is closed"})
+		return
+	}
+
 	if repositories.UserHasBetPlacedForGameweek(user.ID, gameweek) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "user already has bet for gameweek"})
 		return
