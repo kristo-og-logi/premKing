@@ -4,26 +4,16 @@ import Gameweek from '../../types/Gameweek';
 
 export interface GameweekState {
   currentGameweek: number;
+  allGameweeks: Gameweek[];
   isLoading: boolean;
   hasError: boolean;
-  opens: string;
-  closes: string;
-  finishes: string;
-  allGameweeks: Gameweek[];
-  allIsLoading: boolean;
-  allHasError: boolean;
 }
 
 const initialState: GameweekState = {
   currentGameweek: 0,
+  allGameweeks: [],
   isLoading: false,
   hasError: false,
-  opens: new Date().setDate(1000000).toString(),
-  closes: new Date().setDate(1000000).toString(),
-  finishes: new Date().setDate(1000000).toString(),
-  allGameweeks: [],
-  allIsLoading: false,
-  allHasError: false,
 };
 
 const gameweekSlice = createSlice({
@@ -32,68 +22,35 @@ const gameweekSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getCurrentGameweek.pending, (state) => {
+      .addCase(getAllGameweeks.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getCurrentGameweek.rejected, (state) => {
+      .addCase(getAllGameweeks.rejected, (state) => {
         state.isLoading = false;
         state.hasError = true;
       })
-      .addCase(getCurrentGameweek.fulfilled, (state, action: PayloadAction<GameweekResponse>) => {
+      .addCase(getAllGameweeks.fulfilled, (state, action: PayloadAction<GameweekResponse>) => {
         state.isLoading = false;
-
-        state.opens = action.payload.opens;
-        state.closes = action.payload.closes;
-        state.finishes = action.payload.finishes;
-        state.currentGameweek = action.payload.gameweek;
-      })
-      // getAllGameweeks
-      .addCase(getAllGameweeks.pending, (state) => {
-        state.allIsLoading = true;
-      })
-      .addCase(getAllGameweeks.rejected, (state) => {
-        state.allIsLoading = false;
-        state.allHasError = true;
-      })
-      .addCase(getAllGameweeks.fulfilled, (state, action: PayloadAction<Gameweek[]>) => {
-        state.allIsLoading = false;
-        state.allGameweeks = action.payload;
+        state.currentGameweek = action.payload.current;
+        state.allGameweeks = action.payload.gameweeks;
       });
   },
 });
 
 interface GameweekResponse {
-  gameweek: number;
-  opens: string;
-  closes: string;
-  finishes: string;
+  current: number;
+  gameweeks: Gameweek[];
 }
 
-export const getCurrentGameweek = createAsyncThunk<GameweekResponse>(
-  'gameweek/getCurrent',
-  async () => {
-    const response = await fetch(`${backend}/gw`);
-
-    if (!response.ok) {
-      const message: { error: string } = await response.json();
-      throw new Error(message.error);
-    }
-
-    const gameweek: GameweekResponse = await response.json();
-    console.log('gameweek: ', gameweek);
-    return gameweek;
-  }
-);
-
-export const getAllGameweeks = createAsyncThunk<Gameweek[]>('gameweek/getAll', async () => {
-  const response = await fetch(`${backend}/gw/all`);
+export const getAllGameweeks = createAsyncThunk<GameweekResponse>('gameweek/getAll', async () => {
+  const response = await fetch(`${backend}/gw`);
 
   if (!response.ok) {
     const message: { error: string } = await response.json();
     throw new Error(message.error);
   }
 
-  const gameweeks: Gameweek[] = await response.json();
+  const gameweeks: GameweekResponse = await response.json();
   return gameweeks;
 });
 

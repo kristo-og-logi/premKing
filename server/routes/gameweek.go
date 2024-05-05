@@ -8,7 +8,6 @@ import (
 func SetupGameweekRoutes(router *gin.Engine, prefix string) {
 	var fixtureGroup = router.Group(prefix + "/gw")
 	{
-		fixtureGroup.GET("", controllers.GetCurrentGameWeek)
-		fixtureGroup.GET("/all", controllers.GetAllGameWeeks)
+		fixtureGroup.GET("", controllers.GetAllGameWeeks)
 	}
 }
