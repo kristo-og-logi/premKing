@@ -4,7 +4,6 @@ import Fixture from '../../types/Fixture';
 import { backend } from '../../utils/constants';
 
 export interface FixtureState {
-  //   gameweeks: Gameweek[];
   fixtures: Fixture[];
   selectedGameweek: number;
   isLoading: boolean;
@@ -48,6 +47,9 @@ export const getFixtures = createAsyncThunk<Fixture[], number>(
     }
 
     const fixtures: Fixture[] = await response.json();
+    console.log(`GW${gameweek}`);
+    console.log(`normal: ${fixtures.filter((f) => f.isNormal).length}`);
+    console.log(`!normal: ${fixtures.filter((f) => !f.isNormal).length}`);
     return fixtures;
   }
 );

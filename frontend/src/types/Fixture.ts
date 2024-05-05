@@ -19,4 +19,5 @@ export default interface Fixture {
   homeOdds: number;
   drawOdds: number;
   awayOdds: number;
+  isNormal: boolean;
 }

@@ -25,6 +25,7 @@ const FutureMatchUp = ({ fixture }: Props) => {
           disabled={true}
           date={new Date(fixture.matchDate).toDateString()}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
+          isNormal={fixture.isNormal}
         />
         <TeamColumn
           selectable={false}

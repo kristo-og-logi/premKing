@@ -61,6 +61,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           date={new Date(fixture.matchDate).toDateString()}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
           disabled={!betSlice.notFound}
+          isNormal={fixture.isNormal}
           onPress={() => handlePress(FixtureResult.DRAW)}
         />
         <TeamColumn
