@@ -12,6 +12,7 @@ interface Props {
 const Scores = ({ selectedGW }: Props) => {
   const scoreSlice = useAppSelector((state) => state.scores);
   const betSlice = useAppSelector((state) => state.bets);
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   return (
     <View style={[styles.gwScores]}>
@@ -28,9 +29,11 @@ const Scores = ({ selectedGW }: Props) => {
           scoreSlice.scores[selectedGW - 1] === undefined ||
           betSlice.isLoading
             ? '...'
-            : betSlice.bets[selectedGW - 1].bets.length === 0
-              ? 'Missed'
-              : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
+            : selectedGW > gameweekSlice.currentGameweek
+              ? '??'
+              : betSlice.bets[selectedGW - 1].bets.length === 0
+                ? 'Missed'
+                : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
         </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
