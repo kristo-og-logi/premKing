@@ -24,7 +24,7 @@ func GetFixtureByGameWeek(c *gin.Context) {
 
 	gw := uint8(gameweekInt)
 
-	fixtures, err := repositories.FetchFixturesByGameweek(gw)
+	fixtures, err := repositories.FetchNormalFixturesByGameweek(gw)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
