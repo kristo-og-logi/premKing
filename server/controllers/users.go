@@ -51,32 +51,6 @@ type CreateUserRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-func CreateUser(c *gin.Context) {
-	var createUserRequest CreateUserRequest
-
-	if err := c.ShouldBindJSON(&createUserRequest); err != nil {
-		if err == io.EOF {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "body empty"})
-			return
-		}
-		if createUserRequest.Name == "" {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "attribute `name` missing in body"})
-			return
-		}
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
-
-	newUser, err := repositories.CreateUser(createUserRequest.Name, "unknown@email.com")
-	if err != nil {
-		fmt.Printf("failed to create user:" + err.Error())
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-		return
-	}
-
-	c.IndentedJSON(http.StatusCreated, newUser)
-}
-
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
