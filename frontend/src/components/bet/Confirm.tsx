@@ -10,6 +10,13 @@ interface Props {
   bet: Bet[];
 }
 
+enum GWStatus {
+  MISSING = 'Missing bet',
+  PLACED = 'Bet placed',
+  OPEN = 'Confirm',
+  LOCKED = 'Locked',
+}
+
 export const Confirm = ({ selectedGW, bet }: Props) => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const fixtureSlice = useAppSelector((state) => state.fixtures);
@@ -19,6 +26,13 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
 
   const selectedGWIsCurrent = selectedGW == gameweekSlice.currentGameweek;
   const selectedGWIsInPast = selectedGW < gameweekSlice.currentGameweek;
+
+  // const getGWStatus = (): GWStatus => {
+  //   const gw = gameweekSlice.allGameweeks[selectedGW - 1]
+  //   const gwStatus = getGameweekStatus(gw)
+
+  //   if gwStatus === GameweekStatus.OPEN
+  // };
 
   if (betSlice.isLoading)
     return (
@@ -34,7 +48,7 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
       disabled={true}
       onPress={() => {}}
     >
-      {betSlice.notFound ? 'Missing bet' : 'Bet placed'}
+      {betSlice.notFound ? GWStatus.MISSING : GWStatus.PLACED}
     </PremButton>
   ) : selectedGWIsCurrent ? (
     <PremButton
@@ -53,16 +67,16 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
       }
     >
       {betSlice.bets[betSlice.selectedGameweek - 1].length > 0
-        ? 'Bet placed'
+        ? GWStatus.PLACED
         : betSlice.createBetIsLoading
           ? 'Loading...'
           : betSlice.createBetHasError
             ? 'Error :('
-            : 'Confirm'}
+            : GWStatus.OPEN}
     </PremButton>
   ) : (
     <PremButton fullWidth disabled={true} onPress={() => {}}>
-      {'Locked'}
+      {GWStatus.LOCKED}
     </PremButton>
   );
 };
