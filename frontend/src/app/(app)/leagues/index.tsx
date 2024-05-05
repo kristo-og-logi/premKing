@@ -12,11 +12,12 @@ import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
 import Scores from '../../../components/leagueMenu/Scores';
 
-const renderLeagues = (leagues: League[]) => {
+const renderLeagues = (leagues: League[], gw: number) => {
   return leagues.map((league) => (
     <LeagueItem
       key={league.id}
       league={league}
+      gw={gw}
       onPress={() => router.push(`/leagues/${league.id}`)}
     />
   ));
@@ -58,7 +59,9 @@ export default function Page() {
       ) : leagueSlice.leagues.length !== 0 ? (
         <View style={{ maxHeight: 360 }}>
           <ScrollView style={{ flexGrow: 0 }}>
-            <View style={styles.leagueWrapper}>{renderLeagues(leagueSlice.leagues)}</View>
+            <View style={styles.leagueWrapper}>
+              {renderLeagues(leagueSlice.leagues, selectedGW)}
+            </View>
           </ScrollView>
         </View>
       ) : (

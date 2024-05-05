@@ -5,15 +5,25 @@ import PremText from '../basic/PremText';
 import { League } from '../../types/League';
 import { useAppSelector } from '../../redux/hooks';
 import { Redirect } from 'expo-router';
+import { renderChange } from '../leagueId/PlayerScore';
 
 interface Props {
   league: League;
+  gw: number;
   onPress: () => void;
 }
 
-const LeagueItem = ({ league, onPress }: Props) => {
+const LeagueItem = ({ league, gw, onPress }: Props) => {
   const me = useAppSelector((state) => state.auth.user);
+  const leagueSlice = useAppSelector((state) => state.leagues);
   if (!me) return <Redirect href="/" />;
+
+  const posChange = (l: League): number => {
+    if (gw == 1) {
+      return 0;
+    }
+    return l.position[gw - 2].position - l.position[gw - 1].position;
+  };
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -24,13 +34,22 @@ const LeagueItem = ({ league, onPress }: Props) => {
         </View>
         <View style={[styles.rightSide]}>
           <View style={styles.horizontalWrapper}>
-            <PremText order={4}>members</PremText>
-            <PremText>{league.members}</PremText>
+            <View style={styles.memberPosition}>
+              <PremText order={4}>members</PremText>
+              <PremText>{league.members}</PremText>
+            </View>
           </View>
 
           <View style={styles.horizontalWrapper}>
-            <PremText order={4}>position</PremText>
-            <PremText>{league.position}</PremText>
+            <View>
+              <View style={styles.memberPosition}>
+                <PremText order={4}>position</PremText>
+                <PremText>
+                  {leagueSlice.isLoading ? '...' : league.position[gw - 1].position}
+                </PremText>
+              </View>
+            </View>
+            {renderChange(posChange(league), gw, true)}
           </View>
         </View>
       </View>
@@ -50,7 +69,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   horizontalWrapper: {
-    width: 80,
+    width: 105,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -66,6 +85,13 @@ const styles = StyleSheet.create({
   rightSide: {
     display: 'flex',
     gap: 8,
+  },
+  memberPosition: {
+    width: 80,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
 
