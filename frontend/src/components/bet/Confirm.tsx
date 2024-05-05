@@ -4,6 +4,8 @@ import PremButton from '../basic/PremButton';
 import { colors } from '../../styles/styles';
 import { Bet } from '../../types/Bet';
 import { submitBet } from '../../redux/reducers/betReducer';
+import { getGameweekStatus } from '../../utils/leagueUtils';
+import { GameweekStatus } from '../../types/Gameweek';
 
 interface Props {
   selectedGW: number;
@@ -24,15 +26,11 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const selectedGWIsCurrent = selectedGW == gameweekSlice.currentGameweek;
+  const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);
+
+  const selectedGWIsCurrentAndOpen =
+    selectedGW == gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN;
   const selectedGWIsInPast = selectedGW < gameweekSlice.currentGameweek;
-
-  // const getGWStatus = (): GWStatus => {
-  //   const gw = gameweekSlice.allGameweeks[selectedGW - 1]
-  //   const gwStatus = getGameweekStatus(gw)
-
-  //   if gwStatus === GameweekStatus.OPEN
-  // };
 
   if (betSlice.isLoading)
     return (
@@ -50,7 +48,7 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
     >
       {betSlice.notFound ? GWStatus.MISSING : GWStatus.PLACED}
     </PremButton>
-  ) : selectedGWIsCurrent ? (
+  ) : selectedGWIsCurrentAndOpen ? (
     <PremButton
       extraStyles={
         betSlice.bets[betSlice.selectedGameweek - 1].length > 0
