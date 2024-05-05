@@ -20,6 +20,7 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		userGroup.GET("/me/leagues", middleware.Authenticate, controllers.GetMyLeagues)
 		userGroup.POST("/me/leagues", middleware.Authenticate, controllers.CreateMyLeague)
 
+		userGroup.GET("/me/bets", middleware.Authenticate, controllers.GetAllMyBets)
 		userGroup.GET("/me/bets/:gameweek", middleware.Authenticate, controllers.GetMyBetByGameweek)
 		userGroup.POST("/me/bets/:gameweek", middleware.Authenticate, controllers.PlaceMyBetForGameweek)
 
