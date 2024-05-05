@@ -1,4 +1,4 @@
-package initializers
+package crons
 
 import (
 	"encoding/json"
@@ -7,23 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"time"
 
+	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
-	"github.com/robfig/cron/v3"
 )
 
-func CRON() {
-	fmt.Println("adding cron...")
-	c := cron.New()
-	// every function added to a cronjob runs in a separate goroutine,
-	// no need to do anything here
-	c.AddFunc("0 * * * *", updateFixtures)
-	c.Start()
-}
-
-func updateFixtures() {
+func UpdateFixtures() {
 	fmt.Println("updating fixtures...")
 	fixtures := fetchFixtures()
 	dbFixtures := getFixturesFromDB()
@@ -34,13 +24,13 @@ func updateFixtures() {
 			if dbfix.SportmonksID == jsonfix.Id {
 				matches++
 
-				if assignOdds(dbfix, jsonfix) {
+				if AssignOdds(dbfix, jsonfix) {
 					totalOUpdated++
 				}
-				if updateDate(dbfix, jsonfix) {
+				if UpdateDate(dbfix, jsonfix) {
 					totalDUpdated++
 				}
-				if updateStatusAndScores(dbfix, jsonfix) {
+				if UpdateStatusAndScores(dbfix, jsonfix) {
 					totalSsUpdated++
 				}
 
@@ -52,86 +42,11 @@ func updateFixtures() {
 	fmt.Printf("Updated %d odds\n", totalOUpdated)
 	fmt.Printf("Updated %d dates\n", totalDUpdated)
 	fmt.Printf("Updated %d statuses\n", totalSsUpdated)
-}
 
-func updateStatusAndScores(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
-	updated = false
-
-	if jsonFixture.State == "FT" && !dbFixture.Finished {
-
-		result := ""
-		if jsonFixture.Score.Home > jsonFixture.Score.Away {
-			result = "1"
-		} else if jsonFixture.Score.Home < jsonFixture.Score.Away {
-			result = "2"
-		} else {
-			result = "X"
-		}
-
-		response := DB.Model(&dbFixture).Select("Finished", "Result", "AwayGoals", "HomeGoals").Updates(models.Fixture{
-			Finished:  true,
-			HomeGoals: uint8(jsonFixture.Score.Home),
-			AwayGoals: uint8(jsonFixture.Score.Away),
-			Result:    result,
-		})
-
-		if response.Error != nil {
-			fmt.Printf("error saving new status and score to fixture: %s", response.Error.Error())
-			return
-		}
-
-		updated = true
+	if totalDUpdated > 0 {
+		fmt.Println("\nFixture dates updated... checking for gw updates")
+		ChangeGWTimes()
 	}
-
-	return
-}
-
-func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
-	updated = false
-
-	jsonTime, err := time.Parse("2006-01-02 15:04:05", jsonFixture.StartingAt)
-	if err != nil {
-		// fmt.Printf("err - %s\n", err.Error())
-		return
-	}
-
-	if jsonTime.Compare(dbFixture.MatchDate) != 0 {
-		// fmt.Printf("%s | from %s to %s\n", dbFixture.Name, dbFixture.MatchDate, jsonTime)
-		DB.Model(&dbFixture).Updates(models.Fixture{MatchDate: jsonTime})
-		updated = true
-	}
-	return
-}
-
-func assignOdds(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
-	updated = false
-	// no need to reassign odds
-	if dbFixture.AwayOdds >= 0.1 || dbFixture.HomeOdds >= 0.1 || dbFixture.DrawOdds >= 0.1 {
-		return
-	}
-	// if odds haven't appeard in API, don't update
-	if len(jsonFixture.Odds) == 0 {
-		return
-	}
-
-	var homeOdd, drawOdd, awayOdd float32
-	for _, odd := range jsonFixture.Odds {
-		if odd.OriginalLabel == "2" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			awayOdd = float32(oddValue)
-		} else if odd.OriginalLabel == "1" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			homeOdd = float32(oddValue)
-		} else if odd.OriginalLabel == "Draw" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			drawOdd = float32(oddValue)
-		} else {
-			panic(fmt.Sprintf("found odd with original_label: %v\n", odd.OriginalLabel))
-		}
-	}
-	DB.Model(&dbFixture).Updates(models.Fixture{HomeOdds: homeOdd, DrawOdds: drawOdd, AwayOdds: awayOdd})
-	updated = true
-	return
 }
 
 func fetchFixtures() []models.SportmonksFixture {
@@ -160,7 +75,7 @@ func fetchFixtures() []models.SportmonksFixture {
 
 func getFixturesFromDB() []models.Fixture {
 	fixtures := []models.Fixture{}
-	result := DB.Find(&fixtures)
+	result := initializers.DB.Find(&fixtures)
 	if result.Error != nil {
 		fmt.Printf("error: %s\n", result.Error.Error())
 		os.Exit(1)
@@ -189,32 +104,6 @@ func createRequest(page int) *http.Request {
 	}
 
 	return req
-}
-
-func getResponse(request *http.Request) *SportmonksFixtureResponse {
-	client := &http.Client{}
-
-	resp, err := client.Do(request)
-	if err != nil {
-		fmt.Printf("error fetching request: %s", err.Error())
-		return nil
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("error reading response body: %s", err.Error())
-		return nil
-	}
-
-	response := &SportmonksFixtureResponse{}
-
-	err = json.Unmarshal(body, response)
-	if err != nil {
-		fmt.Printf("error unmarshalling body into fixtures struct: %s", err.Error())
-		return nil
-	}
-
-	return response
 }
 
 func createUrl(page int) string {
@@ -286,6 +175,32 @@ func convertScores(orgScores []ScoreDetail) (score models.SportmonksScore) {
 	}
 
 	return
+}
+
+func getResponse(request *http.Request) *SportmonksFixtureResponse {
+	client := &http.Client{}
+
+	resp, err := client.Do(request)
+	if err != nil {
+		fmt.Printf("error fetching request: %s", err.Error())
+		return nil
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("error reading response body: %s", err.Error())
+		return nil
+	}
+
+	response := &SportmonksFixtureResponse{}
+
+	err = json.Unmarshal(body, response)
+	if err != nil {
+		fmt.Printf("error unmarshalling body into fixtures struct: %s", err.Error())
+		return nil
+	}
+
+	return response
 }
 
 type SportmonksFixtureResponse struct {

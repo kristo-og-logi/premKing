@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/kristo-og-logi/premKing/server/crons"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/routes"
 )
@@ -14,7 +15,7 @@ import (
 func init() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
-	initializers.CRON()
+	crons.CRON()
 }
 
 func main() {
