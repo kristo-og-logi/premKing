@@ -6,6 +6,7 @@ import { colors } from '../../styles/styles';
 const DrawColumn = ({
   date,
   odds,
+  isNormal,
   disabled = false,
   selected = false,
   selectable = true,
@@ -13,6 +14,7 @@ const DrawColumn = ({
 }: {
   date: string;
   odds: string;
+  isNormal: boolean;
   disabled?: boolean;
   selected?: boolean;
   selectable?: boolean;
@@ -21,7 +23,7 @@ const DrawColumn = ({
   return (
     <View style={styles.header}>
       <View style={{ height: 32 }}>
-        <PremText order={4} centered={true} padding={12}>
+        <PremText order={4} centered={true} padding={12} color={!isNormal ? 'red' : 'white'}>
           {date}
         </PremText>
       </View>

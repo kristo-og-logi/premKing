@@ -2,15 +2,15 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
-	"strconv"
+	"sort"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/repositories"
 )
 
 func main() {
@@ -19,43 +19,27 @@ func main() {
 
 	// AddOddsAndWonToBets()
 	CreateBets()
+	// FindAndSaveNormalFixtures()
+	// ChangeGWTimes()
 }
 
 func CreateBets() {
 	fmt.Print("email: ")
 	userEmail, _, _ := bufio.NewReader(os.Stdin).ReadLine()
 
+	fmt.Print("bet (1 | X | 2): ")
+	userGuess, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+
 	user := getUser(string(userEmail))
+	guess := string(userGuess)
 
 	for gw := 1; gw < 36; gw++ {
-		fixtures := getFixturesByGW(gw)
-		bets := createBets(user, fixtures, "1")
+		fixtures := getNormalFixturesByGW(gw)
+		bets := createBets(user, fixtures, guess)
 		saveBets(bets)
 	}
 
 	fmt.Println("all bets saved :)")
-}
-
-func UpdateFixturesFromAPI() {
-	dbFixtures := getFixturesFromDB()
-	jsonFixtures := getJSONFixturesFromFile()
-
-	totalUpdated := 0
-	for _, dbfix := range dbFixtures {
-		for _, jsonfix := range jsonFixtures {
-			if dbfix.Name == jsonfix.Name {
-				updated := false
-				updated = assignOdds(dbfix, jsonfix) || updated
-				updated = updateDate(dbfix, jsonfix) || updated
-
-				if updated {
-					totalUpdated++
-				}
-				break
-			}
-		}
-	}
-	fmt.Printf("Updated %d rows\n", totalUpdated)
 }
 
 func AddOddsAndWonToBets() {
@@ -66,6 +50,98 @@ func AddOddsAndWonToBets() {
 	fmt.Printf("found %d fixtures\n", len(allFixtures))
 
 	updateOddsAndWon(allFixtures, allBets)
+}
+
+// ChangeGWTimes updates, if necessary, all gameweeks's
+// Opens, Closes and Finishes attributes depending on
+// whether the normal fixture matchDates changed
+func ChangeGWTimes() {
+	gws := getGWs()
+
+	opensUpdated := 0
+	closesUpdated := 0
+	finishesUpdated := 0
+	for idx := range gws {
+		fixtures, err := repositories.FetchNormalFixturesByGameweek(uint8(gws[idx].Gameweek))
+		if err != nil {
+			fmt.Printf("couldn't find fixtures for GW%d: %s", gws[idx].Gameweek, err.Error())
+			continue
+		}
+
+		if gws[idx].Closes.Compare(fixtures[0].MatchDate.Add(-2*time.Hour)) != 0 {
+			gws[idx].Closes = fixtures[0].MatchDate.Add(-2 * time.Hour)
+			closesUpdated++
+		}
+		if gws[idx].Finishes.Compare(fixtures[len(fixtures)-1].MatchDate.Add(2*time.Hour)) != 0 {
+			gws[idx].Finishes = fixtures[len(fixtures)-1].MatchDate.Add(2 * time.Hour)
+			finishesUpdated++
+
+			if idx < 37 {
+				gws[idx+1].Opens = fixtures[len(fixtures)-1].MatchDate.Add(2 * time.Hour)
+				opensUpdated++
+			}
+		}
+	}
+
+	initializers.DB.Save(&gws)
+	fmt.Printf("gw.Opens updated: %d\n", opensUpdated)
+	fmt.Printf("gw.Closes updated: %d\n", closesUpdated)
+	fmt.Printf("gw.Finishes updated: %d\n", finishesUpdated)
+}
+
+// FindNormalFixtures groups and saves all fixtures
+// by their gameweek, and finds out which are normal
+// , meaning that they occur within the gameweek's timeframe.
+func FindAndSaveNormalFixtures() {
+	fixtureList := make([][]models.Fixture, 38)
+
+	for gw := 1; gw <= 38; gw++ {
+		fixtures, err := repositories.FetchFixturesByGameweek(uint8(gw))
+		if err != nil {
+			fmt.Printf("couldn't find fixtures for GW%d: %s", gw, err.Error())
+			continue
+		}
+
+		fixtureList[gw-1] = fixtures
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		fmt.Printf("GW%d\n", gw)
+		fixtures := fixtureList[gw-1]
+
+		for idx, fix := range fixtures {
+			isNormal := false
+			if fix.GameWeek == 38 || fix.MatchDate.Sub(fixtureList[gw][0].MatchDate).Hours() <= 48 {
+				isNormal = true
+			}
+
+			fmt.Printf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
+
+			if isNormal {
+				fmt.Println(" - X")
+				fixtures[idx].IsNormal = true
+			} else {
+				fmt.Println()
+			}
+		}
+		initializers.DB.Save(&fixtures)
+	}
+}
+
+func getGWs() []models.Gameweek {
+	gws := []models.Gameweek{}
+
+	result := initializers.DB.Find(&gws)
+
+	if result.Error != nil {
+		fmt.Printf("error fetching gameweeks: %s", result.Error.Error())
+	}
+
+	sort.Slice(gws, func(i, j int) bool {
+		return gws[i].Gameweek < gws[j].Gameweek
+	})
+
+	return gws
 }
 
 func updateOddsAndWon(fx []models.Fixture, bts []models.Bet) {
@@ -177,103 +253,16 @@ func createBets(user *models.User, fixtures []models.Fixture, result string) []m
 func saveBets(bets []models.Bet) {
 	result := initializers.DB.Save(&bets)
 	if result.Error != nil {
-		fmt.Printf("error saving bet: %s", result.Error.Error())
+		fmt.Printf("error saving bets: %s", result.Error.Error())
 	}
 }
 
-func getFixturesByGW(gw int) (fixtures []models.Fixture) {
-	fixtures = []models.Fixture{}
-
-	result := initializers.DB.Find(&fixtures, "game_week = ?", gw)
-	if result.Error != nil {
-		fmt.Printf("error fetching fixtures with gw %d: %s", gw, result.Error.Error())
-		return nil
+func getNormalFixturesByGW(gw int) []models.Fixture {
+	fixtures, err := repositories.FetchNormalFixturesByGameweek(uint8(gw))
+	if err != nil {
+		fmt.Printf("error fetching normal fixtures for GW%d\n", gw)
+		os.Exit(1)
 	}
 
 	return fixtures
-}
-
-func updateDate(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
-	updated = false
-
-	jsonTime, err := time.Parse("2006-01-02 15:04:05", jsonFixture.StartingAt)
-	if err != nil {
-		// fmt.Printf("err - %s\n", err.Error())
-		return
-	}
-
-	if jsonTime.Compare(dbFixture.MatchDate) != 0 {
-		// fmt.Printf("%s | from %s to %s\n", dbFixture.Name, dbFixture.MatchDate, jsonTime)
-		initializers.DB.Model(&dbFixture).Updates(models.Fixture{MatchDate: jsonTime})
-		updated = true
-	}
-	return
-}
-
-func assignOdds(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) (updated bool) {
-	updated = false
-	// no need to reassign odds
-	if dbFixture.AwayOdds >= 0.1 || dbFixture.HomeOdds >= 0.1 || dbFixture.DrawOdds >= 0.1 {
-		return
-	}
-	// if odds haven't appeard in API, don't update
-	if len(jsonFixture.Odds) == 0 {
-		return
-	}
-
-	var homeOdd, drawOdd, awayOdd float32
-	for _, odd := range jsonFixture.Odds {
-		if odd.OriginalLabel == "2" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			awayOdd = float32(oddValue)
-		} else if odd.OriginalLabel == "1" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			homeOdd = float32(oddValue)
-		} else if odd.OriginalLabel == "Draw" {
-			oddValue, _ := strconv.ParseFloat(odd.Value, 32)
-			drawOdd = float32(oddValue)
-		} else {
-			panic(fmt.Sprintf("found odd with original_label: %v\n", odd.OriginalLabel))
-		}
-	}
-	initializers.DB.Model(&dbFixture).Updates(models.Fixture{HomeOdds: homeOdd, DrawOdds: drawOdd, AwayOdds: awayOdd})
-	updated = true
-	return
-}
-
-func AssignId(dbFixture models.Fixture, jsonFixture models.SportmonksFixture) {
-	initializers.DB.Model(&dbFixture).Updates(models.Fixture{SportmonksID: jsonFixture.Id})
-}
-
-func getFixturesFromDB() []models.Fixture {
-	fixtures := []models.Fixture{}
-	result := initializers.DB.Find(&fixtures)
-	if result.Error != nil {
-		fmt.Printf("error: %s\n", result.Error.Error())
-		os.Exit(1)
-	}
-
-	fmt.Printf("found %d fixtures!\n", len(fixtures))
-
-	return fixtures
-}
-
-func getJSONFixturesFromFile() []models.SportmonksFixture {
-	// ensure that pages.json exists
-	// - it might have to be created by saveFixtures.py in the same directory
-	jsonFile, err := os.ReadFile("json/sportmonks/fixtures/pages.json")
-	if err != nil {
-		fmt.Printf("error reading json file: %s\n", err.Error())
-		os.Exit(1)
-	}
-
-	jsonFixtures := []models.SportmonksFixture{}
-
-	err = json.Unmarshal(jsonFile, &jsonFixtures)
-	if err != nil {
-		fmt.Printf("error unmarshalling json to fixtures: %s\n", err.Error())
-		os.Exit(1)
-	}
-
-	return jsonFixtures
 }

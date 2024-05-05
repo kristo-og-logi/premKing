@@ -120,14 +120,14 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		return
 	}
 
-	fixturesForGW, err := repositories.FetchFixturesByGameweek(gameweek)
+	fixturesForGW, err := repositories.FetchNormalFixturesByGameweek(gameweek)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Internal error while fetching fixtures for gameweek %d", gameweek)})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Internal error while fetching normal fixtures for gameweek %d", gameweek)})
 		return
 	}
 
 	if len(body.Bets) != len(fixturesForGW) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("number of bets provided does not match fixtures in GW%d (%d provided, %d needed)", gameweek, len(body.Bets), len(fixturesForGW))})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("number of bets provided does not match normal fixtures in GW%d (%d provided, %d needed)", gameweek, len(body.Bets), len(fixturesForGW))})
 		return
 	}
 
@@ -163,6 +163,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 				betFixtureFound = true
 				createdBet := CreateBet(betFixture, user.ID, gameweek)
 				bets = append(bets, createdBet)
+				break // fixture already matched, no need to continue searching
 			}
 		}
 
