@@ -18,20 +18,24 @@ func main() {
 	initializers.ConnectDB()
 
 	// AddOddsAndWonToBets()
-	// CreateBets()
+	CreateBets()
 	// FindAndSaveNormalFixtures()
-	ChangeGWTimes()
+	// ChangeGWTimes()
 }
 
 func CreateBets() {
 	fmt.Print("email: ")
 	userEmail, _, _ := bufio.NewReader(os.Stdin).ReadLine()
 
+	fmt.Print("bet (1 | X | 2): ")
+	userGuess, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+
 	user := getUser(string(userEmail))
+	guess := string(userGuess)
 
 	for gw := 1; gw < 36; gw++ {
-		fixtures := getFixturesByGW(gw)
-		bets := createBets(user, fixtures, "1")
+		fixtures := getNormalFixturesByGW(gw)
+		bets := createBets(user, fixtures, guess)
 		saveBets(bets)
 	}
 
@@ -253,13 +257,11 @@ func saveBets(bets []models.Bet) {
 	}
 }
 
-func getFixturesByGW(gw int) (fixtures []models.Fixture) {
-	fixtures = []models.Fixture{}
-
-	result := initializers.DB.Find(&fixtures, "game_week = ?", gw)
-	if result.Error != nil {
-		fmt.Printf("error fetching fixtures with gw %d: %s", gw, result.Error.Error())
-		return nil
+func getNormalFixturesByGW(gw int) []models.Fixture {
+	fixtures, err := repositories.FetchNormalFixturesByGameweek(uint8(gw))
+	if err != nil {
+		fmt.Printf("error fetching normal fixtures for GW%d\n", gw)
+		os.Exit(1)
 	}
 
 	return fixtures
