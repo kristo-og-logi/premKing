@@ -11,8 +11,12 @@ export default interface Gameweek {
 }
 
 export enum GameweekStatus {
+  // Gameweek has not yet opened
   BEFORE,
+  // Gameweek is currently open
   OPEN,
+  // Gameweek has closed
   CLOSED,
+  // Gameweek has finished
   FINISHED,
 }

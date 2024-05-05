@@ -20,9 +20,7 @@ const LeagueView = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const betSlice = useAppSelector((state) => state.bets);
 
-  // const [league, setLeague] = useState<SelectedLeague>();
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
-  // const [scoreboardedPlayers, setScoreboardedPlayers] = useState<ScoreboardPlayer[]>([]);
 
   useEffect(() => {
     // Event listener for the navigation 'beforeRemove' event
@@ -51,11 +49,6 @@ const LeagueView = () => {
 
     dispatch(getSelectedLeague({ leagueId, token: auth.token }));
   }, [leagueId]);
-
-  // useEffect(() => {
-  //   if (!league) return;
-  //   setScoreboardedPlayers(getScoreboardedPlayers(league.players, selectedGW));
-  // }, [selectedGW]);
 
   return (
     <View style={globalStyles.container}>
