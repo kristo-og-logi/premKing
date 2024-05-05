@@ -22,6 +22,7 @@ const renderPointChange = (gw: number, player: Player) => {
 
 const renderPositionChange = (player: Player, gw: number) => {
   const posChange = (player: Player, gw: number) => {
+    if (gw === 1) return 0;
     return player.scores[gw - 2].place - player.scores[gw - 1].place;
   };
   return renderChange(posChange(player, gw), gw);
