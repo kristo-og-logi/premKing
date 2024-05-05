@@ -9,6 +9,8 @@ import (
 func SetupLeagueRoutes(router *gin.Engine, prefix string) {
 	var leagueGroup = router.Group(prefix + "/leagues")
 	{
+		leagueGroup.GET("", middleware.Admin, controllers.GetAllLeagues)
+
 		leagueGroup.GET("/:id", middleware.Authenticate, controllers.GetLeagueById)
 		leagueGroup.POST("/:id", middleware.Authenticate, controllers.JoinLeague)
 	}

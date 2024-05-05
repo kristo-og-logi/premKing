@@ -10,6 +10,11 @@ import (
 )
 
 func Authenticate(c *gin.Context) {
+	AuthenticateUser(c)
+	c.Next()
+}
+
+func AuthenticateUser(c *gin.Context) {
 	tokenString, authErr := utils.GetTokenFromHeader(c)
 	if authErr != nil {
 		c.AbortWithStatusJSON(authErr.StatusCode, gin.H{"error": authErr.Err.Error()})
@@ -32,5 +37,4 @@ func Authenticate(c *gin.Context) {
 	}
 
 	c.Set("user", user)
-	c.Next()
 }

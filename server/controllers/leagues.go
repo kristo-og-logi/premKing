@@ -26,6 +26,18 @@ type UserDTO struct {
 	Scores []Score `json:"scores"`
 }
 
+func GetAllLeagues(c *gin.Context) {
+	var leagues []models.League
+	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
+
+	if result.Error != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, leagues)
+}
+
 func GetLeagueById(c *gin.Context) {
 	user := utils.GetUserFromContext(c)
 	if user == nil {
