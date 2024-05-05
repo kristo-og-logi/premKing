@@ -66,7 +66,7 @@ const LeagueView = () => {
       ) : (
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-          <BetInfo selectedGW={selectedGW} bets={betSlice.bets[selectedGW - 1] || []} />
+          <BetInfo selectedGW={selectedGW} bets={betSlice.bets[selectedGW - 1].bets || []} />
           <Scoreboard
             players={leagueSlice.selectedLeague.users}
             gw={selectedGW}

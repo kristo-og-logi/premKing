@@ -42,30 +42,33 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
 
   return selectedGWIsInPastOrClosed ? (
     <PremButton
-      extraStyles={{ backgroundColor: betSlice.notFound ? colors.red : colors.green }}
+      extraStyles={{
+        backgroundColor:
+          betSlice.bets[selectedGW - 1].bets.length === 0 ? colors.red : colors.green,
+      }}
       fullWidth
       disabled={true}
       onPress={() => {}}
     >
-      {betSlice.notFound ? GWStatus.MISSING : GWStatus.PLACED}
+      {betSlice.bets[selectedGW - 1].bets.length === 0 ? GWStatus.MISSING : GWStatus.PLACED}
     </PremButton>
   ) : selectedGWIsCurrentAndOpen ? (
     <PremButton
       extraStyles={
-        betSlice.bets[betSlice.selectedGameweek - 1].length > 0
+        betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0
           ? { backgroundColor: colors.green }
           : undefined
       }
       fullWidth
       disabled={
-        betSlice.bets[betSlice.selectedGameweek - 1].length > 0 ||
+        betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0 ||
         fixtureSlice.fixtures.length > bet.length
       }
       onPress={() =>
         dispatch(submitBet({ bets: bet, gameweek: selectedGW, token: authSlice.token }))
       }
     >
-      {betSlice.bets[betSlice.selectedGameweek - 1].length > 0
+      {betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0
         ? GWStatus.PLACED
         : betSlice.createBetIsLoading
           ? 'Loading...'

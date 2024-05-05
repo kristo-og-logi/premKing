@@ -48,6 +48,9 @@ export const fetchScores = createAsyncThunk<Score[], string>('fetchScores', asyn
   });
 
   if (!resp.ok) {
+    if (resp.status === 404) {
+      return [];
+    }
     const message: { error: string } = await resp.json();
     throw new Error(message.error);
   }

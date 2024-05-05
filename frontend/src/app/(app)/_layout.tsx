@@ -4,6 +4,7 @@ import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
 import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
+import { getAllBets } from '../../redux/reducers/betReducer';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
@@ -14,8 +15,13 @@ export default function MainLayout() {
     dispatch(getAllGameweeks());
   }, []);
 
+  useEffect(() => {
+    if (!authSlice.token) return;
+
+    dispatch(getAllBets(authSlice.token));
+  }, [authSlice.token]);
+
   if (!authSlice.isLoading && !authSlice.user) {
-    console.log('redirecting to login');
     return <Redirect href="/login" />;
   }
 

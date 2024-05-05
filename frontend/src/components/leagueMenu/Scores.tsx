@@ -31,9 +31,11 @@ const Scores = ({ selectedGW }: Props) => {
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
         <PremText order={2}>
-          {scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined
+          {scoreSlice.isLoading ||
+          scoreSlice.scores[selectedGW - 1] === undefined ||
+          betSlice.isLoading
             ? '...'
-            : betSlice.bets[selectedGW - 1].length === 0
+            : betSlice.bets[selectedGW - 1].bets.length === 0
               ? 'Missed'
               : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
         </PremText>
