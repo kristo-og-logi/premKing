@@ -13,6 +13,7 @@ interface Props {
 const Scores = ({ selectedGW }: Props) => {
   const token = useAppSelector((state) => state.auth).token;
   const scoreSlice = useAppSelector((state) => state.scores);
+  const betSlice = useAppSelector((state) => state.bets);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -32,7 +33,9 @@ const Scores = ({ selectedGW }: Props) => {
         <PremText order={2}>
           {scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined
             ? '...'
-            : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
+            : betSlice.bets[selectedGW - 1].length === 0
+              ? 'Missed'
+              : `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`}
         </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
