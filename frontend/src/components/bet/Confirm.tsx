@@ -13,7 +13,7 @@ interface Props {
 }
 
 enum GWStatus {
-  MISSING = 'Missing bet',
+  MISSING = 'Missed bet',
   PLACED = 'Bet placed',
   OPEN = 'Confirm',
   LOCKED = 'Locked',
@@ -30,7 +30,8 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
 
   const selectedGWIsCurrentAndOpen =
     selectedGW == gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN;
-  const selectedGWIsInPast = selectedGW < gameweekSlice.currentGameweek;
+  const selectedGWIsInPastOrClosed =
+    selectedGW < gameweekSlice.currentGameweek || gwStatus === GameweekStatus.CLOSED;
 
   if (betSlice.isLoading)
     return (
@@ -39,7 +40,7 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
       </PremButton>
     );
 
-  return selectedGWIsInPast ? (
+  return selectedGWIsInPastOrClosed ? (
     <PremButton
       extraStyles={{ backgroundColor: betSlice.notFound ? colors.red : colors.green }}
       fullWidth
