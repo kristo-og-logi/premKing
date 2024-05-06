@@ -23,7 +23,11 @@ const initialState: BetState = {
 export const betSlice = createSlice({
   name: 'bets',
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedGameweek(state, action: PayloadAction<number>) {
+      state.selectedGameweek = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       //getAllBets
@@ -110,5 +114,7 @@ export const submitBet = createAsyncThunk<
   const createdBets: Bet[] = await response.json();
   return { createdBets, gameweek };
 });
+
+export const { setSelectedGameweek } = betSlice.actions;
 
 export default betSlice.reducer;

@@ -11,6 +11,7 @@ import { Bet } from '../../../types/Bet';
 import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
+import { setSelectedGameweek } from '../../../redux/reducers/betReducer';
 
 const BetScreen = () => {
   const dispatch = useAppDispatch();
@@ -18,25 +19,29 @@ const BetScreen = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const betSlice = useAppSelector((state) => state.bets);
 
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
+  const selectedGW = useAppSelector((state) => state.bets).selectedGameweek;
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
   }, [selectedGW]);
 
   useEffect(() => {
-    setSelectedGW(gameweekSlice.currentGameweek);
+    dispatch(setSelectedGameweek(gameweekSlice.currentGameweek));
   }, [gameweekSlice.currentGameweek]);
 
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    setBet(betSlice.bets[betSlice.selectedGameweek - 1].bets || []);
-  }, [betSlice.bets]);
+    console.log(`bet for GW${selectedGW}: ${JSON.stringify(bet)}`);
+    setBet(betSlice.bets[selectedGW - 1].bets);
+  }, [selectedGW]);
 
   return (
     <View style={globalStyles.container}>
-      <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+      <GameweekShifter
+        selectedGW={betSlice.selectedGameweek}
+        setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
+      />
       {!betSlice.isLoading && betSlice.bets[selectedGW - 1].bets.length > 0 ? (
         <View style={{ marginBottom: 8, marginTop: -8 }}>
           <PremText

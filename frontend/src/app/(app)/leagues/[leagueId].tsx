@@ -65,7 +65,7 @@ const LeagueView = () => {
         <PremText>Error occured</PremText>
       ) : (
         <>
-          <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+          <GameweekShifter selectedGW={selectedGW} setSelectedGameweek={setSelectedGW} />
           <BetInfo selectedGW={selectedGW} bets={betSlice.bets[selectedGW - 1].bets || []} />
           <Scoreboard
             players={leagueSlice.selectedLeague.users}
