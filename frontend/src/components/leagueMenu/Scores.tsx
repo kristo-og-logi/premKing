@@ -19,7 +19,11 @@ const Scores = ({ selectedGW }: Props) => {
       <View style={[styles.secondaryCard, globalStyles.shadow]}>
         <PremText order={4}>Total</PremText>
         <PremText>
-          {scoreSlice.isLoading ? '...' : `x${scoreSlice.scores[selectedGW - 1].total.toFixed(2)}`}
+          {scoreSlice.hasError
+            ? 'error'
+            : scoreSlice.isLoading
+              ? '...'
+              : `x${scoreSlice.scores[selectedGW - 1]?.total.toFixed(2) || '?.??'}`}
         </PremText>
       </View>
       <View style={[styles.mainCard, globalStyles.shadow]}>
