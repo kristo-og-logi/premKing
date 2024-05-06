@@ -7,7 +7,7 @@ import PastMatchUp from './PastMatchUp';
 const PastGameweekBet = () => {
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const betSlice = useAppSelector((state) => state.bets);
-  const bets: Bet[] = betSlice.bets[betSlice.selectedGameweek - 1];
+  const bets: Bet[] = betSlice.bets[betSlice.selectedGameweek - 1].bets;
 
   return (
     <View style={[styles.fixtureList]}>

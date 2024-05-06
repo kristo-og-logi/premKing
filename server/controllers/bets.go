@@ -14,6 +14,58 @@ import (
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
+type AllBetsResponse struct {
+	Gameweek int       `json:"gameweek"`
+	Bets     []BetsDTO `json:"bets"`
+	Score    float64   `json:"score"`
+}
+
+type BetsDTO struct {
+	FixtureId uint32  `json:"fixtureId"`
+	Result    string  `json:"result"`
+	Odd       float32 `json:"odd"`
+	Won       bool    `json:"won"`
+}
+
+func GetAllMyBets(c *gin.Context) {
+	user := utils.GetUserFromContext(c)
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "authentication error, token possibly invalid"})
+		return
+	}
+
+	betsResp := []AllBetsResponse{}
+
+	scores, err := GetScoreById(user.ID)
+	if err != nil {
+		fmt.Printf("ERROR fetching user scores: %s", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		betsResp = append(betsResp, AllBetsResponse{Gameweek: gw, Bets: make([]BetsDTO, 0), Score: scores[gw-1].Score})
+	}
+
+	allBets, err := repositories.GetAllBetsByUserId(user.ID)
+	if err != nil {
+		fmt.Printf("ERROR fetching all bets by user: %s", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	for _, bet := range allBets {
+		dto := BetsDTO{
+			FixtureId: bet.FixtureId,
+			Result:    bet.Result,
+			Odd:       bet.Odd,
+			Won:       bet.Won,
+		}
+		betsResp[bet.GameWeek-1].Bets = append(betsResp[bet.GameWeek-1].Bets, dto)
+	}
+
+	c.IndentedJSON(http.StatusOK, betsResp)
+}
+
 type MyBetsResponse struct {
 	Bets  []models.Bet `json:"bets"`
 	Score float32      `json:"score"`

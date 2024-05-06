@@ -6,10 +6,10 @@ import PremText from './PremText';
 
 interface Props {
   selectedGW: number;
-  setSelectedGW: (selectedGW: number) => void;
+  setSelectedGameweek: (gw: number) => void;
 }
 
-const GameweekShifter = ({ setSelectedGW, selectedGW }: Props) => {
+const GameweekShifter = ({ selectedGW, setSelectedGameweek }: Props) => {
   return (
     <View style={styles.gameweekSection}>
       <AntDesign
@@ -17,7 +17,7 @@ const GameweekShifter = ({ setSelectedGW, selectedGW }: Props) => {
         size={24}
         color={selectedGW > 1 ? colors.gray[0] : colors.gray[2]}
         onPress={() => {
-          if (selectedGW > 1) setSelectedGW(selectedGW - 1);
+          if (selectedGW > 1) setSelectedGameweek(selectedGW - 1);
         }}
       />
       <PremText order={1} centered>{`Gameweek ${selectedGW}`}</PremText>
@@ -26,7 +26,7 @@ const GameweekShifter = ({ setSelectedGW, selectedGW }: Props) => {
         size={24}
         color={selectedGW < 38 ? colors.gray[0] : colors.gray[2]}
         onPress={() => {
-          if (selectedGW < 38) setSelectedGW(selectedGW + 1);
+          if (selectedGW < 38) setSelectedGameweek(selectedGW + 1);
         }}
       />
     </View>

@@ -47,7 +47,7 @@ export default function Page() {
           <PremText>Error occurred</PremText>
         ) : (
           <>
-            <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
+            <GameweekShifter selectedGW={selectedGW} setSelectedGameweek={setSelectedGW} />
             <Scores selectedGW={selectedGW} />
           </>
         )}

@@ -10,6 +10,7 @@ import { GameweekStatus } from '../../types/Gameweek';
 interface Props {
   selectedGW: number;
   bet: Bet[];
+  setBet: (b: Bet[]) => void;
 }
 
 enum GWStatus {
@@ -19,7 +20,7 @@ enum GWStatus {
   LOCKED = 'Locked',
 }
 
-export const Confirm = ({ selectedGW, bet }: Props) => {
+export const Confirm = ({ selectedGW, bet, setBet }: Props) => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const betSlice = useAppSelector((state) => state.bets);
@@ -42,30 +43,33 @@ export const Confirm = ({ selectedGW, bet }: Props) => {
 
   return selectedGWIsInPastOrClosed ? (
     <PremButton
-      extraStyles={{ backgroundColor: betSlice.notFound ? colors.red : colors.green }}
+      extraStyles={{
+        backgroundColor:
+          betSlice.bets[selectedGW - 1].bets.length === 0 ? colors.red : colors.green,
+      }}
       fullWidth
       disabled={true}
       onPress={() => {}}
     >
-      {betSlice.notFound ? GWStatus.MISSING : GWStatus.PLACED}
+      {betSlice.bets[selectedGW - 1].bets.length === 0 ? GWStatus.MISSING : GWStatus.PLACED}
     </PremButton>
   ) : selectedGWIsCurrentAndOpen ? (
     <PremButton
       extraStyles={
-        betSlice.bets[betSlice.selectedGameweek - 1].length > 0
+        betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0
           ? { backgroundColor: colors.green }
           : undefined
       }
       fullWidth
       disabled={
-        betSlice.bets[betSlice.selectedGameweek - 1].length > 0 ||
-        fixtureSlice.fixtures.length > bet.length
+        fixtureSlice.fixtures.length > bet.length || betSlice.bets[selectedGW - 1].bets.length > 0
       }
-      onPress={() =>
-        dispatch(submitBet({ bets: bet, gameweek: selectedGW, token: authSlice.token }))
-      }
+      onPress={() => {
+        dispatch(submitBet({ bets: bet, gameweek: selectedGW, token: authSlice.token }));
+        setBet([]);
+      }}
     >
-      {betSlice.bets[betSlice.selectedGameweek - 1].length > 0
+      {betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0
         ? GWStatus.PLACED
         : betSlice.createBetIsLoading
           ? 'Loading...'

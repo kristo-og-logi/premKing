@@ -1,12 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
-import { Bet } from '../../types/Bet';
+import { Bet, Ticket } from '../../types/Bet';
 
 export interface BetState {
-  bets: Bet[][];
-  notFound: boolean;
+  bets: Ticket[];
   selectedGameweek: number;
-  score: number;
   isLoading: boolean;
   hasError: boolean;
   createBetIsLoading: boolean;
@@ -15,9 +13,7 @@ export interface BetState {
 
 const initialState: BetState = {
   bets: new Array(38),
-  notFound: false,
   selectedGameweek: 1,
-  score: -1,
   isLoading: true,
   hasError: false,
   createBetIsLoading: false,
@@ -27,33 +23,25 @@ const initialState: BetState = {
 export const betSlice = createSlice({
   name: 'bets',
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedGameweek(state, action: PayloadAction<number>) {
+      state.selectedGameweek = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(getBets.pending, (state) => {
+      //getAllBets
+      .addCase(getAllBets.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getBets.rejected, (state) => {
+      .addCase(getAllBets.rejected, (state) => {
         state.isLoading = false;
         state.hasError = true;
-        state.score = -1;
       })
-      .addCase(
-        getBets.fulfilled,
-        (state, action: PayloadAction<{ response: GetBetsResponse; gameweek: number }>) => {
-          state.isLoading = false;
-          if (action.payload.response.bets.length === 0) {
-            state.notFound = true;
-          } else {
-            state.notFound = false;
-          }
-          state.bets[action.payload.gameweek - 1] = action.payload.response.bets;
-          state.score = action.payload.response.score;
-          state.selectedGameweek = action.payload.gameweek;
-
-          console.log(`score for GW${state.selectedGameweek}: ${state.score}`);
-        }
-      )
+      .addCase(getAllBets.fulfilled, (state, action: PayloadAction<Ticket[]>) => {
+        state.isLoading = false;
+        state.bets = action.payload;
+      })
       // submitBet
       .addCase(submitBet.pending, (state) => {
         state.createBetIsLoading = true;
@@ -67,43 +55,35 @@ export const betSlice = createSlice({
         (state, action: PayloadAction<{ createdBets: Bet[]; gameweek: number }>) => {
           state.createBetIsLoading = false;
           state.createBetHasError = false;
-          state.bets[action.payload.gameweek - 1] = action.payload.createdBets;
-          state.notFound = false;
+          state.bets[action.payload.gameweek - 1] = {
+            gameweek: action.payload.gameweek,
+            bets: action.payload.createdBets,
+            score: 0,
+          };
           state.selectedGameweek = action.payload.gameweek;
         }
       );
   },
 });
 
-interface GetBetsRequest {
-  gameweek: number;
-  token: string;
-}
+export const getAllBets = createAsyncThunk<Ticket[], string>(
+  'fixtures/getAllBets',
+  async (token) => {
+    const resp = await fetch(`${backend}/users/me/bets`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-interface GetBetsResponse {
-  bets: Bet[];
-  score: number;
-}
+    if (!resp.ok) {
+      const message: { error: string } = await resp.json();
+      throw new Error(message.error);
+    }
 
-export const getBets = createAsyncThunk<
-  { response: GetBetsResponse; gameweek: number },
-  GetBetsRequest
->('fixtures/getBets', async ({ gameweek, token }) => {
-  const resp = await fetch(`${backend}/users/me/bets/${gameweek}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!resp.ok) {
-    if (resp.status === 404) return { response: { bets: [], score: 0 }, gameweek };
-    const message: { error: string } = await resp.json();
-    throw new Error(message.error);
+    const response: Ticket[] = await resp.json();
+    return response;
   }
-
-  const response: GetBetsResponse = await resp.json();
-  return { response, gameweek };
-});
+);
 
 interface SubmitBetRequest {
   bets: Bet[];
@@ -134,5 +114,7 @@ export const submitBet = createAsyncThunk<
   const createdBets: Bet[] = await response.json();
   return { createdBets, gameweek };
 });
+
+export const { setSelectedGameweek } = betSlice.actions;
 
 export default betSlice.reducer;

@@ -11,58 +11,68 @@ import { Bet } from '../../../types/Bet';
 import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
-import { getBets } from '../../../redux/reducers/betReducer';
+import { setSelectedGameweek } from '../../../redux/reducers/betReducer';
 
 const BetScreen = () => {
   const dispatch = useAppDispatch();
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
-  const authSlice = useAppSelector((state) => state.auth);
   const betSlice = useAppSelector((state) => state.bets);
 
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
+  const selectedGW = useAppSelector((state) => state.bets).selectedGameweek;
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
-    dispatch(getBets({ gameweek: selectedGW, token: authSlice.token }));
   }, [selectedGW]);
 
   useEffect(() => {
-    setSelectedGW(gameweekSlice.currentGameweek);
+    dispatch(setSelectedGameweek(gameweekSlice.currentGameweek));
   }, [gameweekSlice.currentGameweek]);
 
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    setBet(betSlice.bets[betSlice.selectedGameweek - 1] || []);
-  }, [betSlice.bets]);
+    setBet(betSlice.bets[selectedGW - 1]?.bets || []);
+  }, [selectedGW, betSlice.bets]);
 
   return (
     <View style={globalStyles.container}>
-      <GameweekShifter selectedGW={selectedGW} setSelectedGW={setSelectedGW} />
-      {!betSlice.isLoading && !betSlice.notFound ? (
-        <View style={{ marginBottom: 8, marginTop: -8 }}>
-          <PremText centered order={2}>{`score: x${betSlice.score.toFixed(2)}`}</PremText>
-        </View>
+      {betSlice.isLoading ? (
+        <PremText>Loading...</PremText>
       ) : (
-        <></>
+        <>
+          <GameweekShifter
+            selectedGW={betSlice.selectedGameweek}
+            setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
+          />
+          {betSlice.bets[selectedGW - 1].bets.length > 0 ? (
+            <View style={{ marginBottom: 8, marginTop: -8 }}>
+              <PremText
+                centered
+                order={2}
+              >{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
+            </View>
+          ) : (
+            <></>
+          )}
+          <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+            {fixtureSlice.isLoading ? (
+              <PremText>loading...</PremText>
+            ) : fixtureSlice.hasError ? (
+              <PremText>Error</PremText>
+            ) : fixtureSlice.fixtures.length == 0 ? (
+              <PremText>no fixture for this gameweek</PremText>
+            ) : selectedGW === gameweekSlice.currentGameweek ? (
+              <CurrentGameweekBet bet={bet} setBet={setBet} />
+            ) : selectedGW >= gameweekSlice.currentGameweek ? (
+              <FutureGameweekBet />
+            ) : (
+              <PastGameweekBet />
+            )}
+          </ScrollView>
+          <Confirm selectedGW={selectedGW} bet={bet} setBet={setBet} />
+        </>
       )}
-      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
-        {fixtureSlice.isLoading ? (
-          <PremText>loading...</PremText>
-        ) : fixtureSlice.hasError ? (
-          <PremText>Error</PremText>
-        ) : fixtureSlice.fixtures.length == 0 ? (
-          <PremText>no fixture for this gameweek</PremText>
-        ) : selectedGW === gameweekSlice.currentGameweek ? (
-          <CurrentGameweekBet bet={bet} setBet={setBet} />
-        ) : selectedGW >= gameweekSlice.currentGameweek ? (
-          <FutureGameweekBet />
-        ) : (
-          <PastGameweekBet />
-        )}
-      </ScrollView>
-      <Confirm selectedGW={selectedGW} bet={bet} />
     </View>
   );
 };
