@@ -29,6 +29,8 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
       {
         fixtureId: fixture.id,
         result: fixtureResult,
+        odd: 0,
+        won: false,
       },
     ]);
   };
@@ -42,7 +44,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
       ? setBet(bet.filter((b) => !(b.fixtureId === fixture.id && b.result === result)))
       : fixtureExistsInBet()
         ? changeFixtureInBet(result)
-        : setBet([...bet, { fixtureId: fixture.id, result: result }]);
+        : setBet([...bet, { fixtureId: fixture.id, result: result, odd: 0, won: false }]);
   };
 
   return (
@@ -54,14 +56,14 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           logo={{ uri: fixture.homeTeam.logo }}
           odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
-          disabled={!betSlice.notFound}
+          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
           onPress={() => handlePress(FixtureResult.HOME)}
         />
         <DrawColumn
           selected={isSelected(FixtureResult.DRAW)}
           date={dateFormatter.format(new Date(fixture.matchDate))}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
-          disabled={!betSlice.notFound}
+          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
           isNormal={fixture.isNormal}
           onPress={() => handlePress(FixtureResult.DRAW)}
         />
@@ -69,7 +71,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           selected={isSelected(FixtureResult.AWAY)}
           teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
           logo={{ uri: fixture.awayTeam.logo }}
-          disabled={!betSlice.notFound}
+          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
           odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}
           onPress={() => handlePress(FixtureResult.AWAY)}

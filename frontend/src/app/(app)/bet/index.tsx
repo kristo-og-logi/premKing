@@ -32,41 +32,47 @@ const BetScreen = () => {
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    setBet(betSlice.bets[selectedGW - 1].bets);
-  }, [selectedGW]);
+    setBet(betSlice.bets[selectedGW - 1]?.bets || []);
+  }, [selectedGW, betSlice.bets]);
 
   return (
     <View style={globalStyles.container}>
-      <GameweekShifter
-        selectedGW={betSlice.selectedGameweek}
-        setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
-      />
-      {!betSlice.isLoading && betSlice.bets[selectedGW - 1].bets.length > 0 ? (
-        <View style={{ marginBottom: 8, marginTop: -8 }}>
-          <PremText
-            centered
-            order={2}
-          >{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
-        </View>
+      {betSlice.isLoading ? (
+        <PremText>Loading...</PremText>
       ) : (
-        <></>
+        <>
+          <GameweekShifter
+            selectedGW={betSlice.selectedGameweek}
+            setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
+          />
+          {betSlice.bets[selectedGW - 1].bets.length > 0 ? (
+            <View style={{ marginBottom: 8, marginTop: -8 }}>
+              <PremText
+                centered
+                order={2}
+              >{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
+            </View>
+          ) : (
+            <></>
+          )}
+          <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+            {fixtureSlice.isLoading ? (
+              <PremText>loading...</PremText>
+            ) : fixtureSlice.hasError ? (
+              <PremText>Error</PremText>
+            ) : fixtureSlice.fixtures.length == 0 ? (
+              <PremText>no fixture for this gameweek</PremText>
+            ) : selectedGW === gameweekSlice.currentGameweek ? (
+              <CurrentGameweekBet bet={bet} setBet={setBet} />
+            ) : selectedGW >= gameweekSlice.currentGameweek ? (
+              <FutureGameweekBet />
+            ) : (
+              <PastGameweekBet />
+            )}
+          </ScrollView>
+          <Confirm selectedGW={selectedGW} bet={bet} setBet={setBet} />
+        </>
       )}
-      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
-        {fixtureSlice.isLoading ? (
-          <PremText>loading...</PremText>
-        ) : fixtureSlice.hasError ? (
-          <PremText>Error</PremText>
-        ) : fixtureSlice.fixtures.length == 0 ? (
-          <PremText>no fixture for this gameweek</PremText>
-        ) : selectedGW === gameweekSlice.currentGameweek ? (
-          <CurrentGameweekBet bet={bet} setBet={setBet} />
-        ) : selectedGW >= gameweekSlice.currentGameweek ? (
-          <FutureGameweekBet />
-        ) : (
-          <PastGameweekBet />
-        )}
-      </ScrollView>
-      <Confirm selectedGW={selectedGW} bet={bet} />
     </View>
   );
 };

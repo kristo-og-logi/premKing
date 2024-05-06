@@ -4,17 +4,23 @@ import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';
 import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
-import { getAllBets } from '../../redux/reducers/betReducer';
+import { getAllBets, setSelectedGameweek } from '../../redux/reducers/betReducer';
 import { fetchScores } from '../../redux/reducers/scoreReducer';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(getAllGameweeks());
   }, []);
+
+  // necessary to avoid having the initial selectedGameweek
+  useEffect(() => {
+    dispatch(setSelectedGameweek(gameweekSlice.currentGameweek));
+  }, [gameweekSlice.currentGameweek]);
 
   useEffect(() => {
     if (!authSlice.token) return;

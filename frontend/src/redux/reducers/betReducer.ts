@@ -58,7 +58,7 @@ export const betSlice = createSlice({
           state.bets[action.payload.gameweek - 1] = {
             gameweek: action.payload.gameweek,
             bets: action.payload.createdBets,
-            score: -1,
+            score: 0,
           };
           state.selectedGameweek = action.payload.gameweek;
         }
