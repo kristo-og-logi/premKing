@@ -32,7 +32,6 @@ const BetScreen = () => {
   const [bet, setBet] = useState<Bet[]>([]);
 
   useEffect(() => {
-    console.log(`bet for GW${selectedGW}: ${JSON.stringify(bet)}`);
     setBet(betSlice.bets[selectedGW - 1].bets);
   }, [selectedGW]);
 
