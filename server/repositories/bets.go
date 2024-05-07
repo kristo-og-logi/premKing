@@ -67,3 +67,14 @@ func GetAllBetsById(userId string) ([]models.Bet, error) {
 
 	return bets, nil
 }
+
+func GetBetsByFixtureId(fixtureId uint32) ([]models.Bet, error) {
+	bets := []models.Bet{}
+
+	result := initializers.DB.Find(&bets, "fixture_id = ?", fixtureId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bets, nil
+}
