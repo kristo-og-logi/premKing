@@ -3,7 +3,7 @@
     "name": "premKing",
     "slug": "premking",
     "scheme": "premking",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/IOS-LOGO-3x.png",
     "userInterfaceStyle": "dark",
