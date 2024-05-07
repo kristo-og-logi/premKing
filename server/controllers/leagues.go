@@ -151,5 +151,15 @@ func JoinLeague(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, league)
+	users := CalculateUsersWithScoresAndPosition(*league)
+
+	leagueDTO := LeagueDTO{
+		Id:       league.ID,
+		Name:     league.Name,
+		OwnerId:  league.OwnerID,
+		Members:  len(users),
+		Position: calculatePositions(users, currentUser.ID),
+	}
+
+	c.IndentedJSON(http.StatusOK, leagueDTO)
 }

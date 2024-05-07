@@ -45,7 +45,7 @@ const LeagueItem = ({ league, gw, onPress }: Props) => {
               <View style={styles.memberPosition}>
                 <PremText order={4}>position</PremText>
                 <PremText>
-                  {leagueSlice.isLoading ? '...' : league.position[gw - 1].position}
+                  {leagueSlice.isLoading ? '...' : league.position[gw - 1]?.position || 'x'}
                 </PremText>
               </View>
             </View>

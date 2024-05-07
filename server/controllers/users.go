@@ -159,7 +159,7 @@ func UserExistsById(id string) (bool, error) {
 	return true, nil
 }
 
-type MyLeaguesResponse struct {
+type LeagueDTO struct {
 	Id       string        `json:"id"`
 	Name     string        `json:"name"`
 	OwnerId  string        `json:"ownerId"`
@@ -184,10 +184,10 @@ func GetMyLeagues(c *gin.Context) {
 		return
 	}
 
-	resp := []MyLeaguesResponse{}
+	resp := []LeagueDTO{}
 	for _, l := range leagues {
 		users := CalculateUsersWithScoresAndPosition(l)
-		leagueResp := MyLeaguesResponse{
+		leagueResp := LeagueDTO{
 			Id:       l.ID,
 			Name:     l.Name,
 			OwnerId:  l.OwnerID,
@@ -245,10 +245,20 @@ func CreateMyLeague(c *gin.Context) {
 
 	league, err := repositories.CreateleagueFromOwnerId(body.LeagueName, currentUser.ID)
 
+	users := CalculateUsersWithScoresAndPosition(*league)
+
+	leagueDTO := LeagueDTO{
+		Id:       league.ID,
+		Name:     league.Name,
+		OwnerId:  league.OwnerID,
+		Members:  len(league.Users),
+		Position: calculatePositions(users, currentUser.ID),
+	}
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, league)
+	c.IndentedJSON(http.StatusCreated, leagueDTO)
 }
