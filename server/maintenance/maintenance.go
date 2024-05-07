@@ -17,8 +17,8 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	// AddOddsAndWonToBets()
-	CreateBets()
+	AddOddsAndWonToBets()
+	// CreateBets()
 	// FindAndSaveNormalFixtures()
 	// ChangeGWTimes()
 }
@@ -144,22 +144,26 @@ func getGWs() []models.Gameweek {
 	return gws
 }
 
-func updateOddsAndWon(fx []models.Fixture, bts []models.Bet) {
+func updateOddsAndWon(fx []models.Fixture, bts []*models.Bet) {
 	updated := 0
 
 	for _, f := range fx {
-		for _, b := range bts {
+		for idx, b := range bts {
 			if b.FixtureId == f.ID {
-				saveFixture(b, f)
+				updateBet(bts[idx], f)
 				updated++
 			}
 		}
 	}
 
+	// Use .Select() to explicitly update Won column
+	// , otherwise it doesn't update rows with won = false
+	initializers.DB.Save(&bts)
+
 	fmt.Printf("updated %d bets\n", updated)
 }
 
-func saveFixture(b models.Bet, f models.Fixture) {
+func updateBet(b *models.Bet, f models.Fixture) {
 	var odd float32
 	var won bool = false
 	switch b.Result {
@@ -179,13 +183,13 @@ func saveFixture(b models.Bet, f models.Fixture) {
 		}
 		odd = f.AwayOdds
 	}
-	// Use .Select() to explicitly update Won column
-	// , otherwise it doesn't update rows with won = false
-	initializers.DB.Model(&b).Select("Odd", "Won").Updates(models.Bet{Odd: odd, Won: won})
+
+	b.Odd = odd
+	b.Won = won
 }
 
-func getAllNonUpdatedBets() []models.Bet {
-	bets := []models.Bet{}
+func getAllNonUpdatedBets() []*models.Bet {
+	bets := []*models.Bet{}
 
 	result := initializers.DB.Find(&bets, "won is null")
 	if result.Error != nil {
