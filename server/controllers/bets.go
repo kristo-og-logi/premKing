@@ -218,7 +218,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 		for _, betFixture := range body.Bets {
 			if betFixture.FixtureId == fixture.ID {
 				betFixtureFound = true
-				createdBet := CreateBet(betFixture, user.ID, gameweek)
+				createdBet := CreateBet(betFixture, fixture, user.ID, gameweek)
 				bets = append(bets, createdBet)
 				break // fixture already matched, no need to continue searching
 			}
@@ -240,7 +240,19 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, bets)
 }
 
-func CreateBet(betCreator BetCreator, userId string, gameweek uint8) models.Bet {
-	bet := models.Bet{ID: uuid.NewString(), UserId: userId, FixtureId: betCreator.FixtureId, Result: betCreator.Result, GameWeek: gameweek}
+func CreateBet(betCreator BetCreator, fixture models.Fixture, userId string, gameweek uint8) models.Bet {
+
+	var odd float32 = 0.0
+
+	switch betCreator.Result {
+	case "1":
+		odd = fixture.HomeOdds
+	case "X":
+		odd = fixture.DrawOdds
+	case "2":
+		odd = fixture.AwayOdds
+	}
+
+	bet := models.Bet{ID: uuid.NewString(), UserId: userId, FixtureId: betCreator.FixtureId, Result: betCreator.Result, GameWeek: gameweek, Odd: odd}
 	return bet
 }
