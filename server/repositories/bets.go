@@ -78,3 +78,14 @@ func GetBetsByFixtureId(fixtureId uint32) ([]models.Bet, error) {
 
 	return bets, nil
 }
+
+func GetBetsByGameweek(gw int) ([]*models.Bet, error) {
+	bets := []*models.Bet{}
+
+	result := initializers.DB.Find(&bets, "game_week = ?", gw)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bets, nil
+}

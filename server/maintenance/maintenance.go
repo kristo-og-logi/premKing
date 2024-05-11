@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,10 +18,30 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	AddOddsAndWonToBets()
+	// AddOddsAndWonToBets()
+	RecalculateBetsForGameweek()
 	// CreateBets()
 	// FindAndSaveNormalFixtures()
 	// ChangeGWTimes()
+}
+
+func RecalculateBetsForGameweek() {
+	fmt.Print("gameweek: ")
+	gameweekBytes, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+	gameweekString := string(gameweekBytes)
+	gameweek, err := strconv.Atoi(gameweekString)
+	if err != nil {
+		panic("invalid gameweek")
+	}
+
+	fixtures := getNormalFixturesByGW(gameweek)
+	bets := getBetsByGameweek(gameweek)
+
+	calculateBets(bets, fixtures)
+
+	initializers.DB.Save(&bets)
+
+	fmt.Printf("all bets for GW%d recalculated\n", gameweek)
 }
 
 func CreateBets() {
@@ -165,33 +186,23 @@ func updateOddsAndWon(fx []models.Fixture, bts []*models.Bet) {
 
 func updateBet(b *models.Bet, f models.Fixture) {
 	var odd float32
-	var won bool = false
 	switch b.Result {
 	case "1":
-		if f.Result == "1" {
-			won = true
-		}
 		odd = f.HomeOdds
 	case "X":
-		if f.Result == "X" {
-			won = true
-		}
 		odd = f.DrawOdds
 	case "2":
-		if f.Result == "2" {
-			won = true
-		}
 		odd = f.AwayOdds
 	}
 
 	b.Odd = odd
-	b.Won = won
+	b.Won = f.Finished && b.Result == f.Result
 }
 
 func getAllNonUpdatedBets() []*models.Bet {
 	bets := []*models.Bet{}
 
-	result := initializers.DB.Find(&bets, "won is null")
+	result := initializers.DB.Find(&bets, "odd = 0")
 	if result.Error != nil {
 		fmt.Printf("error fetching all bets: %s", result.Error.Error())
 		return nil
@@ -269,4 +280,34 @@ func getNormalFixturesByGW(gw int) []models.Fixture {
 	}
 
 	return fixtures
+}
+
+func getBetsByGameweek(gw int) []*models.Bet {
+	bets, err := repositories.GetBetsByGameweek(gw)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return bets
+}
+
+func calculateBets(bets []*models.Bet, fixtures []models.Fixture) {
+	for _, fix := range fixtures {
+		for idx, bet := range bets {
+			if fix.ID == bet.FixtureId {
+				switch bet.Result {
+				case "1":
+					bets[idx].Odd = fix.HomeOdds
+
+				case "X":
+					bets[idx].Odd = fix.DrawOdds
+
+				case "2":
+					bets[idx].Odd = fix.AwayOdds
+				}
+
+				bets[idx].Won = fix.Finished && fix.Result == bet.Result
+			}
+		}
+	}
 }
