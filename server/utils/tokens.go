@@ -34,6 +34,9 @@ func ValidateToken(tokenString string) (*jwt.Token, *AuthError) {
 	})
 
 	if err != nil {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, &AuthError{http.StatusUnauthorized, errors.New("token is expired")}
+		}
 		return nil, &AuthError{http.StatusInternalServerError, fmt.Errorf("error parsing token: %s", err.Error())}
 	}
 

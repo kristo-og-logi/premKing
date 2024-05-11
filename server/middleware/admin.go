@@ -9,6 +9,10 @@ import (
 
 func Admin(c *gin.Context) {
 	AuthenticateUser(c)
+	if c.IsAborted() {
+		return
+	}
+
 	user := utils.GetUserFromContext(c)
 
 	if user == nil {

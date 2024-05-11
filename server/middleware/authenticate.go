@@ -11,6 +11,9 @@ import (
 
 func Authenticate(c *gin.Context) {
 	AuthenticateUser(c)
+	if c.IsAborted() {
+		return
+	}
 	c.Next()
 }
 
