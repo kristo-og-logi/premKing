@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kristo-og-logi/premKing/server/crons"
 	"github.com/kristo-og-logi/premKing/server/repositories"
 )
 
@@ -31,4 +32,8 @@ func GetFixturesByGameWeek(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, fixtures)
+}
+
+func UpdateFixtures(c *gin.Context) {
+	crons.UpdateFixtures()
 }
