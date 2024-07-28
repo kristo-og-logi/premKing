@@ -58,6 +58,10 @@ func fetchFixtures() []models.SportmonksFixture {
 		req := createRequest(page)
 		res := getResponse(req)
 
+		if res == nil {
+			break
+		}
+
 		if !res.Pagination.HasMore {
 			hasMore = false
 		}
