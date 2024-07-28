@@ -44,6 +44,16 @@ func main() {
 	routes.SetupGameweekRoutes(router, version1Prefix)
 
 	router.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
+	router.GET("/health3", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
+	router.LoadHTMLFiles("html/privacy_policy.html")
+	router.GET("/pp", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "privacy_policy.html", nil)
+	})
+
+	router.Static("static", "./static")
+	router.GET("/favicon.png", func(c *gin.Context) {
+		c.File("./static/favicon.png")
+	})
 
 	fmt.Println("Router running...")
 	router.Run()
