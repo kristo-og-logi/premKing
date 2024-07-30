@@ -45,9 +45,13 @@ func main() {
 
 	router.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
 	router.GET("/health3", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
-	router.LoadHTMLFiles("html/privacy_policy.html")
+	router.LoadHTMLGlob("html/*")
 	router.GET("/pp", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "privacy_policy.html", nil)
+	})
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
 	router.Static("static", "./static")
