@@ -4,7 +4,9 @@ Running on Gin (Go) with Gorm.
 
 ## Setup
 
-Inside the server directory, try running `go run .`. If that gives you errors, you might not have downloaded the necessary packages. Run `go get .` in the same directory, and then run `go run .` again.
+Inside the server directory, try running `go run . --environment DEV`. If that gives you errors, you might not have downloaded the necessary packages. Run `go get .` in the same directory, and then run `go run . --environment DEV` again.
+
+Ensure that you've set all environment varialbes in [`.env.DEV`](./env.DEV). Use [`.env.example`](./.env.example) to get you started.
 
 ### For development
 
@@ -23,12 +25,21 @@ export PATH=$PATH:$GOPATH/bin
 Now, to hot module reload run the backend, start it with..
 
 ```
-CompileDaemon -command="./server" -color=true -log-prefix=false
+CompileDaemon -command="./server --environment DEV" -color=true -log-prefix=false
 ```
 
 ..inside the backend repository. The command includes "./server" as it's the name of the backend directory.
 
 Now you should be up and running!
+
+## Database
+
+The backend connects to a Postgres database using [gorm](https://gorm.io/). Both a DEV and a PROD database are hosted there. To connect, go to the Supabase dashboard.
+
+In the psql session:
+
+`\dt` - lists tables in the current schema
+`select * from teams;` - example SQL query
 
 ## Endpoints
 
