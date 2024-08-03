@@ -4,3 +4,4 @@
 .platform
 server
 awsServer
+json/**/*.json
