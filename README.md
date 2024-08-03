@@ -37,7 +37,7 @@ Then, to start the backend, make sure you have added the necessary environment v
 Then, run
 
 ```
-go run .
+go run . --environment {DEV || PROD}
 ```
 
 If you haven't used Go on your machine before, this probably won't work. Refer to [`/server/README.md`](/server/README.md) for help to boot up the backend.
@@ -45,7 +45,7 @@ If you haven't used Go on your machine before, this probably won't work. Refer t
 If running the backend in development, you **need to follow** the [`/server/README.md`](/server/README.md) documentation. Having completed that, run
 
 ```
-CompileDaemon -command="./server"
+CompileDaemon -command="./server --environment {DEV || PROD}"
 ```
 
 **For more detailed instructions, setup, endpoints and troubleshooting, visit the [server README](./server/README.md)**
