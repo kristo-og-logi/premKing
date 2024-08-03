@@ -13,6 +13,10 @@ import (
 	"github.com/kristo-og-logi/premKing/server/models"
 )
 
+// Compares all fixtures between Sportmonks and DB
+// Tries to update their dates, odds or status.
+//
+// Collects and prints statistics about successful updates
 func UpdateFixtures() {
 	fmt.Println("updating fixtures...")
 	fixtures := FetchFixtures()
@@ -43,6 +47,8 @@ func UpdateFixtures() {
 	fmt.Printf("Updated %d dates\n", totalDUpdated)
 	fmt.Printf("Updated %d statuses\n", totalSsUpdated)
 
+	// If any dates are updated,
+	// it might affect when the gameweeks start
 	if totalDUpdated > 0 {
 		fmt.Println("\nFixture dates updated... checking for gw updates")
 		ChangeGWTimes()
@@ -118,7 +124,7 @@ func createUrl(page int) string {
 	}
 
 	params := map[string]string{
-		"filters":  "fixtureSeasons:21646;bookmakers:2;markets:1",
+		"filters":  "fixtureSeasons:23614;bookmakers:2;markets:1",
 		"include":  "round;odds;scores;state",
 		"per_page": "50",
 		"page":     fmt.Sprint(page)}

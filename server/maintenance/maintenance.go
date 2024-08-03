@@ -22,9 +22,9 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	FindTeamsFromFixtures()
-	FetchAndCreateFixturesInDB()
-	FindAndSaveNormalFixtures()
+	// FindTeamsFromFixtures()
+	// FetchAndCreateFixturesInDB()
+	// FindAndSaveNormalFixtures()
 	// CreateBets()
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
@@ -482,6 +482,8 @@ func updateBet(b *models.Bet, f models.Fixture) {
 	b.Won = f.Finished && b.Result == f.Result
 }
 
+// Gets all bets which haven't had their odds updated.
+// Naturally, these bets haven't been declared as either won or lost either.
 func getAllNonUpdatedBets() []*models.Bet {
 	bets := []*models.Bet{}
 
