@@ -62,7 +62,7 @@ func migrateTeamsToDB(db *gorm.DB) {
 	var existingTeams []models.Team
 	result := db.Select("id").Find(&existingTeams)
 	if result.Error != nil {
-		log.Fatalf("error fetching all teams: %s\n", result.Error.Error())
+		log.Fatalf("error fetching existing teams: %s\n", result.Error.Error())
 	}
 
 	if len(existingTeams) >= 20 {
@@ -84,8 +84,6 @@ func migrateTeamsToDB(db *gorm.DB) {
 	for _, team := range teamsData {
 		model := models.Team{
 			ID:        team.Team.ID,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
 			Name:      team.Team.Name,
 			ShortName: team.Team.ShortName,
 			Logo:      team.Team.Logo,
@@ -113,11 +111,11 @@ func migrateFixturesToDB(db *gorm.DB) {
 	var existingFixtures []models.Fixture
 	result := db.Select("id").Find(&existingFixtures)
 	if result.Error != nil {
-		log.Fatalf("error fetching all fixtures: %s\n", result.Error.Error())
+		log.Fatalf("error fetching existing fixtures: %s\n", result.Error.Error())
 	}
 
 	if len(existingFixtures) >= 380 {
-		fmt.Println("all fixtures already existing in db")
+		fmt.Println("all fixtures already exist in db")
 		return
 	}
 
@@ -229,6 +227,8 @@ func migrateGameweeksToDB(db *gorm.DB) {
 
 		if index != 0 {
 			openTime = borders[index-1].LastFixtureDate.Add(2 * time.Hour)
+		} else {
+			openTime = time.Unix(0, 0)
 		}
 
 		model := models.Gameweek{

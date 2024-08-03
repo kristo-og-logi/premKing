@@ -2,27 +2,310 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/kristo-og-logi/premKing/server/crons"
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
+	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
 func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
-	// AddOddsAndWonToBets()
-	RecalculateBetsForGameweek()
+	FindTeamsFromFixtures()
+	FetchAndCreateFixturesInDB()
+	FindAndSaveNormalFixtures()
 	// CreateBets()
-	// FindAndSaveNormalFixtures()
 	// ChangeGWTimes()
+	// AddOddsAndWonToBets()
+	// RecalculateBetsForGameweek()
+}
+
+// Uses all fetched fixtures from pages.json
+// And saves them to the db if any fixtures are missing
+// Assumes that all teams exist in db
+func FetchAndCreateFixturesInDB() {
+	fixtures := []models.SportmonksFixture{}
+
+	// pages.json created by saveFixtures.py
+	file, _ := os.ReadFile("./json/sportmonks/fixtures/pages.json")
+	_ = json.Unmarshal(file, &fixtures)
+
+	fmt.Printf("found: %d fixtures\n", len(fixtures))
+
+	dbTeams, _ := repositories.GetTeams()
+
+	if len(dbTeams) < 20 {
+		fmt.Printf("only found %v teams\n", len(dbTeams))
+		os.Exit(1)
+	}
+	dbFixtures := crons.GetFixturesFromDB()
+
+	fmt.Printf("found: %d db fixtures\n", len(dbFixtures))
+
+	fmt.Printf("fixture: %+v\n", fixtures[0])
+
+	if len(dbFixtures) < 380 {
+
+		fixturesToSave := []models.Fixture{}
+		for _, fix := range fixtures {
+
+			teams := strings.Split(fix.Name, " vs ")
+
+			home := findTeamByName(dbTeams, teams[0])
+			away := findTeamByName(dbTeams, teams[1])
+
+			if home == nil || away == nil {
+				fmt.Printf("ERROR: teams \"%v\" or \"%v\" not found\n", teams[0], teams[1])
+				continue
+			}
+
+			// fmt.Printf("teams: %v\n", len(teams))
+			round, _ := strconv.Atoi(fix.Round.Name)
+			date, _ := utils.StringToDate(fix.StartingAt)
+			dbFix := models.Fixture{
+				ID:           fix.Id,
+				LongName:     fix.Name,
+				HomeTeamId:   home.ID,
+				AwayTeamId:   away.ID,
+				MatchDate:    date,
+				GameWeek:     uint8(round),
+				SportmonksID: fix.Id,
+			}
+
+			fixturesToSave = append(fixturesToSave, dbFix)
+		}
+
+		result := initializers.DB.Create(&fixturesToSave)
+
+		if result.Error != nil {
+			fmt.Printf("ERROR saving fixtures: %v\n", result.Error.Error())
+			os.Exit(1)
+		}
+
+		fmt.Printf("Success: %v\n", result.RowsAffected)
+	}
+}
+
+func findTeamByName(teams []models.Team, name string) *models.Team {
+	for _, team := range teams {
+		if team.Name == name {
+			return &team
+		}
+	}
+
+	return nil
+}
+
+type ApiSportsTeamsResponse struct {
+	Response []struct {
+		Team struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+			Logo string `json:"logo"`
+		} `json:"team"`
+	} `json:"response"`
+}
+
+// Uses fetched fixtures from sportmonks (enough fixtures for each team to be included at least once)
+// And fetched teams from API-football (bc they provide images for each team)
+// Creates the teams in the database if none exist
+func FindTeamsFromFixtures() {
+	// fixtures4.json fetched from
+	// https://api.sportmonks.com/v3/football/fixtures
+	// ?include=round;odds;scores;state&filters=bookmakers=2;markets=1;fixtureSeasons=23614&page=2
+	buf, err := os.ReadFile("./json/fixtures4.json")
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+	}
+
+	var resp crons.SportmonksFixtureResponse
+	json.Unmarshal(buf, &resp)
+
+	fixtures := crons.Convert(&resp)
+
+	fmt.Printf("found %v fixtures\n", len(fixtures))
+
+	teamMap := make(map[string]struct{})
+	for _, fix := range fixtures {
+		teams := strings.Split(fix.Name, " vs ")
+		teamMap[teams[0]] = struct{}{}
+		teamMap[teams[1]] = struct{}{}
+	}
+
+	fmt.Printf("%v teams\n", len(teamMap))
+
+	// teams24-25.json fetched from API-football
+	// using https://v3.football.api-sports.io/teams?league=39&season=2024
+	buf2, _ := os.ReadFile("./json/teams24-25.json")
+	var resp2 ApiSportsTeamsResponse
+
+	err = json.Unmarshal(buf2, &resp2)
+	if err != nil {
+		fmt.Printf("err: %v\n", err.Error())
+	}
+
+	dbTeams := []models.Team{}
+	result := initializers.DB.Find(&dbTeams)
+	if result.Error != nil {
+		fmt.Printf("error: %v\n", result.Error.Error())
+		return
+	}
+
+	fmt.Printf("found %v teams in db\n", len(dbTeams))
+	fmt.Printf("found %v teams in json\n", len(resp2.Response))
+
+	// for team := range teamMap {
+	// 	fmt.Printf("%s - %s\n", team, ConvertTeamName(team))
+	// }
+
+	if len(dbTeams) == 0 {
+		for _, team := range resp2.Response {
+			name := ConvertTeamName(team.Team.Name)
+			dbTeam := models.Team{
+				ID:        uint16(team.Team.ID),
+				Name:      name,
+				ShortName: GetShortName(name),
+				Logo:      team.Team.Logo,
+			}
+
+			fmt.Printf("db: %v\n", dbTeam)
+			initializers.DB.Create(&dbTeam)
+		}
+	}
+}
+
+func ConvertTeamName(name string) string {
+	conversion := map[string]string{
+		"Manchester United": "Manchester United",
+		"Arsenal":           "Arsenal",
+		"Wolves":            "Wolverhampton Wanderers",
+		"Bournemouth":       "AFC Bournemouth",
+		"Crystal Palace":    "Crystal Palace",
+		"Fulham":            "Fulham",
+		"Ipswich Town":      "Ipswich Town",
+		"Newcastle":         "Newcastle United",
+		"Tottenham":         "Tottenham Hotspur",
+		"Liverpool":         "Liverpool",
+		"Everton":           "Everton",
+		"Nottingham Forest": "Nottingham Forest",
+		"Brentford":         "Brentford",
+		"Chelsea":           "Chelsea",
+		"Manchester City":   "Manchester City",
+		"Leicester":         "Leicester City",
+		"Brighton":          "Brighton & Hove Albion",
+		"Southampton":       "Southampton",
+		"West Ham":          "West Ham United",
+		"Aston Villa":       "Aston Villa",
+	}
+
+	return conversion[name]
+}
+
+func GetShortName(name string) string {
+	conversion := map[string]string{
+		"Manchester United":       "Man United",
+		"Wolverhampton Wanderers": "Wolves",
+		"AFC Bournemouth":         "Bournemouth",
+		"Ipswich Town":            "Ipswich",
+		"Newcastle United":        "Newcastle",
+		"Tottenham Hotspur":       "Tottenham",
+		"Nottingham Forest":       "Nott'm Forest",
+		"Manchester City":         "Man City",
+		"Leicester City":          "Leicester",
+		"Brighton & Hove Albion":  "Brighton",
+		"West Ham United":         "West Ham",
+	}
+
+	converted := conversion[name]
+
+	if converted == "" {
+		return name
+	}
+
+	return converted
+}
+
+// CalculateLevenshteinDistance calculates the Levenshtein distance between two strings.
+func CalculateLevenshteinDistance(s1, s2 string) int {
+	lenS1, lenS2 := len(s1), len(s2)
+
+	// Create a 2D slice for dynamic programming
+	dp := make([][]int, lenS1+1)
+	for i := range dp {
+		dp[i] = make([]int, lenS2+1)
+	}
+
+	// Initialize base cases
+	for i := 0; i <= lenS1; i++ {
+		dp[i][0] = i
+	}
+	for j := 0; j <= lenS2; j++ {
+		dp[0][j] = j
+	}
+
+	// Fill the dp table
+	for i := 1; i <= lenS1; i++ {
+		for j := 1; j <= lenS2; j++ {
+			if s1[i-1] == s2[j-1] {
+				dp[i][j] = dp[i-1][j-1]
+			} else {
+				dp[i][j] = min(dp[i-1][j]+1, min(dp[i][j-1]+1, dp[i-1][j-1]+1))
+			}
+		}
+	}
+
+	return dp[lenS1][lenS2]
+}
+
+// min returns the minimum of two integers.
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// PairSimilarStrings takes two equal-sized arrays of strings and returns an array of pairs of the most similar strings.
+func PairSimilarStrings(arr1, arr2 []string) [][2]string {
+	if len(arr1) != len(arr2) {
+		return nil // Return nil if the arrays are not of equal size
+	}
+
+	pairedStrings := make([][2]string, len(arr1))
+	usedIndices := make(map[int]bool)
+
+	for i, str1 := range arr1 {
+		minDistance := int(^uint(0) >> 1) // Max int value
+		bestMatchIndex := -1
+
+		for j, str2 := range arr2 {
+			if usedIndices[j] {
+				continue // Skip already paired strings
+			}
+
+			distance := CalculateLevenshteinDistance(str1, str2)
+			if distance < minDistance {
+				minDistance = distance
+				bestMatchIndex = j
+			}
+		}
+
+		pairedStrings[i] = [2]string{str1, arr2[bestMatchIndex]}
+		usedIndices[bestMatchIndex] = true
+	}
+
+	return pairedStrings
 }
 
 func RecalculateBetsForGameweek() {
@@ -111,8 +394,8 @@ func ChangeGWTimes() {
 }
 
 // FindNormalFixtures groups and saves all fixtures
-// by their gameweek, and finds out which are normal
-// , meaning that they occur within the gameweek's timeframe.
+// by their gameweek, and finds out which are normal,
+// meaning that they occur within the gameweek's timeframe.
 func FindAndSaveNormalFixtures() {
 	fixtureList := make([][]models.Fixture, 38)
 

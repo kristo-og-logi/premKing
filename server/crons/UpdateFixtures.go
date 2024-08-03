@@ -15,8 +15,8 @@ import (
 
 func UpdateFixtures() {
 	fmt.Println("updating fixtures...")
-	fixtures := fetchFixtures()
-	dbFixtures := getFixturesFromDB()
+	fixtures := FetchFixtures()
+	dbFixtures := GetFixturesFromDB()
 
 	var totalOUpdated, totalDUpdated, totalSsUpdated, matches int = 0, 0, 0, 0
 	for _, dbfix := range dbFixtures {
@@ -49,7 +49,7 @@ func UpdateFixtures() {
 	}
 }
 
-func fetchFixtures() []models.SportmonksFixture {
+func FetchFixtures() []models.SportmonksFixture {
 	hasMore := true
 
 	fixtures := []models.SportmonksFixture{}
@@ -66,7 +66,7 @@ func fetchFixtures() []models.SportmonksFixture {
 			hasMore = false
 		}
 
-		fixt := convert(res)
+		fixt := Convert(res)
 		fixtures = append(fixtures, fixt...)
 
 		time.Sleep(1 * time.Second)
@@ -77,7 +77,7 @@ func fetchFixtures() []models.SportmonksFixture {
 	return fixtures
 }
 
-func getFixturesFromDB() []models.Fixture {
+func GetFixturesFromDB() []models.Fixture {
 	fixtures := []models.Fixture{}
 	result := initializers.DB.Find(&fixtures)
 	if result.Error != nil {
@@ -132,7 +132,7 @@ func createUrl(page int) string {
 	return baseUrl.String()
 }
 
-func convert(res *SportmonksFixtureResponse) []models.SportmonksFixture {
+func Convert(res *SportmonksFixtureResponse) []models.SportmonksFixture {
 	fixtures := []models.SportmonksFixture{}
 
 	for _, match := range res.Data {

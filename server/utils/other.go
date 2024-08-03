@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/kristo-og-logi/premKing/server/models"
 )
@@ -36,4 +37,15 @@ func CreateFixtureName(homeTeam models.Team, awayTeam models.Team) string {
 
 	fixtureName := fmt.Sprintf("%s vs %s", home, away)
 	return fixtureName
+}
+
+func StringToDate(date string) (time.Time, error) {
+	format := "2006-01-02 15:04:05"
+	parsed, err := time.Parse(format, date)
+
+	if err != nil {
+		return time.Unix(0, 0), err
+	}
+
+	return parsed, nil
 }

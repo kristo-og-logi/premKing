@@ -27,6 +27,7 @@ type Fixture struct {
 	IsNormal     bool      `json:"isNormal"`
 }
 
+// Api-football fixture
 type FixturesResponse struct {
 	Response []FixtureJSON `json:"response"`
 }
