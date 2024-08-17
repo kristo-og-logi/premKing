@@ -19,6 +19,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
+      "buildNumber": "1",
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
           {
