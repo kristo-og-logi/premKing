@@ -10,12 +10,12 @@ import (
 )
 
 func LoadEnv() {
-	env := flag.String("environment", "", "Specify the environment: DEV | PROD")
+	env := flag.String("environment", "", "Specify the environment: DEV | PROD | LOCAL")
 
 	flag.Parse()
 
-	if *env != "DEV" && *env != "PROD" {
-		fmt.Fprintln(os.Stderr, "The --environment flag is mandatory and can only be DEV or PROD")
+	if *env != "DEV" && *env != "PROD" && *env != "LOCAL" {
+		fmt.Fprintln(os.Stderr, "The --environment flag is mandatory and can only be DEV, PROD or LOCAL")
 		flag.Usage()
 		os.Exit(2)
 	}

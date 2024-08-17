@@ -32,6 +32,8 @@ CompileDaemon -command="./server --environment DEV" -color=true -log-prefix=fals
 
 Now you should be up and running!
 
+ps. You can also setup a local database using `.env.LOCAL`, or just by simply changing your `.env.DEV`.
+
 ## Database
 
 The backend connects to a Postgres database using [gorm](https://gorm.io/). Both a DEV and a PROD database are hosted there. To connect, go to the Supabase dashboard.
@@ -101,7 +103,7 @@ This is likely not for you, but for general admin control over the database use 
 Currently:
 
 ```
-go run maintenance/maintenance.go --environment {DEV || PROD}
+go run maintenance/maintenance.go --environment {DEV | PROD | LOCAL}
 ```
 
 executes a maintenance script for either environments's database.
