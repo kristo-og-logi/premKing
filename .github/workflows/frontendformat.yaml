@@ -1,0 +1,24 @@
+# from https://biomejs.dev/recipes/continuous-integration/
+name: Frontend| Format & Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: cd frontend
+        run: cd frontend
+
+      - name: 
+        run: biome ci .
