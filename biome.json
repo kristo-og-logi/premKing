@@ -1,13 +1,13 @@
 {
   "formatter": {
-    "indentStyle": "space", // default is `tab`
-    "lineWidth": 100, // default is `80`
+    "indentStyle": "space",
+    "lineWidth": 100,
     "indentWidth": 2
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "single", // default is `double`
-      "lineWidth": 120 // override `formatter.lineWidth`
+      "quoteStyle": "single",
+      "lineWidth": 120
     }
   },
   "json": {
