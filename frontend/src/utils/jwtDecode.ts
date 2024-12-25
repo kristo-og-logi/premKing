@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 export const jwtDecode = (token: string): { exp: number; id: string; name: string } => {
   const part = token.split('.')[1];

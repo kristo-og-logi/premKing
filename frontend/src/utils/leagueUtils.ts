@@ -61,9 +61,9 @@ export const calculateTimeUntilGW = (gameweek: Gameweek) => {
   const finishes = new Date(gameweek.finishes);
 
   if (now < opens) return `Opens on ${dateFormatter.format(opens)}`;
-  if (now < closes) return `Open`;
-  if (now < finishes) return `Ongoing`;
+  if (now < closes) return 'Open';
+  if (now < finishes) return 'Ongoing';
   if (finishes < now) return `Finished on ${dateFormatter.format(finishes)}`;
 
-  return `unknown`;
+  return 'unknown';
 };
