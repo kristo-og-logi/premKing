@@ -3,6 +3,8 @@ name: Frontend| Format & Lint
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
