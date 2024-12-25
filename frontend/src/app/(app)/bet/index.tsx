@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
-import { Bet } from '../../../types/Bet';
+import type { Bet } from '../../../types/Bet';
 import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';

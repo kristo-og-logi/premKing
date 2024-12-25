@@ -2,7 +2,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
-import { League } from '../../types/League';
+import type { League } from '../../types/League';
 import { useAppSelector } from '../../redux/hooks';
 import { Redirect } from 'expo-router';
 import { renderChange } from '../leagueId/PlayerScore';

@@ -6,7 +6,7 @@ import { calculateTimeUntilGW, calculateGwAction, getGameweekStatus } from '../.
 import PremButton from '../basic/PremButton';
 import PremText from '../basic/PremText';
 import { useAppSelector } from '../../redux/hooks';
-import { Bet } from '../../types/Bet';
+import type { Bet } from '../../types/Bet';
 import { GameweekStatus } from '../../types/Gameweek';
 
 interface Props {

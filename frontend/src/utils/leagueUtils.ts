@@ -1,6 +1,7 @@
-import { Bet } from '../types/Bet';
-import Gameweek, { GameweekStatus } from '../types/Gameweek';
-import { Player } from '../types/Player';
+import type { Bet } from '../types/Bet';
+import type Gameweek from '../types/Gameweek';
+import { GameweekStatus } from '../types/Gameweek';
+import type { Player } from '../types/Player';
 import { dateFormatter } from './constants';
 
 export const calculateYourPlace = (players: Player[], gw: number, userId?: string): string => {

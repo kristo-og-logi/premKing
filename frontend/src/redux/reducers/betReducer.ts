@@ -1,6 +1,6 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
-import { Bet, Ticket } from '../../types/Bet';
+import type { Bet, Ticket } from '../../types/Bet';
 
 export interface BetState {
   bets: Ticket[];

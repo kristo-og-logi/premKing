@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { LoginResponse } from '../redux/reducers/authReducer';
+import type { LoginResponse } from '../redux/reducers/authReducer';
 import { jwtDecode } from './jwtDecode';
 
 export const getTokenFromStorage = async (): Promise<LoginResponse> => {

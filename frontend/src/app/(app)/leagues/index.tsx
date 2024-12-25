@@ -6,7 +6,7 @@ import PremButton from '../../../components/basic/PremButton';
 import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { League } from '../../../types/League';
+import type { League } from '../../../types/League';
 import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';

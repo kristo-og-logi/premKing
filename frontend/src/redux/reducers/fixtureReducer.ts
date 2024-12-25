@@ -1,5 +1,5 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import Fixture from '../../types/Fixture';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type Fixture from '../../types/Fixture';
 // import Gameweek from '../../types/Gameweek';
 import { backend } from '../../utils/constants';
 

@@ -1,4 +1,4 @@
-import Score from './Scores';
+import type Score from './Scores';
 
 export type Player = {
   id: string;

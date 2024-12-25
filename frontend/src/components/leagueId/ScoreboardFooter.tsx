@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { calculateYourPlace } from '../../utils/leagueUtils';
 import PremText from '../basic/PremText';
-import { Player } from '../../types/Player';
+import type { Player } from '../../types/Player';
 
 interface Props {
   players: Player[];

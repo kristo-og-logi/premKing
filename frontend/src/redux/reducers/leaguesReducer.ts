@@ -1,7 +1,7 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { League, SelectedLeague } from '../../types/League';
-import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
+import type { League, SelectedLeague } from '../../types/League';
+import type { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import { backend } from '../../utils/constants';
 
 export interface LeagueState {

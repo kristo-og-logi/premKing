@@ -1,11 +1,11 @@
 import React from 'react';
-import { ImageSourcePropType, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { type ImageSourcePropType, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import PremText from '../basic/PremText';
 import { colors } from '../../styles/styles';
 
 export enum Side {
-  LEFT,
-  RIGHT,
+  LEFT = 0,
+  RIGHT = 1,
 }
 
 const TeamColumn = ({

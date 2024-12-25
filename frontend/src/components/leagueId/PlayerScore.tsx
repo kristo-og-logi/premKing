@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 import PremText from '../basic/PremText';
 import { colors, scoreboardWidths } from '../../styles/styles';
-import { Player } from '../../types/Player';
+import type { Player } from '../../types/Player';
 
 interface Props {
   player: Player;
@@ -28,7 +28,7 @@ const renderPositionChange = (player: Player, gw: number) => {
   return renderChange(posChange(player, gw), gw);
 };
 
-export const renderChange = (posChange: number, gw: number, opposite: boolean = false) => {
+export const renderChange = (posChange: number, gw: number, opposite = false) => {
   return (
     <View style={styles.positionChangeWrapper}>
       {gw === 1 || posChange === 0 ? (

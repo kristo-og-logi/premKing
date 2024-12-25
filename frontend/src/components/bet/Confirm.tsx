@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import PremButton from '../basic/PremButton';
 import { colors } from '../../styles/styles';
-import { Bet } from '../../types/Bet';
+import type { Bet } from '../../types/Bet';
 import { submitBet } from '../../redux/reducers/betReducer';
 import { getGameweekStatus } from '../../utils/leagueUtils';
 import { GameweekStatus } from '../../types/Gameweek';

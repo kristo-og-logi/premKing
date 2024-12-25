@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import PremText from '../../basic/PremText';
-import Fixture, { FixtureResult } from '../../../types/Fixture';
-import { Bet } from '../../../types/Bet';
+import type Fixture from '../../../types/Fixture';
+import { FixtureResult } from '../../../types/Fixture';
+import type { Bet } from '../../../types/Bet';
 import TeamColumn, { Side } from '../TeamColumn';
 import DrawColumn from '../DrawColumn';
 import { dateFormatter } from '../../../utils/constants';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Fixture from '../../../types/Fixture';
+import type Fixture from '../../../types/Fixture';
 import TeamColumn, { Side } from '../TeamColumn';
 import DrawColumn from '../DrawColumn';
 import { dateFormatter } from '../../../utils/constants';

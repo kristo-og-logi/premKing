@@ -4,7 +4,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { colors } from '../../styles/styles';
 import PlayerScore from './PlayerScore';
 import ScoreboardFooter from './ScoreboardFooter';
-import { Player } from '../../types/Player';
+import type { Player } from '../../types/Player';
 import ScoreboardHeader from './ScoreboardHeader';
 
 interface Props {

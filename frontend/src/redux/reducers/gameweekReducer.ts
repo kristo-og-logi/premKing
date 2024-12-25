@@ -1,6 +1,6 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { backend } from '../../utils/constants';
-import Gameweek from '../../types/Gameweek';
+import type Gameweek from '../../types/Gameweek';
 
 export interface GameweekState {
   currentGameweek: number;
