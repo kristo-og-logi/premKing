@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/styles';
+import type { Player } from '../../types/Player';
 import PlayerScore from './PlayerScore';
 import ScoreboardFooter from './ScoreboardFooter';
-import { Player } from '../../types/Player';
 import ScoreboardHeader from './ScoreboardHeader';
 
 interface Props {

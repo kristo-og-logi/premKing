@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextStyle } from 'react-native';
+import { Text, type TextStyle } from 'react-native';
 import { colors } from '../../styles/styles';
 
 type Props = {
@@ -24,14 +24,7 @@ const getSize = (order: 1 | 2 | 3 | 4) => {
   }
 };
 
-const PremText = ({
-  order = 3,
-  centered = false,
-  padding = 0,
-  color,
-  overflowing = false,
-  children,
-}: Props) => {
+const PremText = ({ order = 3, centered = false, padding = 0, color, overflowing = false, children }: Props) => {
   const size = getSize(order);
 
   const styles: TextStyle = {
@@ -46,11 +39,7 @@ const PremText = ({
   };
 
   return (
-    <Text
-      style={styles}
-      numberOfLines={overflowing ? 1 : undefined}
-      ellipsizeMode={overflowing ? 'tail' : undefined}
-    >
+    <Text style={styles} numberOfLines={overflowing ? 1 : undefined} ellipsizeMode={overflowing ? 'tail' : undefined}>
       {children}
     </Text>
   );

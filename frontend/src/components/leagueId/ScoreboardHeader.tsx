@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { scoreboardWidths } from '../../styles/styles';
+import type { Player } from '../../types/Player';
 import PremText from '../basic/PremText';
-import { Player } from '../../types/Player';
 
 interface Props {
   gw: number;

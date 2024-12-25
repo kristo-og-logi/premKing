@@ -1,6 +1,6 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type Score from '../../types/Scores';
 import { backend } from '../../utils/constants';
-import Score from '../../types/Scores';
 
 export interface ScoreState {
   selectedGameweek: number;

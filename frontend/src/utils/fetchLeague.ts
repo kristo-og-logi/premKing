@@ -1,4 +1,4 @@
-import { SelectedLeague } from '../types/League';
+import type { SelectedLeague } from '../types/League';
 
 const leagues: SelectedLeague[] = [
   {
@@ -137,7 +137,7 @@ export const fetchLeagues = async () => {
   return leagues;
 };
 
-export const fetchLeagueById = async (id: string = '') => {
+export const fetchLeagueById = async (id = '') => {
   // const response = await fetch(`${BACKEND}/api/v1/leagues/${id}`)
   const response = leagues.find((league) => league.id === id);
 

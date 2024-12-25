@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import PremText from '../basic/PremText';
-import { colors, globalStyles } from '../../styles/styles';
 import { useAppSelector } from '../../redux/hooks';
+import { colors, globalStyles } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 interface Props {
   selectedGW: number;
@@ -29,9 +29,7 @@ const Scores = ({ selectedGW }: Props) => {
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
         <PremText order={2}>
-          {scoreSlice.isLoading ||
-          scoreSlice.scores[selectedGW - 1] === undefined ||
-          betSlice.isLoading
+          {scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined || betSlice.isLoading
             ? '...'
             : selectedGW > gameweekSlice.currentGameweek
               ? '??'

@@ -1,12 +1,12 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import PremText from '../../../components/basic/PremText';
-import { colors, globalStyles } from '../../../styles/styles';
-import PremTextInput from '../../../components/basic/PremTextInput';
-import PremButton from '../../../components/basic/PremButton';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import PremButton from '../../../components/basic/PremButton';
+import PremText from '../../../components/basic/PremText';
+import PremTextInput from '../../../components/basic/PremTextInput';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { joinLeague, removeJoinLeagueError } from '../../../redux/reducers/leaguesReducer';
+import { colors, globalStyles } from '../../../styles/styles';
 import { CHARSET, ERROR_TIMEOUT, ID_LEN } from '../../../utils/constants';
 
 const isValidCode = (leagueCode: string): boolean => {
@@ -47,9 +47,7 @@ const JoinLeague = () => {
         <PremTextInput
           placeholder="XYC123"
           value={leagueCode}
-          onChangeText={(value) =>
-            value.length <= 6 ? setLeagueCode(value.toUpperCase()) : setInputError(true)
-          }
+          onChangeText={(value) => (value.length <= 6 ? setLeagueCode(value.toUpperCase()) : setInputError(true))}
         />
         <PremButton
           disabled={!isValidCode(leagueCode) || leagueSlice.joinIsLoading}

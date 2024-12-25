@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-
-import { colors, globalStyles } from '../../../styles/styles';
-import PremButton from '../../../components/basic/PremButton';
-import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import { router } from 'expo-router';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { League } from '../../../types/League';
-import PremText from '../../../components/basic/PremText';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+
 import GameweekShifter from '../../../components/basic/GameweekShifter';
-import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
+import PremButton from '../../../components/basic/PremButton';
+import PremText from '../../../components/basic/PremText';
+import LeagueItem from '../../../components/leagueMenu/LeagueItem';
 import Scores from '../../../components/leagueMenu/Scores';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { getMyLeagues, setJoinLeagueActive } from '../../../redux/reducers/leaguesReducer';
+import { colors, globalStyles } from '../../../styles/styles';
+import type { League } from '../../../types/League';
 
 const renderLeagues = (leagues: League[], gw: number) => {
   return leagues.map((league) => (
-    <LeagueItem
-      key={league.id}
-      league={league}
-      gw={gw}
-      onPress={() => router.push(`/leagues/${league.id}`)}
-    />
+    <LeagueItem key={league.id} league={league} gw={gw} onPress={() => router.push(`/leagues/${league.id}`)} />
   ));
 };
 
@@ -59,9 +54,7 @@ export default function Page() {
       ) : leagueSlice.leagues.length !== 0 ? (
         <View style={{ maxHeight: 360 }}>
           <ScrollView style={{ flexGrow: 0 }}>
-            <View style={styles.leagueWrapper}>
-              {renderLeagues(leagueSlice.leagues, selectedGW)}
-            </View>
+            <View style={styles.leagueWrapper}>{renderLeagues(leagueSlice.leagues, selectedGW)}</View>
           </ScrollView>
         </View>
       ) : (

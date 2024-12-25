@@ -1,4 +1,4 @@
-import Team from './Team';
+import type Team from './Team';
 
 export enum FixtureResult {
   HOME = '1',

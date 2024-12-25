@@ -1,14 +1,14 @@
-import { BackHandler, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, View } from 'react-native';
 
-import { globalStyles } from '../../../styles/styles';
-import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
+import PremText from '../../../components/basic/PremText';
+import BetInfo from '../../../components/leagueId/BetInfo';
+import Scoreboard from '../../../components/leagueId/Scoreboard';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
-import Scoreboard from '../../../components/leagueId/Scoreboard';
-import BetInfo from '../../../components/leagueId/BetInfo';
+import { globalStyles } from '../../../styles/styles';
 
 const LeagueView = () => {
   const navigation = useNavigation();
@@ -67,11 +67,7 @@ const LeagueView = () => {
         <>
           <GameweekShifter selectedGW={selectedGW} setSelectedGameweek={setSelectedGW} />
           <BetInfo selectedGW={selectedGW} bets={betSlice.bets[selectedGW - 1].bets || []} />
-          <Scoreboard
-            players={leagueSlice.selectedLeague.users}
-            gw={selectedGW}
-            myId={auth.user?.id}
-          />
+          <Scoreboard players={leagueSlice.selectedLeague.users} gw={selectedGW} myId={auth.user?.id} />
         </>
       )}
     </View>

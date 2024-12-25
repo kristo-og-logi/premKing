@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Fixture from '../../../types/Fixture';
-import TeamColumn, { Side } from '../TeamColumn';
-import DrawColumn from '../DrawColumn';
+import { StyleSheet, View } from 'react-native';
+import type Fixture from '../../../types/Fixture';
 import { dateFormatter } from '../../../utils/constants';
+import DrawColumn from '../DrawColumn';
+import TeamColumn, { Side } from '../TeamColumn';
 
 interface Props {
   fixture: Fixture;

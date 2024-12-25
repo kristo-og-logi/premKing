@@ -1,5 +1,5 @@
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { StyleSheet } from 'react-native';
 
 export const colors = {

@@ -1,17 +1,13 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import {
-  calculateTimeUntilGW,
-  calculateGwAction,
-  getGameweekStatus,
-} from '../../utils/leagueUtils';
+import { useAppSelector } from '../../redux/hooks';
+import type { Bet } from '../../types/Bet';
+import { GameweekStatus } from '../../types/Gameweek';
+import { calculateGwAction, calculateTimeUntilGW, getGameweekStatus } from '../../utils/leagueUtils';
 import PremButton from '../basic/PremButton';
 import PremText from '../basic/PremText';
-import { useAppSelector } from '../../redux/hooks';
-import { Bet } from '../../types/Bet';
-import { GameweekStatus } from '../../types/Gameweek';
 
 interface Props {
   selectedGW: number;
@@ -25,15 +21,10 @@ const BetInfo = ({ selectedGW, bets }: Props) => {
 
   return (
     <View style={styles.betWrapper}>
-      <PremText centered>
-        {calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}
-      </PremText>
+      <PremText centered>{calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}</PremText>
       <PremButton
         disabled={
-          !(
-            getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]) === GameweekStatus.OPEN &&
-            bets.length === 0
-          )
+          !(getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]) === GameweekStatus.OPEN && bets.length === 0)
         }
         onPress={() => {
           router.replace('bet');

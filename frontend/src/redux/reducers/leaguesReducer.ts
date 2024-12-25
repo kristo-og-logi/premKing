@@ -1,8 +1,8 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { League, SelectedLeague } from '../../types/League';
-import { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import type { League, SelectedLeague } from '../../types/League';
 import { backend } from '../../utils/constants';
+import type { RootState } from '../store';
 
 export interface LeagueState {
   leagues: League[];
@@ -84,15 +84,12 @@ export const leagueSlice = createSlice({
       .addCase(joinLeague.pending, (state) => {
         state.joinIsLoading = true;
       })
-      .addCase(
-        joinLeague.rejected,
-        (state, action: RejectedActionFromAsyncThunk<typeof joinLeague>) => {
-          console.log('in builder: action = ', action);
-          state.joinHasError = true;
-          state.joinIsLoading = false;
-          state.joinErrorMessage = action.error.message ?? '';
-        }
-      )
+      .addCase(joinLeague.rejected, (state, action: RejectedActionFromAsyncThunk<typeof joinLeague>) => {
+        console.log('in builder: action = ', action);
+        state.joinHasError = true;
+        state.joinIsLoading = false;
+        state.joinErrorMessage = action.error.message ?? '';
+      })
       .addCase(joinLeague.fulfilled, (state, action: PayloadAction<League>) => {
         state.joinIsLoading = false;
         state.leagues.push(action.payload);
@@ -128,7 +125,7 @@ export const getSelectedLeague = createAsyncThunk<SelectedLeague, GetSelectedLea
       console.log('ERROR: ', error);
       throw error;
     }
-  }
+  },
 );
 
 interface CreateLeagueParams {
@@ -155,32 +152,29 @@ export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
 
     const data: League = await response.json();
     return data;
-  }
+  },
 );
 
-export const getMyLeagues = createAsyncThunk<League[], string>(
-  'leagues/getMyLeagues',
-  async (token) => {
-    try {
-      const response = await fetch(`${backend}/users/me/leagues`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+export const getMyLeagues = createAsyncThunk<League[], string>('leagues/getMyLeagues', async (token) => {
+  try {
+    const response = await fetch(`${backend}/users/me/leagues`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (!response.ok) {
-        const message: { error: string } = await response.json();
-        throw new Error(message.error);
-      }
-
-      const myLeagues: League[] = await response.json();
-      return myLeagues;
-    } catch (error) {
-      console.log('ERROR in leagues/getMyLeagues: ', error);
-      throw error;
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      throw new Error(message.error);
     }
+
+    const myLeagues: League[] = await response.json();
+    return myLeagues;
+  } catch (error) {
+    console.log('ERROR in leagues/getMyLeagues: ', error);
+    throw error;
   }
-);
+});
 
 interface JoinLeagueParams {
   token: string;
@@ -209,7 +203,7 @@ export const joinLeague = createAsyncThunk<League, JoinLeagueParams>(
       console.log('ERROR in leagues/joinLeague: ', error);
       throw error;
     }
-  }
+  },
 );
 
 export const { remove, unselect, setJoinLeagueActive, removeJoinLeagueError } = leagueSlice.actions;

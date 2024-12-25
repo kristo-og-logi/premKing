@@ -1,9 +1,9 @@
-import React from 'react';
-import { Slot } from 'expo-router';
 import { registerRootComponent } from 'expo';
+import { useFonts } from 'expo-font';
+import { Slot } from 'expo-router';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
-import { useFonts } from 'expo-font';
 
 export default function AppLayout() {
   const [fontsLoaded] = useFonts({

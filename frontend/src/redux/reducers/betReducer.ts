@@ -1,6 +1,6 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { Bet, Ticket } from '../../types/Bet';
 import { backend } from '../../utils/constants';
-import { Bet, Ticket } from '../../types/Bet';
 
 export interface BetState {
   bets: Ticket[];
@@ -50,40 +50,34 @@ export const betSlice = createSlice({
         state.createBetIsLoading = false;
         state.createBetHasError = true;
       })
-      .addCase(
-        submitBet.fulfilled,
-        (state, action: PayloadAction<{ createdBets: Bet[]; gameweek: number }>) => {
-          state.createBetIsLoading = false;
-          state.createBetHasError = false;
-          state.bets[action.payload.gameweek - 1] = {
-            gameweek: action.payload.gameweek,
-            bets: action.payload.createdBets,
-            score: 0,
-          };
-          state.selectedGameweek = action.payload.gameweek;
-        }
-      );
+      .addCase(submitBet.fulfilled, (state, action: PayloadAction<{ createdBets: Bet[]; gameweek: number }>) => {
+        state.createBetIsLoading = false;
+        state.createBetHasError = false;
+        state.bets[action.payload.gameweek - 1] = {
+          gameweek: action.payload.gameweek,
+          bets: action.payload.createdBets,
+          score: 0,
+        };
+        state.selectedGameweek = action.payload.gameweek;
+      });
   },
 });
 
-export const getAllBets = createAsyncThunk<Ticket[], string>(
-  'fixtures/getAllBets',
-  async (token) => {
-    const resp = await fetch(`${backend}/users/me/bets`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export const getAllBets = createAsyncThunk<Ticket[], string>('fixtures/getAllBets', async (token) => {
+  const resp = await fetch(`${backend}/users/me/bets`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    if (!resp.ok) {
-      const message: { error: string } = await resp.json();
-      throw new Error(message.error);
-    }
-
-    const response: Ticket[] = await resp.json();
-    return response;
+  if (!resp.ok) {
+    const message: { error: string } = await resp.json();
+    throw new Error(message.error);
   }
-);
+
+  const response: Ticket[] = await resp.json();
+  return response;
+});
 
 interface SubmitBetRequest {
   bets: Bet[];
@@ -91,29 +85,29 @@ interface SubmitBetRequest {
   token: string;
 }
 
-export const submitBet = createAsyncThunk<
-  { createdBets: Bet[]; gameweek: number },
-  SubmitBetRequest
->('fixtures/submitBet', async ({ bets, gameweek, token }) => {
-  const response = await fetch(`${backend}/users/me/bets/${gameweek}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-type': 'application/json',
-    },
-    body: `{ "bets": ${JSON.stringify(bets)} }`,
-  });
+export const submitBet = createAsyncThunk<{ createdBets: Bet[]; gameweek: number }, SubmitBetRequest>(
+  'fixtures/submitBet',
+  async ({ bets, gameweek, token }) => {
+    const response = await fetch(`${backend}/users/me/bets/${gameweek}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-type': 'application/json',
+      },
+      body: `{ "bets": ${JSON.stringify(bets)} }`,
+    });
 
-  if (!response.ok) {
-    if (response.status === 404) return { createdBets: [], gameweek };
-    const message: { error: string } = await response.json();
-    console.error(`submitBet ERROR: ${message.error}`);
-    throw new Error(message.error);
-  }
+    if (!response.ok) {
+      if (response.status === 404) return { createdBets: [], gameweek };
+      const message: { error: string } = await response.json();
+      console.error(`submitBet ERROR: ${message.error}`);
+      throw new Error(message.error);
+    }
 
-  const createdBets: Bet[] = await response.json();
-  return { createdBets, gameweek };
-});
+    const createdBets: Bet[] = await response.json();
+    return { createdBets, gameweek };
+  },
+);
 
 export const { setSelectedGameweek } = betSlice.actions;
 

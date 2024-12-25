@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { Redirect, Tabs } from 'expo-router';
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Redirect, Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { colors } from '../../styles/styles';
-import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
 import { getAllBets, setSelectedGameweek } from '../../redux/reducers/betReducer';
+import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
 import { fetchScores } from '../../redux/reducers/scoreReducer';
+import { colors } from '../../styles/styles';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
@@ -48,9 +48,7 @@ export default function MainLayout() {
       <Tabs.Screen
         name="leagues"
         options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="trophy" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="trophy" size={24} color={color} />,
         }}
       />
       <Tabs.Screen

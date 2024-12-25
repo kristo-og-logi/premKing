@@ -1,18 +1,18 @@
+import { makeRedirectUri } from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
+import { Redirect } from 'expo-router';
+import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React, { useEffect } from 'react';
 import { Image, View } from 'react-native';
-import { Redirect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Google from 'expo-auth-session/providers/google';
-import { maybeCompleteAuthSession } from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
 
-import { globalStyles } from '../../styles/styles';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import GoogleButton from '../../components/GoogleButton';
-import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 import premkingLogo from '../../../assets/premKingLogo.png';
-import { getTokenFromStorage } from '../../utils/storage';
+import GoogleButton from '../../components/GoogleButton';
 import PremButton from '../../components/basic/PremButton';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
+import { globalStyles } from '../../styles/styles';
+import { getTokenFromStorage } from '../../utils/storage';
 
 maybeCompleteAuthSession();
 

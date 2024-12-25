@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
-import { Bet } from '../../../types/Bet';
+import type { Bet } from '../../../types/Bet';
 import PastMatchUp from './PastMatchUp';
 
 const PastGameweekBet = () => {
@@ -12,11 +12,7 @@ const PastGameweekBet = () => {
   return (
     <View style={[styles.fixtureList]}>
       {fixtureSlice.fixtures.map((fixture) => (
-        <PastMatchUp
-          bet={bets.find((b) => b.fixtureId === fixture.id)}
-          key={fixture.id}
-          fixture={fixture}
-        />
+        <PastMatchUp bet={bets.find((b) => b.fixtureId === fixture.id)} key={fixture.id} fixture={fixture} />
       ))}
     </View>
   );

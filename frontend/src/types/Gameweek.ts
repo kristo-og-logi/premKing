@@ -1,4 +1,4 @@
-import Fixture from './Fixture';
+import type Fixture from './Fixture';
 
 export default interface Gameweek {
   gameweek: number;
@@ -12,11 +12,11 @@ export default interface Gameweek {
 
 export enum GameweekStatus {
   // Gameweek has not yet opened
-  BEFORE,
+  BEFORE = 0,
   // Gameweek is currently open
-  OPEN,
+  OPEN = 1,
   // Gameweek has closed
-  CLOSED,
+  CLOSED = 2,
   // Gameweek has finished
-  FINISHED,
+  FINISHED = 3,
 }

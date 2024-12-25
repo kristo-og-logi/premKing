@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
-import { Bet } from '../../../types/Bet';
+import type { Bet } from '../../../types/Bet';
 import CurrentMatchUpBet from './CurrentMatchUpBet';
 
 interface Props {

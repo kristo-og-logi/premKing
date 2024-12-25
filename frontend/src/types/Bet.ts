@@ -1,4 +1,4 @@
-import { FixtureResult } from './Fixture';
+import type { FixtureResult } from './Fixture';
 
 export interface Bet {
   fixtureId: number;
