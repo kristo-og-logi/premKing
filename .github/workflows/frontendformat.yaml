@@ -4,7 +4,7 @@ name: Frontend| Format & Lint
 on:
   push:
     branches:
-      - main
+      - [main, dev]
   pull_request:
 
 jobs:
