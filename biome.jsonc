@@ -14,5 +14,8 @@
     "formatter": {
       "enabled": true
     }
+  },
+  "files": {
+    "ignoreUnknown": true
   }
 }

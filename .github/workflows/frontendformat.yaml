@@ -17,8 +17,5 @@ jobs:
         with:
           version: latest
 
-      - name: cd frontend
-        run: cd frontend
-
       - name: 
-        run: biome ci .
+        run: cd frontend && biome ci .
