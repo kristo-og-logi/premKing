@@ -47,9 +47,7 @@ const JoinLeague = () => {
         <PremTextInput
           placeholder="XYC123"
           value={leagueCode}
-          onChangeText={(value) =>
-            value.length <= 6 ? setLeagueCode(value.toUpperCase()) : setInputError(true)
-          }
+          onChangeText={(value) => (value.length <= 6 ? setLeagueCode(value.toUpperCase()) : setInputError(true))}
         />
         <PremButton
           disabled={!isValidCode(leagueCode) || leagueSlice.joinIsLoading}

@@ -36,21 +36,18 @@ export const fixtureSlice = createSlice({
       }),
 });
 
-export const getFixtures = createAsyncThunk<Fixture[], number>(
-  'fixtures/getFixtures',
-  async (gameweek) => {
-    const response = await fetch(`${backend}/fixtures/${gameweek}`);
+export const getFixtures = createAsyncThunk<Fixture[], number>('fixtures/getFixtures', async (gameweek) => {
+  const response = await fetch(`${backend}/fixtures/${gameweek}`);
 
-    if (!response.ok) {
-      const message: { error: string } = await response.json();
-      throw new Error(message.error);
-    }
-
-    const fixtures: Fixture[] = await response.json();
-    // only use normal fixtures
-    const normalFixtures = fixtures.filter((f) => f.isNormal);
-    return normalFixtures;
+  if (!response.ok) {
+    const message: { error: string } = await response.json();
+    throw new Error(message.error);
   }
-);
+
+  const fixtures: Fixture[] = await response.json();
+  // only use normal fixtures
+  const normalFixtures = fixtures.filter((f) => f.isNormal);
+  return normalFixtures;
+});
 
 export default fixtureSlice.reducer;

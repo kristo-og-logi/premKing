@@ -58,34 +58,31 @@ export interface LoginResponse {
   token: string;
 }
 
-export const login = createAsyncThunk<LoginResponse, string>(
-  'user/login',
-  async (googleOAuthToken: string) => {
-    const url = `${BACKEND_URL}/api/v1/auth/login`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          googleToken: googleOAuthToken,
-        }),
-      });
+export const login = createAsyncThunk<LoginResponse, string>('user/login', async (googleOAuthToken: string) => {
+  const url = `${BACKEND_URL}/api/v1/auth/login`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        googleToken: googleOAuthToken,
+      }),
+    });
 
-      if (!response.ok) {
-        const message: { error: string } = await response.json();
-        throw new Error(message.error);
-      }
-
-      const data: LoginResponse = await response.json();
-      console.log('token: ', data.token);
-      await saveTokenInStorage(data);
-
-      return data;
-    } catch (error) {
-      console.log('ERROR logging in: ', error);
-      throw error;
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      throw new Error(message.error);
     }
+
+    const data: LoginResponse = await response.json();
+    console.log('token: ', data.token);
+    await saveTokenInStorage(data);
+
+    return data;
+  } catch (error) {
+    console.log('ERROR logging in: ', error);
+    throw error;
   }
-);
+});
 
 export const { clearUser, setUser, setUserDataFromStorage } = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;

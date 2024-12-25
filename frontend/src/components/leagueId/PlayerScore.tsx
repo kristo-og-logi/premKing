@@ -35,17 +35,13 @@ export const renderChange = (posChange: number, gw: number, opposite: boolean = 
         <></>
       ) : (
         <>
-          {Math.abs(posChange) !== 1 && !opposite && (
-            <PremText order={4}>{Math.abs(posChange)}</PremText>
-          )}
+          {Math.abs(posChange) !== 1 && !opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
           {posChange > 0 ? (
             <FontAwesome name="circle" size={8} color={colors.green} />
           ) : (
             <FontAwesome name="circle" size={8} color={colors.red} />
           )}
-          {Math.abs(posChange) !== 1 && opposite && (
-            <PremText order={4}>{Math.abs(posChange)}</PremText>
-          )}
+          {Math.abs(posChange) !== 1 && opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
         </>
       )}
     </View>
@@ -60,17 +56,13 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
           style={[
             styles.scoreWrapper,
             styles.positionWrapper,
-            leagueSize >= 10
-              ? scoreboardWidths.between10and100WrapperWidth
-              : scoreboardWidths.under10WrapperWidth,
+            leagueSize >= 10 ? scoreboardWidths.between10and100WrapperWidth : scoreboardWidths.under10WrapperWidth,
           ]}
         >
           <View
             style={[
               styles.position,
-              leagueSize >= 10
-                ? scoreboardWidths.between10and100Width
-                : scoreboardWidths.under10Width,
+              leagueSize >= 10 ? scoreboardWidths.between10and100Width : scoreboardWidths.under10Width,
             ]}
           >
             <PremText>{position}</PremText>

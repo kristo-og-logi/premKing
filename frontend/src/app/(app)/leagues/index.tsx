@@ -14,12 +14,7 @@ import Scores from '../../../components/leagueMenu/Scores';
 
 const renderLeagues = (leagues: League[], gw: number) => {
   return leagues.map((league) => (
-    <LeagueItem
-      key={league.id}
-      league={league}
-      gw={gw}
-      onPress={() => router.push(`/leagues/${league.id}`)}
-    />
+    <LeagueItem key={league.id} league={league} gw={gw} onPress={() => router.push(`/leagues/${league.id}`)} />
   ));
 };
 
@@ -59,9 +54,7 @@ export default function Page() {
       ) : leagueSlice.leagues.length !== 0 ? (
         <View style={{ maxHeight: 360 }}>
           <ScrollView style={{ flexGrow: 0 }}>
-            <View style={styles.leagueWrapper}>
-              {renderLeagues(leagueSlice.leagues, selectedGW)}
-            </View>
+            <View style={styles.leagueWrapper}>{renderLeagues(leagueSlice.leagues, selectedGW)}</View>
           </ScrollView>
         </View>
       ) : (

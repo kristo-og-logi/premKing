@@ -29,10 +29,8 @@ export const Confirm = ({ selectedGW, bet, setBet }: Props) => {
 
   const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);
 
-  const selectedGWIsCurrentAndOpen =
-    selectedGW == gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN;
-  const selectedGWIsInPastOrClosed =
-    selectedGW < gameweekSlice.currentGameweek || gwStatus === GameweekStatus.CLOSED;
+  const selectedGWIsCurrentAndOpen = selectedGW == gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN;
+  const selectedGWIsInPastOrClosed = selectedGW < gameweekSlice.currentGameweek || gwStatus === GameweekStatus.CLOSED;
 
   if (betSlice.isLoading)
     return (
@@ -44,8 +42,7 @@ export const Confirm = ({ selectedGW, bet, setBet }: Props) => {
   return selectedGWIsInPastOrClosed ? (
     <PremButton
       extraStyles={{
-        backgroundColor:
-          betSlice.bets[selectedGW - 1].bets.length === 0 ? colors.red : colors.green,
+        backgroundColor: betSlice.bets[selectedGW - 1].bets.length === 0 ? colors.red : colors.green,
       }}
       fullWidth
       disabled={true}
@@ -56,14 +53,10 @@ export const Confirm = ({ selectedGW, bet, setBet }: Props) => {
   ) : selectedGWIsCurrentAndOpen ? (
     <PremButton
       extraStyles={
-        betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0
-          ? { backgroundColor: colors.green }
-          : undefined
+        betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0 ? { backgroundColor: colors.green } : undefined
       }
       fullWidth
-      disabled={
-        fixtureSlice.fixtures.length > bet.length || betSlice.bets[selectedGW - 1].bets.length > 0
-      }
+      disabled={fixtureSlice.fixtures.length > bet.length || betSlice.bets[selectedGW - 1].bets.length > 0}
       onPress={() => {
         dispatch(submitBet({ bets: bet, gameweek: selectedGW, token: authSlice.token }));
         setBet([]);

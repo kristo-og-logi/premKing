@@ -48,9 +48,7 @@ export default function MainLayout() {
       <Tabs.Screen
         name="leagues"
         options={{
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="trophy" size={24} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="trophy" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
