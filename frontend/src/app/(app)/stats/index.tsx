@@ -1,14 +1,14 @@
 import React from 'react';
 import { View } from 'react-native';
-import { globalStyles } from '../../../styles/styles';
-import PremText from '../../../components/basic/PremText';
 import PremButton from '../../../components/basic/PremButton';
+import PremText from '../../../components/basic/PremText';
+import { globalStyles } from '../../../styles/styles';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
-import { ENVIRONMENT, BACKEND_URL } from '@env';
+import { BACKEND_URL, ENVIRONMENT } from '@env';
 
 const Stats = () => {
   const authSlice = useAppSelector((state) => state.auth);

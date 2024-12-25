@@ -1,7 +1,7 @@
+import { BACKEND_URL } from '@env';
 import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type User from '../../types/User';
 import type { RootState } from '../store';
-import { BACKEND_URL } from '@env';
 
 export interface UserState {
   isLoading: boolean;

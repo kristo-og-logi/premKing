@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useAppSelector } from '../../../redux/hooks';
+import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';
 import { FixtureResult } from '../../../types/Fixture';
-import type { Bet } from '../../../types/Bet';
-import TeamColumn, { Side } from '../TeamColumn';
-import DrawColumn from '../DrawColumn';
-import { useAppSelector } from '../../../redux/hooks';
 import { dateFormatter } from '../../../utils/constants';
+import DrawColumn from '../DrawColumn';
+import TeamColumn, { Side } from '../TeamColumn';
 
 interface Props {
   fixture: Fixture;

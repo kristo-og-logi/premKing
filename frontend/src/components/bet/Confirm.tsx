@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import PremButton from '../basic/PremButton';
+import { submitBet } from '../../redux/reducers/betReducer';
 import { colors } from '../../styles/styles';
 import type { Bet } from '../../types/Bet';
-import { submitBet } from '../../redux/reducers/betReducer';
-import { getGameweekStatus } from '../../utils/leagueUtils';
 import { GameweekStatus } from '../../types/Gameweek';
+import { getGameweekStatus } from '../../utils/leagueUtils';
+import PremButton from '../basic/PremButton';
 
 interface Props {
   selectedGW: number;

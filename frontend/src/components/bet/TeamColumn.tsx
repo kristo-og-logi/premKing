@@ -1,7 +1,7 @@
 import React from 'react';
-import { type ImageSourcePropType, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import PremText from '../basic/PremText';
+import { Image, type ImageSourcePropType, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 export enum Side {
   LEFT = 0,

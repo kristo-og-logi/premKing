@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import leaguesReducer from './reducers/leaguesReducer';
-import usersReducer from './reducers/usersReducer';
 import authReducer from './reducers/authReducer';
+import betReducer from './reducers/betReducer';
 import fixtureReducer from './reducers/fixtureReducer';
 import gameweekReducer from './reducers/gameweekReducer';
-import betReducer from './reducers/betReducer';
+import leaguesReducer from './reducers/leaguesReducer';
 import scoreReducer from './reducers/scoreReducer';
+import usersReducer from './reducers/usersReducer';
 
 export const store = configureStore({
   reducer: {

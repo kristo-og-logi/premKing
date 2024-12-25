@@ -1,10 +1,10 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { colors } from '../../styles/styles';
-import PremText from '../basic/PremText';
-import type { League } from '../../types/League';
-import { useAppSelector } from '../../redux/hooks';
 import { Redirect } from 'expo-router';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useAppSelector } from '../../redux/hooks';
+import { colors } from '../../styles/styles';
+import type { League } from '../../types/League';
+import PremText from '../basic/PremText';
 import { renderChange } from '../leagueId/PlayerScore';
 
 interface Props {

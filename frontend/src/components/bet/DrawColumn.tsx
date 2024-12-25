@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import PremText from '../basic/PremText';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 const DrawColumn = ({
   date,

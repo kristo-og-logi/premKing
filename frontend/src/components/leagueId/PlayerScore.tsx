@@ -1,10 +1,10 @@
+import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 
-import PremText from '../basic/PremText';
 import { colors, scoreboardWidths } from '../../styles/styles';
 import type { Player } from '../../types/Player';
+import PremText from '../basic/PremText';
 
 interface Props {
   player: Player;

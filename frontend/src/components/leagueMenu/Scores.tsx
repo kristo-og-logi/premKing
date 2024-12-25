@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import PremText from '../basic/PremText';
-import { colors, globalStyles } from '../../styles/styles';
 import { useAppSelector } from '../../redux/hooks';
+import { colors, globalStyles } from '../../styles/styles';
+import PremText from '../basic/PremText';
 
 interface Props {
   selectedGW: number;

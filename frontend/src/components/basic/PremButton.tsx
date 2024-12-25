@@ -1,8 +1,8 @@
-import { type Role, StyleSheet, TouchableOpacity, type ViewStyle } from 'react-native';
+import type { Href } from 'expo-router/build/link/href';
 import type React from 'react';
+import { type Role, StyleSheet, TouchableOpacity, type ViewStyle } from 'react-native';
 import { colors, globalStyles } from '../../styles/styles';
 import PremText from './PremText';
-import type { Href } from 'expo-router/build/link/href';
 
 interface Props {
   fullWidth?: boolean;

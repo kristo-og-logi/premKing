@@ -1,12 +1,12 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import PremText from '../../../components/basic/PremText';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
+import PremText from '../../../components/basic/PremText';
 import PremTextInput from '../../../components/basic/PremTextInput';
-import { colors, globalStyles } from '../../../styles/styles';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { createLeague } from '../../../redux/reducers/leaguesReducer';
+import { colors, globalStyles } from '../../../styles/styles';
 import { ERROR_TIMEOUT } from '../../../utils/constants';
 
 const MAX_LEN = 30;

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { globalStyles } from '../../../styles/styles';
-import { Confirm } from '../../../components/bet/Confirm';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { getFixtures } from '../../../redux/reducers/fixtureReducer';
-import PremText from '../../../components/basic/PremText';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
-import type { Bet } from '../../../types/Bet';
+import PremText from '../../../components/basic/PremText';
+import { Confirm } from '../../../components/bet/Confirm';
 import CurrentGameweekBet from '../../../components/bet/current/CurrentGameweekBet';
-import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
+import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { setSelectedGameweek } from '../../../redux/reducers/betReducer';
+import { getFixtures } from '../../../redux/reducers/fixtureReducer';
+import { globalStyles } from '../../../styles/styles';
+import type { Bet } from '../../../types/Bet';
 
 const BetScreen = () => {
   const dispatch = useAppDispatch();
