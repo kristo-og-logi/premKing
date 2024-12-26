@@ -12,6 +12,9 @@
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
+      },
+      "style": {
+        "useNodejsImportProtocol": "off"
       }
     }
   },
