@@ -1,0 +1,34 @@
+{
+  "cli": {
+    "version": ">= 6.0.0",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "ENVIRONMENT": "production",
+        "BACKEND_URL": "https://api.premking.net"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "kristoferfannarb@gmail.com",
+        "sku": "PREMKING"
+      }
+    }
+  }
+}

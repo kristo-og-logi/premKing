@@ -1,0 +1,8 @@
+.env
+.env.LOCAL
+.env.DEV
+.env.PROD
+.platform
+server
+awsServer
+json/**/*.json
