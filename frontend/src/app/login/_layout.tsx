@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import premkingLogo from '../../../assets/premKingLogo.png';
+import premkingLogo from '../../../assets/newpk_banner_nobkg.png';
 import GoogleButton from '../../components/GoogleButton';
 import PremButton from '../../components/basic/PremButton';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';

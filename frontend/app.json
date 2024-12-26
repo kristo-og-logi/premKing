@@ -5,10 +5,10 @@
     "scheme": "premking",
     "version": "1.5.0",
     "orientation": "portrait",
-    "icon": "./assets/IOS-LOGO-3x.png",
+    "icon": "./assets/newpk-ios.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/premKingLogo.png",
+      "image": "./assets/newpk_splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#072936"
     },
