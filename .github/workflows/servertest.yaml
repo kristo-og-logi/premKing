@@ -10,6 +10,11 @@ on:
 jobs:
   tester:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server/
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          go get -v -t -d ./...        
+          go mod tidy
 
       - name: Run unit tests
         run: go test -v ./...
