@@ -1,4 +1,3 @@
-# from https://biomejs.dev/recipes/continuous-integration/
 name: Server| unit test
 
 on:
@@ -9,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  run:
+  tester:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,5 +25,4 @@ jobs:
           go get -v -t -d ./...        
 
       - name: Run unit tests
-        env:
         run: go test -v ./...
