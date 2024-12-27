@@ -15,7 +15,7 @@ export const getGameweekStatus = (gameweek: Gameweek): GameweekStatus => {
   const closes = new Date(gameweek.closes);
   const finishes = new Date(gameweek.finishes);
 
-  // "now" can be inbetween any of these 3 times, giving us four cases
+  // "now" can be inbetween any of these 3 times (1. opens, 2. closes, 3. finishes), giving us four cases
   // (1) opens (2) closes (3) finishes (4)
   if (now < opens) return GameweekStatus.BEFORE;
   if (now < closes) return GameweekStatus.OPEN;
