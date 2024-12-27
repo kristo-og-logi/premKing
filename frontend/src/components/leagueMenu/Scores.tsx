@@ -20,11 +20,12 @@ const getMyScore = (
   gameweekSlice: GameweekState,
   selectedGW: number,
 ): string => {
+  // waiting for data..
+  if (scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined || betSlice.isLoading) return '...';
+
   const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);
   const isCurrentGW = selectedGW === gameweekSlice.currentGameweek;
 
-  // waiting for data..
-  if (scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined || betSlice.isLoading) return '...';
   // gameweek has not yet finished
   if (selectedGW > gameweekSlice.currentGameweek || (isCurrentGW && gwStatus === GameweekStatus.OPEN)) return '??';
   // no bets were placed for past gameweek
