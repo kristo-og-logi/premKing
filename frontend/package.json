@@ -7,6 +7,7 @@
     "android": "expo run:android",
     "ios:dev": "cat .env.DEV > .env && expo run:ios",
     "ios:prod": "cat .env.PROD > .env && expo run:ios",
+    "test": "jest --watchAll",
     "web": "expo start --web",
     "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios --clear-cache",
     "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios",
@@ -41,7 +42,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
+    "@jest/globals": "^29.7.0",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^29.5.14",
     "@types/react": "~18.2.79",
+    "jest": "^29.7.0",
+    "jest-expo": "^52.0.2",
+    "react-test-renderer": "18.2.0",
     "typescript": "^5.4.5"
   },
   "private": true
