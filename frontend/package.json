@@ -7,7 +7,7 @@
     "android": "expo run:android",
     "ios:dev": "cat .env.DEV > .env && expo run:ios",
     "ios:prod": "cat .env.PROD > .env && expo run:ios",
-    "test": "jest --watchAll",
+    "test": "jest",
     "web": "expo start --web",
     "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios --clear-cache",
     "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios",
