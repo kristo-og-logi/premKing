@@ -2,38 +2,13 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useAppSelector } from '../../redux/hooks';
-import type { BetState } from '../../redux/reducers/betReducer';
-import type { GameweekState } from '../../redux/reducers/gameweekReducer';
-import type { ScoreState } from '../../redux/reducers/scoreReducer';
 import { colors, globalStyles } from '../../styles/styles';
-import { GameweekStatus } from '../../types/Gameweek';
-import { getGameweekStatus } from '../../utils/leagueUtils';
+import { getMyScore } from '../../utils/scores';
 import PremText from '../basic/PremText';
 
 interface Props {
   selectedGW: number;
 }
-
-const getMyScore = (
-  scoreSlice: ScoreState,
-  betSlice: BetState,
-  gameweekSlice: GameweekState,
-  selectedGW: number,
-): string => {
-  // waiting for data..
-  if (scoreSlice.isLoading || scoreSlice.scores[selectedGW - 1] === undefined || betSlice.isLoading) return '...';
-
-  const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);
-  const isCurrentGW = selectedGW === gameweekSlice.currentGameweek;
-
-  // gameweek has not yet finished
-  if (selectedGW > gameweekSlice.currentGameweek || (isCurrentGW && gwStatus === GameweekStatus.OPEN)) return '??';
-  // no bets were placed for past gameweek
-  if (betSlice.bets[selectedGW - 1].bets.length === 0) return 'Missed';
-
-  // default: bet placed for past gameweek
-  return `x${scoreSlice.scores[selectedGW - 1].score.toFixed(2)}`;
-};
 
 const Scores = ({ selectedGW }: Props) => {
   const scoreSlice = useAppSelector((state) => state.scores);
@@ -55,7 +30,17 @@ const Scores = ({ selectedGW }: Props) => {
 
       <View style={[styles.mainCard, globalStyles.shadow]}>
         <PremText>My score</PremText>
-        <PremText order={2}>{getMyScore(scoreSlice, betSlice, gameweekSlice, selectedGW)}</PremText>
+        <PremText order={2}>
+          {getMyScore(
+            scoreSlice.isLoading,
+            scoreSlice.scores[selectedGW - 1],
+            betSlice.isLoading,
+            betSlice.bets[selectedGW - 1],
+            gameweekSlice.currentGameweek,
+            gameweekSlice.allGameweeks[selectedGW - 1],
+            selectedGW,
+          )}
+        </PremText>
       </View>
       {/* <View style={[styles.secondaryCard, globalStyles.shadow]}>
       <PremText order={4}>Max</PremText>
