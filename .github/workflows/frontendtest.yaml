@@ -21,4 +21,13 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
+
+      - name: create .env
+        run: |
+          echo "BACKEND_URL=test" > .env
+
+      - name: test
+        run: |
+          echo .env
+
       - run: npm test
