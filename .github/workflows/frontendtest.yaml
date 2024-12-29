@@ -28,6 +28,6 @@ jobs:
 
       - name: test
         run: |
-          echo .env
+          cat .env
 
       - run: npm test
