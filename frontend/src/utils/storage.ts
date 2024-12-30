@@ -12,7 +12,8 @@ export const getTokenFromStorage = async (): Promise<LoginResponse> => {
   const currentTime = Date.now() / 1000;
   const expiryCounter = tokenPayload.exp - currentTime;
 
-  if (expiryCounter < 0) throw new Error('token expired');
+  // If the token is about to expire, just request a new one
+  if (expiryCounter < 60 * 60) throw new Error('token expired');
 
   return userData;
 };

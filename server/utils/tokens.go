@@ -19,7 +19,7 @@ func CreateToken(user models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":   user.ID,
 		"name": user.Name,
-		"exp":  time.Now().Add(time.Hour * 24).Unix(),
+		"exp":  time.Now().Add(time.Hour*24*7*4 + time.Hour*12).Unix(), // token expires every four weeks + 12 hours to decrease probability of token expiring mid-session
 	})
 
 	return token.SignedString(jwtSecret)
