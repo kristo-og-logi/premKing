@@ -50,6 +50,10 @@ func main() {
 		c.HTML(http.StatusOK, "privacy_policy.html", nil)
 	})
 
+	router.GET("/support", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "support.html", nil)
+	})
+
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
