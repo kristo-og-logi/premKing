@@ -15,6 +15,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "bundleIdentifier": "com.kristo.premking",
       "config": {
         "usesNonExemptEncryption": false
@@ -52,7 +53,7 @@
       "bundler": "metro",
       "favicon": "./assets/newpk-ios.png"
     },
-    "plugins": ["expo-router"],
+    "plugins": ["expo-router", "expo-apple-authentication"],
     "extra": {
       "router": {
         "origin": false
