@@ -2,6 +2,38 @@
 
 Running in Expo (React Native)
 
+## development
+
+
+### IOS
+
+As of Dec 2024, with commit [b1afb57](https://github.com/kristo-og-logi/premKing/commit/b1afb57b6e939432df037fdae337aec26688be26), IOS now uses Apple Sign in.
+This requires the mac devices buiding and running the app to be registered on [developer.apple.com](https://developer.apple.com/devices).
+If not registered, the below error (or similar) will be shown when building the app for IOS.
+
+```bash
+❯ npm run ios:dev
+
+> frontend@1.0.0 ios:dev
+> cat .env.DEV > .env && expo run:ios
+
+env: load .env
+env: export ENVIRONMENT BACKEND_URL
+env: load .env
+env: export ENVIRONMENT BACKEND_URL
+✔ Created native directory
+✔ Updated package.json | no changes
+✔ Finished prebuild
+✔ Installed CocoaPods
+› Your computer requires some additional setup before you can build onto physical iOS devices.
+  Learn more: https://expo.fyi/setup-xcode-signing
+CommandError: No code signing certificates are available to use.
+```
+
+Now, running with Expo Go can work around most of these issues, seen on [their docs](https://docs.expo.dev/versions/latest/sdk/apple-authentication/#development-and-testing), but Google OAuth doesn't work unless the app itself is built instead of ran within Expo Go, and that requires some extra work and this step will have to be taken eventually.
+
+To successfully build, use the link provided in the error message above ([https://expo.fyi/setup-xcode-signing](https://expo.fyi/setup-xcode-signing), (I used [this specific one](https://github.com/expo/fyi/blob/bdeb4f299a01514651f4aadb227cf37e8e61878a/setup-xcode-signing.md))). You'll have to register your mac device on Developer website. To find your devices `UDID`, use the command: `system_profiler SPHardwareDataType | grep "Provisioning UDID"` in your mac's terminal.
+
 ## Deployment
 
 ### IOS
