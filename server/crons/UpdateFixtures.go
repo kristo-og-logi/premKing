@@ -148,9 +148,10 @@ func Convert(res *SportmonksFixtureResponse) []models.SportmonksFixture {
 			Round: models.SportmonksRound{
 				Name: match.Round.Name,
 			},
-			Odds:  convertOdds(match.Odds),
-			State: match.State.State,
-			Score: convertScores(match.Scores),
+			StartingAt: match.StartingAt,
+			Odds:       convertOdds(match.Odds),
+			State:      match.State.State,
+			Score:      convertScores(match.Scores),
 		}
 
 		fixtures = append(fixtures, newFixture)
@@ -202,15 +203,25 @@ func getResponse(request *http.Request) *SportmonksFixtureResponse {
 		return nil
 	}
 
-	response := &SportmonksFixtureResponse{}
-
-	err = json.Unmarshal(body, response)
+	response, err := toSportmonksFixtureResponse(body)
 	if err != nil {
-		fmt.Printf("error unmarshalling body into fixtures struct: %s", err.Error())
 		return nil
 	}
 
 	return response
+}
+
+func toSportmonksFixtureResponse(body []byte) (*SportmonksFixtureResponse, error) {
+	response := &SportmonksFixtureResponse{}
+
+	err := json.Unmarshal(body, response)
+	if err != nil {
+		fmt.Printf("error unmarshalling body into fixtures struct: %s", err.Error())
+		return nil, err
+	}
+
+	return response, nil
+
 }
 
 type SportmonksFixtureResponse struct {
