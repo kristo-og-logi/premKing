@@ -11,7 +11,6 @@ import (
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
-	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
 // Compares all fixtures between Sportmonks and DB
