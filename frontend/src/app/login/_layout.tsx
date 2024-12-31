@@ -70,7 +70,7 @@ const Login = () => {
         ) : (
           <View style={{ gap: 12 }}>
             <GoogleButton onPress={() => promptAsync()} />
-            {Platform.OS === 'ios' && <AppleButton onPress={() => console.log('hola')} />}
+            {Platform.OS === 'ios' && <AppleButton dispatch={dispatch} />}
           </View>
         )}
       </View>
