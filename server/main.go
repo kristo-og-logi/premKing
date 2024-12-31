@@ -15,6 +15,7 @@ import (
 func init() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
+	initializers.LoadKeys()
 	crons.CRON()
 }
 
