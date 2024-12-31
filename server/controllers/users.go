@@ -60,6 +60,15 @@ func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	return newUser, nil
 }
 
+func CreateUserFromAppleAuth(user AppleUserInfo) (*models.User, error) {
+	newUser, err := repositories.CreateUser(user.Name, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return newUser, nil
+}
+
 type DeleteUserRequest struct {
 	ID string `json:"id" binding:"required"`
 }
