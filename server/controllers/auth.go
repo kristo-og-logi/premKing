@@ -11,7 +11,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/utils"
 )
 
-type AuthRequest struct {
+type GoogleAuthRequest struct {
 	GoogleToken string `json:"googleToken" binding:"required"`
 }
 
@@ -31,15 +31,16 @@ type LoginResponse struct {
 	Token string       `json:"token"`
 }
 
-func GetAuth(c *gin.Context) {
-	var authReq AuthRequest
+// Login (or signup) using a google OAuth token
+func GoogleLogin(c *gin.Context) {
+	var authReq GoogleAuthRequest
 
 	if err := c.ShouldBindJSON(&authReq); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Request body is not in the correct format or missing 'googleToken'"})
 		return
 	}
 
-	tokenInfo, err := checkTokenStatus(authReq.GoogleToken)
+	tokenInfo, err := checkGoogleTokenStatus(authReq.GoogleToken)
 	if err != nil {
 		fmt.Printf("token error: %s\n", err.Error())
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
@@ -59,6 +60,7 @@ func GetAuth(c *gin.Context) {
 		return
 	}
 
+	// This is a signup event, create the user
 	if !userExists {
 		createdUser, err := CreateUserFromGoogleAuth(*userInfo)
 		if err != nil {
@@ -73,6 +75,7 @@ func GetAuth(c *gin.Context) {
 			return
 		}
 
+		// Return 201 created
 		c.IndentedJSON(http.StatusCreated, gin.H{"user": createdUser, "token": tokenString})
 		return
 	}
@@ -137,8 +140,8 @@ func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	return &userInfo, nil
 }
 
-// TokenInfo represents the information returned by the Google token info endpoint
-type TokenInfo struct {
+// represents the information returned by the Google token info endpoint
+type GoogleTokenInfo struct {
 	Audience      string `json:"aud"`            // The audience for which the token was issued
 	Scope         string `json:"scope"`          // The scopes associated with the token
 	ExpiresIn     string `json:"expires_in"`     // The remaining lifetime on the token
@@ -147,8 +150,8 @@ type TokenInfo struct {
 	Error         string `json:"error"`          // Error description (if any)
 }
 
-// checkTokenStatus verifies the status of an OAuth token with Google's token info endpoint
-func checkTokenStatus(accessToken string) (*TokenInfo, error) {
+// verifies the status of an OAuth token with Google's token info endpoint
+func checkGoogleTokenStatus(accessToken string) (*GoogleTokenInfo, error) {
 	resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s", accessToken))
 	if err != nil {
 		return nil, fmt.Errorf("error making request to token info endpoint: %v", err)
@@ -166,7 +169,7 @@ func checkTokenStatus(accessToken string) (*TokenInfo, error) {
 		return nil, fmt.Errorf("error reading response body: %v", err)
 	}
 
-	var tokenInfo TokenInfo
+	var tokenInfo GoogleTokenInfo
 	err = json.Unmarshal(body, &tokenInfo)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling token info JSON: %v", err)
