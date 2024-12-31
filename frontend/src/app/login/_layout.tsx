@@ -3,16 +3,15 @@ import * as Google from 'expo-auth-session/providers/google';
 import { Redirect } from 'expo-router';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React, { useEffect } from 'react';
-import { Image, View } from 'react-native';
+import { Image, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import premkingLogo from '../../../assets/newpk_banner_nobkg.png';
 import AppleButton from '../../components/AppleButton';
 import GoogleButton from '../../components/GoogleButton';
 import PremButton from '../../components/basic/PremButton';
-import PremText from '../../components/basic/PremText';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
+import { LoginType, login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 import { globalStyles } from '../../styles/styles';
 import { getTokenFromStorage } from '../../utils/storage';
 
@@ -36,7 +35,7 @@ const Login = () => {
       console.log('oauth success: ', response.authentication?.accessToken);
 
       if (response.authentication?.accessToken) {
-        dispatch(login(response.authentication?.accessToken));
+        dispatch(login({ loginType: LoginType.GOOGLE, googleOAuthToken: response.authentication?.accessToken }));
       }
     }
   };
@@ -69,9 +68,9 @@ const Login = () => {
             Loading
           </PremButton>
         ) : (
-          <View style={{ gap: 8 }}>
+          <View style={{ gap: 12 }}>
             <GoogleButton onPress={() => promptAsync()} />
-            <AppleButton onPress={() => console.log('hola')} />
+            {Platform.OS === 'ios' && <AppleButton onPress={() => console.log('hola')} />}
           </View>
         )}
       </View>

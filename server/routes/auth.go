@@ -9,7 +9,7 @@ import (
 func SetupAuthRoutes(router *gin.Engine, prefix string) {
 	var authGroup = router.Group(prefix + "/auth")
 	{
-		authGroup.POST("/login", controllers.GetAuth)
+		authGroup.POST("/login/google", controllers.GoogleLogin)
 		authGroup.GET("/isAuth", middleware.Authenticate, controllers.IsAuth)
 	}
 }

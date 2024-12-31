@@ -59,29 +59,47 @@ export interface LoginResponse {
   token: string;
 }
 
-export const login = createAsyncThunk<LoginResponse, string>(
-  'user/login',
-  async (googleOAuthToken: string, { dispatch }) => {
-    const url = `${BACKEND_URL}/api/v1/auth/login`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({
-          googleToken: googleOAuthToken,
-        }),
-      });
+export enum LoginType {
+  GOOGLE = 'google',
+  APPLE = 'apple',
+}
 
-      if (!response.ok) {
-        const message: { error: string } = await response.json();
-        throw new Error(message.error);
+const googleLogin = async (googleOAuthToken: string): Promise<LoginResponse> => {
+  const url = `${BACKEND_URL}/api/v1/auth/login/google`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      googleToken: googleOAuthToken,
+    }),
+  });
+
+  if (!response.ok) {
+    const message: { error: string } = await response.json();
+    throw new Error(message.error);
+  }
+
+  const data: LoginResponse = await response.json();
+  return data;
+};
+
+export const login = createAsyncThunk<LoginResponse, { loginType: LoginType; googleOAuthToken: string }>(
+  'user/login',
+  async ({ loginType, googleOAuthToken }: { loginType: LoginType; googleOAuthToken: string }, { dispatch }) => {
+    try {
+      let data: LoginResponse;
+
+      switch (loginType) {
+        case LoginType.GOOGLE:
+          data = await googleLogin(googleOAuthToken);
+          break;
+        case LoginType.APPLE:
+          throw new Error('TODO');
       }
 
-      const data: LoginResponse = await response.json();
       console.log('token: ', data.token);
       await saveTokenInStorage(data);
 
       const tokenPayload = jwtDecode(data.token);
-
       const secLeft = tokenPayload.exp - new Date().getTime() / 1000;
 
       // HACK: when the token expires, we want to clear the user metadata,
