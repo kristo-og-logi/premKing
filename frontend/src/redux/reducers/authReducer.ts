@@ -64,7 +64,11 @@ export enum LoginType {
   APPLE = 'apple',
 }
 
-const googleLogin = async (googleOAuthToken: string): Promise<LoginResponse> => {
+const googleLogin = async (googleOAuthToken?: string): Promise<LoginResponse> => {
+  if (googleOAuthToken === undefined) {
+    throw new Error('google token missing from request body');
+  }
+
   const url = `${BACKEND_URL}/api/v1/auth/login/google`;
   const response = await fetch(url, {
     method: 'POST',
@@ -82,9 +86,43 @@ const googleLogin = async (googleOAuthToken: string): Promise<LoginResponse> => 
   return data;
 };
 
-export const login = createAsyncThunk<LoginResponse, { loginType: LoginType; googleOAuthToken: string }>(
+const appleLogin = async (appleRequest: AppleRequest | undefined): Promise<LoginResponse> => {
+  if (appleRequest === undefined) {
+    throw new Error('missing request body for apple sign in');
+  }
+
+  const url = `${BACKEND_URL}/api/v1/auth/login/apple`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      identityToken: appleRequest.identityToken,
+      fullName: appleRequest.fullName,
+    }),
+  });
+
+  if (!response.ok) {
+    const message: { error: string } = await response.json();
+    throw new Error(message.error);
+  }
+
+  const data: LoginResponse = await response.json();
+  return data;
+};
+
+export type AppleRequest = {
+  identityToken: string;
+  fullName: { familyName: string | null | undefined; givenName: string | null | undefined };
+};
+
+interface LoginParams {
+  loginType: LoginType;
+  googleOAuthToken?: string;
+  appleRequest?: AppleRequest;
+}
+
+export const login = createAsyncThunk<LoginResponse, LoginParams>(
   'user/login',
-  async ({ loginType, googleOAuthToken }: { loginType: LoginType; googleOAuthToken: string }, { dispatch }) => {
+  async ({ loginType, googleOAuthToken, appleRequest }: LoginParams, { dispatch }) => {
     try {
       let data: LoginResponse;
 
@@ -93,7 +131,7 @@ export const login = createAsyncThunk<LoginResponse, { loginType: LoginType; goo
           data = await googleLogin(googleOAuthToken);
           break;
         case LoginType.APPLE:
-          throw new Error('TODO');
+          data = await appleLogin(appleRequest);
       }
 
       console.log('token: ', data.token);
