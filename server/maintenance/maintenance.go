@@ -22,6 +22,7 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	// crons.UpdateFixtures()
 	// FindTeamsFromFixtures()
 	// FetchAndCreateFixturesInDB()
 	// FindAndSaveNormalFixtures()
