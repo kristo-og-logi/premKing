@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, type ImageSourcePropType, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, type ImageSourcePropType, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';
 
@@ -48,11 +48,11 @@ const TeamColumn = ({
             <PremText order={3} centered={true}>
               {odds}
             </PremText>
-            <Image source={logo} style={styles.image} />
+            {Platform.OS !== 'ios' ? <Image source={logo} style={styles.image} /> : <View style={styles.image} />}
           </>
         ) : (
           <>
-            <Image source={logo} style={styles.image} />
+            {Platform.OS !== 'ios' ? <Image source={logo} style={styles.image} /> : <View style={styles.image} />}
             <PremText order={3} centered={true}>
               {odds}
             </PremText>
