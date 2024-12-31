@@ -7,8 +7,10 @@ import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import premkingLogo from '../../../assets/newpk_banner_nobkg.png';
+import AppleButton from '../../components/AppleButton';
 import GoogleButton from '../../components/GoogleButton';
 import PremButton from '../../components/basic/PremButton';
+import PremText from '../../components/basic/PremText';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 import { globalStyles } from '../../styles/styles';
@@ -67,7 +69,10 @@ const Login = () => {
             Loading
           </PremButton>
         ) : (
-          <GoogleButton onPress={() => promptAsync()} />
+          <View style={{ gap: 8 }}>
+            <GoogleButton onPress={() => promptAsync()} />
+            <AppleButton onPress={() => console.log('hola')} />
+          </View>
         )}
       </View>
     </SafeAreaView>
