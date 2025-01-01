@@ -39,6 +39,8 @@ const BetScreen = () => {
     <View style={globalStyles.container}>
       {betSlice.isLoading ? (
         <PremText>Loading...</PremText>
+      ) : betSlice.hasError ? (
+        <PremText>Error loading bets</PremText>
       ) : (
         <>
           <GameweekShifter
