@@ -5,18 +5,18 @@ import type Score from '../types/Scores';
 import { getMyScore } from './scores';
 
 const testInput_getMyScore = (): {
-  scoreIsLoading: boolean;
+  isLoading: boolean;
+  hasError: boolean;
   score: Score;
-  betIsLoading: boolean;
   ticket: Ticket;
   currentGW: number;
   gameweek: Gameweek;
   selectedGW: number;
 } => {
   return {
-    scoreIsLoading: false,
+    isLoading: false,
+    hasError: false,
     score: { gameweek: 1, score: 50, total: 1500, place: 1 },
-    betIsLoading: false,
     ticket: { gameweek: 1, bets: [], score: 0 },
     currentGW: 1,
     gameweek: {
@@ -34,34 +34,19 @@ const testInput_getMyScore = (): {
 
 describe('getMyScore', () => {
   describe('loading', () => {
-    test('getMyScore handles loading with both loadings set', () => {
-      const { score, ticket, currentGW, gameweek, selectedGW } = testInput_getMyScore();
-      const scoreIsLoading = true;
-      const betIsLoading = true;
+    test('getMyScore handles loading', () => {
+      const { hasError, score, ticket, currentGW, gameweek, selectedGW } = testInput_getMyScore();
+      const isLoading = true;
 
-      const myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
-      expect(myScore).toEqual('...');
-    });
-
-    test('getMyScore handles loading with either loading set', () => {
-      const { score, ticket, currentGW, gameweek, selectedGW } = testInput_getMyScore();
-      let scoreIsLoading = false;
-      let betIsLoading = true;
-
-      let myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
-      expect(myScore).toEqual('...');
-
-      scoreIsLoading = true;
-      betIsLoading = false;
-
-      myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
+      const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
       expect(myScore).toEqual('...');
     });
 
     test('getMyScore handles loading with all other variables undefined', () => {
-      const scoreIsLoading = true;
-      const betIsLoading = true;
+      const isLoading = true;
 
+      // @ts-ignore
+      const hasError: boolean = undefined;
       // @ts-ignore
       const score: Score = undefined;
       // @ts-ignore
@@ -73,23 +58,50 @@ describe('getMyScore', () => {
       // @ts-ignore
       const selectedGW: number = undefined;
 
-      const myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
+      const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
       expect(myScore).toEqual('...');
+    });
+  });
+
+  describe('error', () => {
+    test('getMyScore handles error', () => {});
+    const { isLoading, score, ticket, currentGW, gameweek, selectedGW } = testInput_getMyScore();
+    const hasError = true;
+
+    const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
+    expect(myScore).toEqual('error');
+
+    test('getMyScore handles error with all later variables undefined', () => {
+      const isLoading = false;
+      const hasError = true;
+      // @ts-ignore
+      const score: Score = undefined;
+      // @ts-ignore
+      const ticket: Ticket = undefined;
+      // @ts-ignore
+      const gameweek: Gameweek = undefined;
+      // @ts-ignore
+      const currentGW: number = undefined;
+      // @ts-ignore
+      const selectedGW: number = undefined;
+
+      const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
+      expect(myScore).toEqual('error');
     });
   });
 
   describe('unknown', () => {
     test('getMyScore displays future gameweeks with unknown', () => {
-      const { scoreIsLoading, score, betIsLoading, ticket, gameweek } = testInput_getMyScore();
+      const { isLoading, hasError, score, ticket, gameweek } = testInput_getMyScore();
       const currentGW = 20;
       const selectedGW = currentGW + 1; // more than currentGW
 
-      const myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
+      const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
       expect(myScore).toEqual('??');
     });
 
     test('getMyScore displays current, open gameweeks with unknown', () => {
-      const { scoreIsLoading, score, betIsLoading, ticket, currentGW, selectedGW } = testInput_getMyScore();
+      const { isLoading, hasError, score, ticket, currentGW, selectedGW } = testInput_getMyScore();
 
       const gameweek: Gameweek = {
         gameweek: 1,
@@ -101,7 +113,7 @@ describe('getMyScore', () => {
         hasFixtures: false,
       };
 
-      const myScore = getMyScore(scoreIsLoading, score, betIsLoading, ticket, currentGW, gameweek, selectedGW);
+      const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
       expect(myScore).toEqual('??');
     });
   });
