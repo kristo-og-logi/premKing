@@ -5,16 +5,17 @@ import type Score from '../types/Scores';
 import { getGameweekStatus } from './leagueUtils';
 
 export const getMyScore = (
-  scoreIsLoading: boolean,
+  isLoading: boolean,
+  hasError: boolean,
   score: Score,
-  betIsLoading: boolean,
   ticket: Ticket,
   currentGW: number,
   selectedGWObj: Gameweek,
   selectedGW: number,
 ): string => {
   // waiting for data..
-  if (scoreIsLoading || betIsLoading) return '...';
+  if (isLoading) return '...';
+  if (hasError) return 'error';
 
   const gwStatus = getGameweekStatus(selectedGWObj);
   const isCurrentGW = selectedGW === currentGW;

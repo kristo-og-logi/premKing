@@ -32,9 +32,9 @@ const Scores = ({ selectedGW }: Props) => {
         <PremText>My score</PremText>
         <PremText order={2}>
           {getMyScore(
-            scoreSlice.isLoading,
+            scoreSlice.isLoading || betSlice.isLoading,
+            scoreSlice.hasError || betSlice.hasError,
             scoreSlice.scores[selectedGW - 1],
-            betSlice.isLoading,
             betSlice.bets[selectedGW - 1],
             gameweekSlice.currentGameweek,
             gameweekSlice.allGameweeks[selectedGW - 1],
