@@ -16,7 +16,7 @@ const FutureMatchUp = ({ fixture }: Props) => {
         <TeamColumn
           selectable={false}
           disabled={true}
-          teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
+          teamName={fixture.homeTeam.shortName}
           logo={{ uri: fixture.homeTeam.logo }}
           odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
@@ -31,7 +31,7 @@ const FutureMatchUp = ({ fixture }: Props) => {
         <TeamColumn
           selectable={false}
           disabled={true}
-          teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
+          teamName={fixture.awayTeam.shortName}
           logo={{ uri: fixture.awayTeam.logo }}
           odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}

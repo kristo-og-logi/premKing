@@ -53,7 +53,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
       <View style={styles.container}>
         <TeamColumn
           selected={isSelected(FixtureResult.HOME)}
-          teamName={fixture.homeTeam.shortName || fixture.homeTeam.name}
+          teamName={fixture.homeTeam.shortName}
           logo={{ uri: fixture.homeTeam.logo }}
           odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
@@ -70,7 +70,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
         />
         <TeamColumn
           selected={isSelected(FixtureResult.AWAY)}
-          teamName={fixture.awayTeam.shortName || fixture.awayTeam.name}
+          teamName={fixture.awayTeam.shortName}
           logo={{ uri: fixture.awayTeam.logo }}
           disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
           odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}

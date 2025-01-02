@@ -22,6 +22,7 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	// ShortenFixtureNames()
 	// crons.UpdateFixtures()
 	// FindTeamsFromFixtures()
 	// FetchAndCreateFixturesInDB()
@@ -30,6 +31,26 @@ func main() {
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
 	// RecalculateBetsForGameweek()
+}
+
+// Make fixture names (team1 vs team2) use teams' short names
+func ShortenFixtureNames() {
+	gameweeks, _ := repositories.GetAllGameWeeks()
+
+	for _, gw := range gameweeks {
+		fixtures, _ := repositories.FetchFixturesByGameweek(gw.Gameweek)
+
+		for idx, fix := range fixtures {
+			name := utils.CreateFixtureName(fix.HomeTeam, fix.AwayTeam)
+			// fix.Name = name
+			fixtures[idx].Name = name
+			// fmt.Printf("fix: %s vs %s -> %s\n", fix.HomeTeam.ShortName, fix.AwayTeam.ShortName, name)
+		}
+
+		initializers.DB.Save(&fixtures)
+		fmt.Printf("saved %d fixtures for GW%d\n", len(fixtures), gw.Gameweek)
+	}
+
 }
 
 // Uses all fetched fixtures from pages.json
