@@ -54,7 +54,7 @@ const PastMatchUp = ({ fixture, bet }: Props) => {
       <View>
         <PremText
           centered
-        >{`${fixture.homeTeam.name} ${fixture.homeGoals} - ${fixture.awayGoals} ${fixture.awayTeam.name}`}</PremText>
+        >{`${fixture.homeTeam.shortName || fixture.homeTeam.name} ${fixture.homeGoals} - ${fixture.awayGoals} ${fixture.awayTeam.shortName || fixture.awayTeam.name}`}</PremText>
       </View>
     </>
   );
