@@ -1,5 +1,5 @@
 export default interface Team {
   name: string;
-  shortName?: string;
+  shortName: string;
   logo: string;
 }
