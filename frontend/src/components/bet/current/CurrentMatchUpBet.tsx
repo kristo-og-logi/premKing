@@ -7,6 +7,8 @@ import { FixtureResult } from '../../../types/Fixture';
 import { dateFormatter } from '../../../utils/constants';
 import DrawColumn from '../DrawColumn';
 import TeamColumn, { Side } from '../TeamColumn';
+import { getGameweekStatus } from '../../../utils/leagueUtils';
+import { GameweekStatus } from '../../../types/Gameweek';
 
 interface Props {
   fixture: Fixture;
@@ -16,6 +18,8 @@ interface Props {
 
 const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
   const betSlice = useAppSelector((state) => state.bets);
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
+
   const fixtureExistsInBet = () => {
     return bet.some((b) => b.fixtureId === fixture.id);
   };
@@ -48,6 +52,13 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
         : setBet([...bet, { fixtureId: fixture.id, result: result, odd: 0, won: false }]);
   };
 
+  const gw = gameweekSlice.allGameweeks[fixture.gameWeek - 1];
+  const gwStatus = getGameweekStatus(gw);
+
+  const isDisabled = (): boolean => {
+    return betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0 || gwStatus >= GameweekStatus.CLOSED;
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -57,14 +68,14 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           logo={{ uri: fixture.homeTeam.logo }}
           odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           onPress={() => handlePress(FixtureResult.HOME)}
         />
         <DrawColumn
           selected={isSelected(FixtureResult.DRAW)}
           date={dateFormatter.format(new Date(fixture.matchDate))}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           isNormal={fixture.isNormal}
           onPress={() => handlePress(FixtureResult.DRAW)}
         />
@@ -72,7 +83,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           selected={isSelected(FixtureResult.AWAY)}
           teamName={fixture.awayTeam.shortName}
           logo={{ uri: fixture.awayTeam.logo }}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}
           onPress={() => handlePress(FixtureResult.AWAY)}
