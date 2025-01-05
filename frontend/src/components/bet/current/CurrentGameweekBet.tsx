@@ -2,10 +2,10 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
 import type { Bet, Ticket } from '../../../types/Bet';
-import CurrentMatchUpBet from './CurrentMatchUpBet';
-import { getGameweekStatus } from '../../../utils/leagueUtils';
 import type Gameweek from '../../../types/Gameweek';
 import { GameweekStatus } from '../../../types/Gameweek';
+import { getGameweekStatus } from '../../../utils/leagueUtils';
+import CurrentMatchUpBet from './CurrentMatchUpBet';
 
 interface Props {
   bet: Bet[];
