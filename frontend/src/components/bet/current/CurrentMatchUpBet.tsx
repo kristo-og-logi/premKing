@@ -1,25 +1,20 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useAppSelector } from '../../../redux/hooks';
 import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';
 import { FixtureResult } from '../../../types/Fixture';
 import { dateFormatter } from '../../../utils/constants';
 import DrawColumn from '../DrawColumn';
 import TeamColumn, { Side } from '../TeamColumn';
-import { getGameweekStatus } from '../../../utils/leagueUtils';
-import { GameweekStatus } from '../../../types/Gameweek';
 
 interface Props {
   fixture: Fixture;
   bet: Bet[];
   setBet: (bet: Bet[]) => void;
+  isDisabled: () => boolean;
 }
 
-const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
-  const betSlice = useAppSelector((state) => state.bets);
-  const gameweekSlice = useAppSelector((state) => state.gameweek);
-
+const CurrentMatchUpBet = ({ fixture, bet, setBet, isDisabled }: Props) => {
   const fixtureExistsInBet = () => {
     return bet.some((b) => b.fixtureId === fixture.id);
   };
@@ -50,13 +45,6 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
       : fixtureExistsInBet()
         ? changeFixtureInBet(result)
         : setBet([...bet, { fixtureId: fixture.id, result: result, odd: 0, won: false }]);
-  };
-
-  const gw = gameweekSlice.allGameweeks[fixture.gameWeek - 1];
-  const gwStatus = getGameweekStatus(gw);
-
-  const isDisabled = (): boolean => {
-    return betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0 || gwStatus >= GameweekStatus.CLOSED;
   };
 
   return (
