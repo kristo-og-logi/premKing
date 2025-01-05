@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
@@ -51,7 +51,9 @@ func UserHasBetPlacedForGameweek(userId string, gameweek uint8) bool {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return false
 		}
-		fmt.Printf("ERROR: %s\n", result.Error.Error())
+		slog.Error("unexpected error while fetching bet for userId and gameweek", "userId", userId, "gw", gameweek, "error", result.Error.Error())
+
+		// TODO: it makes no sense to return true here, we should return an error
 		return true
 	}
 	return true

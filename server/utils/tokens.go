@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -101,7 +102,7 @@ func VerifyRSAToken(tokenString string, pbKey *rsa.PublicKey) (bool, error) {
 
 	// we failed but can't be sure whether the token is valid or not
 	if err != nil {
-		fmt.Printf("error parsing token: %s\n", err.Error())
+		slog.Error("error parsing token", "error", err.Error())
 		return false, err
 	}
 
