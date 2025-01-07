@@ -21,7 +21,7 @@ const Stats = () => {
       <PremModal isActive={isActive} setIsActive={setIsActive}>
         <PremText order={3}>
           {
-            'By pressing Delete, your account, its bets, scores & leagues will be removed forever.\n\nWhile you will be able to create a new account, your old information will be lost.'
+            "By pressing Delete, your account, its bets & scores, along with your spot in other leagues as well as the leagues you've created will be removed forever.\n\nWhile you will be able to create a new account, your old information will be lost."
           }
         </PremText>
         <View style={[styles.horizontal, { marginTop: 16 }]}>
