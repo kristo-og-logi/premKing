@@ -78,3 +78,11 @@ func GetBetsByGameweek(gw int) ([]*models.Bet, error) {
 
 	return bets, nil
 }
+
+func DeleteAllBetsByUserId(userId string) error {
+	result := initializers.DB.Where("user_id = ?", userId).Delete(&models.Bet{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

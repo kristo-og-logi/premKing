@@ -52,12 +52,30 @@ type CreateUserRequest struct {
 }
 
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
+	registered, err := repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	// the user is reviving a deleted account
+	if registered {
+		fmt.Printf("user's email already registered\n")
+		revivedUser, err := repositories.ReviveUser(user.Email)
+		if err != nil {
+			return nil, err
+		}
+
+		utils.PrettyPrint("revived user: %s\n", revivedUser)
+		return revivedUser, nil
+	}
+
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	return newUser, nil
+
 }
 
 func CreateUserFromAppleAuth(user AppleUserInfo) (*models.User, error) {
@@ -270,4 +288,26 @@ func CreateMyLeague(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, leagueDTO)
+}
+
+func DeleteMyAccount(c *gin.Context) {
+	// TODO: delete my bets, remove me from my leagues
+	// delete the leagues I've created and mark my account as deleted
+	me := utils.GetUserFromContext(c)
+
+	for _, league := range me.Leagues {
+		err := repositories.LeaveLeague(league.ID, me.ID)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	repositories.DeleteAllBetsByUserId(me.ID)
+
+	repositories.DeleteUserById(me.ID)
+
+	c.IndentedJSON(http.StatusOK, me)
+	return
+
 }
