@@ -10,14 +10,14 @@ import (
 )
 
 func Authenticate(c *gin.Context) {
-	AuthenticateUser(c)
+	authenticateUser(c)
 	if c.IsAborted() {
 		return
 	}
 	c.Next()
 }
 
-func AuthenticateUser(c *gin.Context) {
+func authenticateUser(c *gin.Context) {
 	tokenString, authErr := utils.GetTokenFromHeader(c)
 	if authErr != nil {
 		c.AbortWithStatusJSON(authErr.StatusCode, gin.H{"error": authErr.Err.Error()})
