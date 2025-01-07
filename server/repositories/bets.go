@@ -57,17 +57,6 @@ func UserHasBetPlacedForGameweek(userId string, gameweek uint8) bool {
 	return true
 }
 
-func GetAllBetsById(userId string) ([]models.Bet, error) {
-	bets := []models.Bet{}
-
-	result := initializers.DB.Find(&bets, "user_id = ?", userId)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	return bets, nil
-}
-
 func GetBetsByFixtureId(fixtureId uint32) ([]models.Bet, error) {
 	bets := []models.Bet{}
 

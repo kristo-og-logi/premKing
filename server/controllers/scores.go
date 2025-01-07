@@ -34,7 +34,7 @@ func GetMyScores(c *gin.Context) {
 }
 
 func GetScoreById(userId string) ([]Score, error) {
-	bets, err := repositories.GetAllBetsById(userId)
+	bets, err := repositories.GetAllBetsByUserId(userId)
 	if err != nil {
 		fmt.Printf("Error fetching bets from user with ID %v: %s", userId, err.Error())
 		return nil, err
