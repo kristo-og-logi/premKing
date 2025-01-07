@@ -307,7 +307,7 @@ func DeleteMyAccount(c *gin.Context) {
 
 	repositories.DeleteUserById(me.ID)
 
-	c.IndentedJSON(http.StatusOK, me)
+	c.IndentedJSON(http.StatusOK, "account successfully deleted")
 	return
 
 }

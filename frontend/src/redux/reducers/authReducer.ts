@@ -166,6 +166,34 @@ export const login = createAsyncThunk<LoginResponse, LoginParams>(
   },
 );
 
+export interface DeleteAccResponse {
+  success: boolean;
+}
+export interface DeleteAccParams {
+  token: string;
+}
+
+export const deleteAccount = createAsyncThunk<DeleteAccResponse, DeleteAccParams>(
+  'user/delete',
+  async ({ token }: DeleteAccParams, { dispatch }) => {
+    const url = `${BACKEND_URL}/api/v1/users/me`;
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const err = await response.json();
+      console.log(`err: ${JSON.stringify(err)}`);
+      return { success: false };
+    }
+
+    removeTokenFromStorage();
+    dispatch(clearUser());
+
+    return { success: true };
+  },
+);
+
 export const { clearUser, setUser, setUserDataFromStorage } = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;
 

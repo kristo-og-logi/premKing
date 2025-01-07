@@ -6,7 +6,7 @@ import PremModal from '../../../components/basic/PremModal';
 import { colors, globalStyles } from '../../../styles/styles';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { clearUser } from '../../../redux/reducers/authReducer';
+import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
@@ -15,6 +15,10 @@ const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+
+  const deleteAcc = async () => {
+    dispatch(deleteAccount({ token: authSlice.token }));
+  };
 
   return (
     <View style={globalStyles.container}>
@@ -34,8 +38,8 @@ const Stats = () => {
             Cancel
           </PremButton>
           <PremButton
-            onPress={() => {
-              // TODO: send deleteAccount request
+            onPress={async () => {
+              await deleteAcc();
               setIsActive(false);
             }}
             extraStyles={{
