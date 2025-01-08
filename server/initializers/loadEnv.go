@@ -10,7 +10,7 @@ import (
 
 func LoadEnv() (lvl *string) {
 	env := flag.String("environment", "", "Specify the environment: DEV | PROD | LOCAL")
-
+	lvl = flag.String("loglvl", "DEBUG", "Specify the log level: DEBUG | INFO | WARN | ERROR")
 	flag.Parse()
 
 	if *env != "DEV" && *env != "PROD" && *env != "LOCAL" {
@@ -18,8 +18,6 @@ func LoadEnv() (lvl *string) {
 		flag.Usage()
 		os.Exit(2)
 	}
-
-	lvl = flag.String("loglvl", "DEBUG", "Specify the log level: DEBUG | INFO | WARN | ERROR")
 
 	err := godotenv.Load(".env." + *env)
 	if err != nil {
