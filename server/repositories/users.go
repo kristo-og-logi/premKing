@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -17,7 +18,23 @@ func IsEmailRegisteredOnDeletedAccount(email string) (bool, error) {
 	var user models.User
 	result := initializers.DB.Unscoped().Find(&user, "email = ?", email)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, result.Error
+	}
+
+	return !user.DeletedAt.Time.IsZero(), nil
+}
+
+// Checks whether a specific email is associated with a deleted account
+// The email has to be registered **AND** to a deleted account for this
+// function to return true
+func IsAppleIdRegisteredOnDeletedAccount(appleId string) (bool, error) {
+	var user models.User
+	result := initializers.DB.Unscoped().Find(&user, "apple_id = ?", appleId)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return false, nil
 		}
 		return false, result.Error
@@ -69,10 +86,21 @@ func DeleteUserById(userId string) error {
 	return nil
 }
 
-// revive a previously deleted account
-func ReviveUser(email string) (*models.User, error) {
+// revive a previously deleted account, using email
+func ReviveUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 	result := initializers.DB.Unscoped().Clauses(clause.Returning{}).Model(user).Where("email = ?", email).Update("deleted_at", nil)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return user, nil
+}
+
+// revive a previously deleted account, using apple Id
+func ReviveUserByAppleId(appleId string) (*models.User, error) {
+	user := &models.User{}
+	result := initializers.DB.Unscoped().Clauses(clause.Returning{}).Model(user).Where("apple_id = ?", appleId).Update("deleted_at", nil)
 	if result.Error != nil {
 		return nil, result.Error
 	}

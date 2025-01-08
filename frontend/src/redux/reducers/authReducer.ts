@@ -97,6 +97,7 @@ const appleLogin = async (appleRequest: AppleRequest | undefined): Promise<Login
     body: JSON.stringify({
       identityToken: appleRequest.identityToken,
       fullName: appleRequest.fullName,
+      user: appleRequest.user,
     }),
   });
 
@@ -112,6 +113,7 @@ const appleLogin = async (appleRequest: AppleRequest | undefined): Promise<Login
 export type AppleRequest = {
   identityToken: string;
   fullName: { familyName: string | null | undefined; givenName: string | null | undefined };
+  user: string;
 };
 
 interface LoginParams {
