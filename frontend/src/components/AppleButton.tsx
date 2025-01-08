@@ -49,7 +49,7 @@ const AppleButton = ({ dispatch }: Props) => {
       fullWidth
       Icon={<Image source={appleImage} style={{ height: 32, width: 32 }} />}
     >
-      Sign in
+      Sign in with Apple
     </PremButton>
   );
 };

@@ -41,8 +41,8 @@ const PremButton = ({
       ref={ref}
       disabled={disabled}
     >
-      <PremText color={textColor}>{children}</PremText>
       {Icon}
+      <PremText color={textColor}>{children}</PremText>
     </TouchableOpacity>
   );
 };
