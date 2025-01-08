@@ -11,7 +11,7 @@ interface Props {
 const GoogleButton = ({ onPress }: Props) => {
   return (
     <PremButton onPress={onPress} fullWidth Icon={<Image source={googleImage} style={{ height: 28, width: 28 }} />}>
-      Sign in
+      Sign in with Google
     </PremButton>
   );
 };

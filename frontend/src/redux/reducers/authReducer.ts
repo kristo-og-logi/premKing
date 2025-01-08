@@ -97,6 +97,7 @@ const appleLogin = async (appleRequest: AppleRequest | undefined): Promise<Login
     body: JSON.stringify({
       identityToken: appleRequest.identityToken,
       fullName: appleRequest.fullName,
+      user: appleRequest.user,
     }),
   });
 
@@ -112,6 +113,7 @@ const appleLogin = async (appleRequest: AppleRequest | undefined): Promise<Login
 export type AppleRequest = {
   identityToken: string;
   fullName: { familyName: string | null | undefined; givenName: string | null | undefined };
+  user: string;
 };
 
 interface LoginParams {
@@ -163,6 +165,34 @@ export const login = createAsyncThunk<LoginResponse, LoginParams>(
       console.log('ERROR logging in: ', error);
       throw error;
     }
+  },
+);
+
+export interface DeleteAccResponse {
+  success: boolean;
+}
+export interface DeleteAccParams {
+  token: string;
+}
+
+export const deleteAccount = createAsyncThunk<DeleteAccResponse, DeleteAccParams>(
+  'user/delete',
+  async ({ token }: DeleteAccParams, { dispatch }) => {
+    const url = `${BACKEND_URL}/api/v1/users/me`;
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const err = await response.json();
+      console.log(`err: ${JSON.stringify(err)}`);
+      return { success: false };
+    }
+
+    removeTokenFromStorage();
+    dispatch(clearUser());
+
+    return { success: true };
   },
 );
 

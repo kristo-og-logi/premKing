@@ -8,7 +8,7 @@ import (
 )
 
 func Admin(c *gin.Context) {
-	AuthenticateUser(c)
+	authenticateUser(c)
 	if c.IsAborted() {
 		return
 	}

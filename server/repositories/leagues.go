@@ -67,3 +67,35 @@ func GetLeagueById(id string) (*models.League, error) {
 
 	return &league, nil
 }
+
+func LeaveLeague(leagueId string, userId string) error {
+	league, err := GetLeagueById(leagueId)
+	if err != nil {
+		return err
+	}
+
+	// owner is leaving, we must delete this league
+	if league.OwnerID == userId {
+		// we must delete all users from the league before deleting the league
+		err := initializers.DB.Model(league).Association("Users").Clear()
+		if err != nil {
+			return err
+		}
+
+		result := initializers.DB.Delete(league)
+		if result.Error != nil {
+			// TODO: we deleted all users from the league without deleting the league
+			// ideally, we should add the users back
+			return result.Error
+		}
+		return nil
+	}
+
+	// remove the user from the league
+	err = initializers.DB.Model(league).Association("Users").Delete(&models.User{ID: userId})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

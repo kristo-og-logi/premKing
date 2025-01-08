@@ -53,15 +53,54 @@ type CreateUserRequest struct {
 }
 
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
+	registered, err := repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	// the user is reviving a deleted account
+	if registered {
+		revivedUser, err := repositories.ReviveUserByEmail(user.Email)
+		if err != nil {
+			return nil, err
+		}
+
+		return revivedUser, nil
+	}
+
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	return newUser, nil
+
 }
 
-func CreateUserFromAppleAuth(user AppleUserInfo) (*models.User, error) {
+func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*models.User, error) {
+	registered, err := repositories.IsAppleIdRegisteredOnDeletedAccount(user.AppleId)
+	if err != nil {
+		return nil, err
+	}
+
+	// the user is reviving a deleted account
+	if registered {
+		revivedUser, err := repositories.ReviveUserByAppleId(user.AppleId)
+		if err != nil {
+			return nil, err
+		}
+
+		return revivedUser, nil
+	}
+
+	// if we did not revive, this is a brand new user.
+	// They must have included a username and email
+	success := findUserName(&user, authReq)
+	if !success || user.Email == "" {
+		utils.PrettyPrint("missing name: %s\n", user)
+		return nil, fmt.Errorf("Bad request, name and email required when creating new accounts")
+	}
+
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
 		return nil, err
@@ -135,6 +174,18 @@ func UserExistsByEmail(email string) (bool, error) {
 	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
 
 		// If there's an error, and it's not a 'record not found' error, return the error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func UserExistsByAppleId(appleId string) (bool, error) {
+	var user models.User
+	if err := initializers.DB.Where("apple_id = ?", appleId).First(&user).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return false, err
 		}
@@ -267,4 +318,26 @@ func CreateMyLeague(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, leagueDTO)
+}
+
+func DeleteMyAccount(c *gin.Context) {
+	// TODO: delete my bets, remove me from my leagues
+	// delete the leagues I've created and mark my account as deleted
+	me := utils.GetUserFromContext(c)
+
+	for _, league := range me.Leagues {
+		err := repositories.LeaveLeague(league.ID, me.ID)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	repositories.DeleteAllBetsByUserId(me.ID)
+
+	repositories.DeleteUserById(me.ID)
+
+	c.IndentedJSON(http.StatusOK, "account successfully deleted")
+	return
+
 }

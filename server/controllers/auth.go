@@ -102,11 +102,13 @@ type AppleAuthRequest struct {
 		GivenName  string `json:"givenName"`
 		FamilyName string `json:"familyName"`
 	} `json:"fullName"` // not required.. unless user is signing up
+	User string `json:"user"` // not required.. as the field is always available in the identity token
 }
 
 type AppleUserInfo struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Email   string
+	Name    string
+	AppleId string
 }
 
 func AppleLogin(c *gin.Context) {
@@ -144,21 +146,16 @@ func AppleLogin(c *gin.Context) {
 		return
 	}
 
-	userExists, err := UserExistsByEmail(userInfo.Email)
+	// better to use the apple id rather than email for apple login events
+	// as we can't seem to be able to trust that the email is provided
+	userExists, err := UserExistsByAppleId(userInfo.AppleId)
 	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error while checking whether user email exists in db"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error while checking whether appleId exists in db"})
 		return
 	}
-
 	// This is a signup event, create the user
 	if !userExists {
-		success := findUserName(userInfo, &authReq)
-		if !success {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Bad request, names required when creating accounts"})
-			return
-		}
-
-		createdUser, err := CreateUserFromAppleAuth(*userInfo)
+		createdUser, err := CreateUserFromAppleAuth(*userInfo, &authReq)
 		if err != nil {
 			slog.Error("Error creating user", "error", err.Error())
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating new user"})
@@ -189,11 +186,13 @@ func AppleLogin(c *gin.Context) {
 }
 
 func ParseAppleToken(appleToken string, key *rsa.PublicKey) (*AppleUserInfo, error) {
-	var userInfo AppleUserInfo
+	userInfo := &AppleUserInfo{}
+
 	type AppleClaims struct {
-		Email string `json:"email"`
+		Email string
 		jwt.RegisteredClaims
 	}
+
 	token, _ := jwt.ParseWithClaims(appleToken, &AppleClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
@@ -213,9 +212,16 @@ func ParseAppleToken(appleToken string, key *rsa.PublicKey) (*AppleUserInfo, err
 	if exp, _ := claims.GetExpirationTime(); time.Now().After(exp.Time) {
 		return nil, fmt.Errorf("exp field marks token as expired")
 	}
+	sub, _ := claims.GetSubject()
+	if sub == "" {
+		fmt.Println("bad sub")
+		return nil, fmt.Errorf("Invalid jwt token")
+	}
 
-	userInfo = AppleUserInfo{Email: claims.Email}
-	return &userInfo, nil
+	userInfo.Email = claims.Email
+	userInfo.AppleId = sub
+
+	return userInfo, nil
 }
 
 func findUserName(userInfo *AppleUserInfo, authReq *AppleAuthRequest) bool {

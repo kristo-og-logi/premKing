@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useAppSelector } from '../../../redux/hooks';
 import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';
 import { FixtureResult } from '../../../types/Fixture';
@@ -12,10 +11,10 @@ interface Props {
   fixture: Fixture;
   bet: Bet[];
   setBet: (bet: Bet[]) => void;
+  isDisabled: () => boolean;
 }
 
-const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
-  const betSlice = useAppSelector((state) => state.bets);
+const CurrentMatchUpBet = ({ fixture, bet, setBet, isDisabled }: Props) => {
   const fixtureExistsInBet = () => {
     return bet.some((b) => b.fixtureId === fixture.id);
   };
@@ -57,14 +56,14 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           logo={{ uri: fixture.homeTeam.logo }}
           odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
           side={Side.LEFT}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           onPress={() => handlePress(FixtureResult.HOME)}
         />
         <DrawColumn
           selected={isSelected(FixtureResult.DRAW)}
           date={dateFormatter.format(new Date(fixture.matchDate))}
           odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           isNormal={fixture.isNormal}
           onPress={() => handlePress(FixtureResult.DRAW)}
         />
@@ -72,7 +71,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet }: Props) => {
           selected={isSelected(FixtureResult.AWAY)}
           teamName={fixture.awayTeam.shortName}
           logo={{ uri: fixture.awayTeam.logo }}
-          disabled={betSlice.bets[betSlice.selectedGameweek - 1].bets.length > 0}
+          disabled={isDisabled()}
           odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
           side={Side.RIGHT}
           onPress={() => handlePress(FixtureResult.AWAY)}
