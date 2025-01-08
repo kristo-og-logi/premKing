@@ -214,8 +214,7 @@ func ParseAppleToken(appleToken string, key *rsa.PublicKey) (*AppleUserInfo, err
 	}
 	sub, _ := claims.GetSubject()
 	if sub == "" {
-		fmt.Println("bad sub")
-		return nil, fmt.Errorf("Invalid jwt token")
+		return nil, fmt.Errorf("identity token's sub field missing")
 	}
 
 	userInfo.Email = claims.Email

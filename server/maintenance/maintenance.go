@@ -42,9 +42,7 @@ func ShortenFixtureNames() {
 
 		for idx, fix := range fixtures {
 			name := utils.CreateFixtureName(fix.HomeTeam, fix.AwayTeam)
-			// fix.Name = name
 			fixtures[idx].Name = name
-			// fmt.Printf("fix: %s vs %s -> %s\n", fix.HomeTeam.ShortName, fix.AwayTeam.ShortName, name)
 		}
 
 		initializers.DB.Save(&fixtures)

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 	"sort"
 
@@ -36,7 +36,7 @@ func GetMyScores(c *gin.Context) {
 func GetScoreById(userId string) ([]Score, error) {
 	bets, err := repositories.GetAllBetsByUserId(userId)
 	if err != nil {
-		fmt.Printf("Error fetching bets from user with ID %v: %s", userId, err.Error())
+		slog.Error("Failed to fetch bets from user", "userId", userId, "error", err.Error())
 		return nil, err
 	}
 
