@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
-import PremText from '../../../components/basic/PremText';
 import PremModal from '../../../components/basic/PremModal';
+import PremText from '../../../components/basic/PremText';
 import { colors, globalStyles } from '../../../styles/styles';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
