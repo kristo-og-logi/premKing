@@ -114,10 +114,10 @@ func ExtractKIDFromTokenString(tokenString string) (string, error) {
 		return "", err
 	}
 
-	header, ok := token.Header["kid"].(string)
+	kid, ok := token.Header["kid"].(string)
 	if !ok {
 		return "", fmt.Errorf("Unable to parse kid from token header")
 	}
 
-	return header, nil
+	return kid, nil
 }

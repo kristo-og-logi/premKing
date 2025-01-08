@@ -25,5 +25,7 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		userGroup.POST("/me/bets/:gameweek", middleware.Authenticate, controllers.PlaceMyBetForGameweek)
 
 		userGroup.GET("/me/scores", middleware.Authenticate, controllers.GetMyScores)
+
+		userGroup.DELETE("/me", middleware.Authenticate, controllers.DeleteMyAccount)
 	}
 }

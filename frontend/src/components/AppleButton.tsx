@@ -11,35 +11,45 @@ interface Props {
   dispatch: AppDispatch;
 }
 
+/* expo's AppleAuth errors seem to be `{code: string}` objects,
+ * but they're not typehinted as such.
+ * Seems like we must do this for them
+ */
+const isAppleAuthError = (e: unknown): e is { code: string } => {
+  return typeof e === 'object' && e !== null && 'code' in e && typeof e.code === 'string';
+};
+
 const appleSignin = async (dispatch: AppDispatch) => {
+  let credential: AppleAuth.AppleAuthenticationCredential;
   try {
-    const credential = await AppleAuth.signInAsync({
+    credential = await AppleAuth.signInAsync({
       requestedScopes: [AppleAuth.AppleAuthenticationScope.EMAIL, AppleAuth.AppleAuthenticationScope.FULL_NAME],
     });
-
-    if (!credential.identityToken) {
-      throw new Error('missing identityToken from Apple credential');
-    }
-
-    dispatch(
-      login({
-        loginType: LoginType.APPLE,
-        appleRequest: {
-          identityToken: credential.identityToken,
-          fullName: {
-            givenName: credential.fullName?.givenName,
-            familyName: credential.fullName?.familyName,
-          },
-        },
-      }),
-    );
   } catch (e) {
-    if (e.code === 'ERR_REQUEST_CANCELLED') {
-      // handle cancelled
-    } else {
-      //handle other errors
+    if (!isAppleAuthError(e) || e.code !== 'ERR_REQUEST_CANCELED') {
+      console.error(`unknown apple signin error: ${JSON.stringify(e)}`);
     }
+    return;
   }
+
+  // the identity token cannot be missing
+  if (!credential.identityToken) {
+    throw new Error('missing identityToken from Apple credential');
+  }
+
+  dispatch(
+    login({
+      loginType: LoginType.APPLE,
+      appleRequest: {
+        identityToken: credential.identityToken,
+        fullName: {
+          givenName: credential.fullName?.givenName,
+          familyName: credential.fullName?.familyName,
+        },
+        user: credential.user,
+      },
+    }),
+  );
 };
 
 const AppleButton = ({ dispatch }: Props) => {
