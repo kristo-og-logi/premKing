@@ -105,8 +105,8 @@ func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*mo
 	// If user exists by email, that means the user is signing into an account already established with Google
 	// but wants to use the same email for Apple for the first time
 	// we want to accociate the apple Id with that email
-	registered, _ = repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
-	if registered {
+	exists, _ := UserExistsByEmail(user.Email)
+	if exists {
 		user, err := repositories.AssignAppleIdToUserByEmail(user.Email, user.AppleId)
 		if err != nil {
 			return nil, fmt.Errorf("[pk]: failed to assign AppleId=%s to user by email=%s (%s)", user.AppleId, user.Email, err.Error())
