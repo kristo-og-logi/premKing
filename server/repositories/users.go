@@ -121,7 +121,11 @@ func ReviveUserByAppleId(appleId string) (*models.User, error) {
 
 // Assigns an Apple Id to an existing account
 // For if a user logs in to an existing account with Apple for the first time
-func AssignAppleIdToUserByEmail(email string, appleId string) error {
-	user := &models.User{Email: email}
-	return initializers.DB.First(user).Update("apple_id", appleId).Error
+func AssignAppleIdToUserByEmail(email string, appleId string) (*models.User, error) {
+	user := &models.User{}
+	result := initializers.DB.Clauses(clause.Returning{}).Model(user).Where("email = ?", email).Update("apple_id", appleId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user, nil
 }

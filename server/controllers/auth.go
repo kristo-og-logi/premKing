@@ -179,7 +179,12 @@ func AppleLogin(c *gin.Context) {
 		return
 	}
 
-	user, _ := GetUserByEmail(userInfo.Email)
+	user, err := GetUserByAppleId(userInfo.AppleId)
+	if err != nil {
+		slog.Error("Failed to get user by apple id", "appleId", userInfo.AppleId)
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error signing in"})
+		return
+	}
 
 	tokenString, err := utils.CreateToken(*user)
 	if err != nil {

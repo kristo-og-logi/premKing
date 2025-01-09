@@ -84,6 +84,8 @@ func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*mo
 	}
 
 	// the user is reviving a deleted account
+	// TODO: if the user has registered on this apple id using a different name or Email
+	// then we aren't updating the new apple id or email
 	if registered {
 		revivedUser, err := repositories.ReviveUserByAppleId(user.AppleId)
 		if err != nil {
@@ -105,12 +107,17 @@ func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*mo
 	// we want to accociate the apple Id with that email
 	registered, _ = repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
 	if registered {
-		repositories.AssignAppleIdToUserByEmail(user.Email, user.AppleId)
+		user, err := repositories.AssignAppleIdToUserByEmail(user.Email, user.AppleId)
+		if err != nil {
+			return nil, fmt.Errorf("[pk]: failed to assign AppleId=%s to user by email=%s (%s)", user.AppleId, user.Email, err.Error())
+		}
+
+		return user, nil
 	}
 
 	newUser, err := repositories.CreateUserWithAppleId(user.Name, user.Email, user.AppleId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[pk]: failed to create user with apple id (%s)", err.Error())
 	}
 
 	return newUser, nil
@@ -208,6 +215,14 @@ func GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 
+	return &user, nil
+}
+
+func GetUserByAppleId(appleId string) (*models.User, error) {
+	var user models.User
+	if err := initializers.DB.First(&user, "apple_id = ?", appleId).Error; err != nil {
+		return nil, err
+	}
 	return &user, nil
 }
 
