@@ -54,6 +54,17 @@ func CreateUser(name string, email string) (*models.User, error) {
 	return &user, nil
 }
 
+func CreateUserWithAppleId(name string, email string, appleId string) (*models.User, error) {
+	user := models.User{ID: uuid.NewString(), Name: name, Email: email, AppleId: appleId}
+
+	result := initializers.DB.Create(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
+
 func GetUserById(id string) (*models.User, error) {
 	var user models.User
 	result := initializers.DB.Preload("Leagues").First(&user, "id = ?", id)
@@ -106,4 +117,11 @@ func ReviveUserByAppleId(appleId string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+// Assigns an Apple Id to an existing account
+// For if a user logs in to an existing account with Apple for the first time
+func AssignAppleIdToUserByEmail(email string, appleId string) error {
+	user := &models.User{Email: email}
+	return initializers.DB.First(user).Update("apple_id", appleId).Error
 }
