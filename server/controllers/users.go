@@ -84,6 +84,8 @@ func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*mo
 	}
 
 	// the user is reviving a deleted account
+	// TODO: if the user has registered on this apple id using a different name or Email
+	// then we aren't updating the new apple id or email
 	if registered {
 		revivedUser, err := repositories.ReviveUserByAppleId(user.AppleId)
 		if err != nil {
@@ -97,13 +99,25 @@ func CreateUserFromAppleAuth(user AppleUserInfo, authReq *AppleAuthRequest) (*mo
 	// They must have included a username and email
 	success := findUserName(&user, authReq)
 	if !success || user.Email == "" {
-		utils.PrettyPrint("missing name: %s\n", user)
 		return nil, fmt.Errorf("Bad request, name and email required when creating new accounts")
 	}
 
-	newUser, err := repositories.CreateUser(user.Name, user.Email)
+	// If user exists by email, that means the user is signing into an account already established with Google
+	// but wants to use the same email for Apple for the first time
+	// we want to accociate the apple Id with that email
+	exists, _ := UserExistsByEmail(user.Email)
+	if exists {
+		user, err := repositories.AssignAppleIdToUserByEmail(user.Email, user.AppleId)
+		if err != nil {
+			return nil, fmt.Errorf("[pk]: failed to assign AppleId=%s to user by email=%s (%s)", user.AppleId, user.Email, err.Error())
+		}
+
+		return user, nil
+	}
+
+	newUser, err := repositories.CreateUserWithAppleId(user.Name, user.Email, user.AppleId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[pk]: failed to create user with apple id (%s)", err.Error())
 	}
 
 	return newUser, nil
@@ -201,6 +215,14 @@ func GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 
+	return &user, nil
+}
+
+func GetUserByAppleId(appleId string) (*models.User, error) {
+	var user models.User
+	if err := initializers.DB.First(&user, "apple_id = ?", appleId).Error; err != nil {
+		return nil, err
+	}
 	return &user, nil
 }
 
