@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,8 @@ import (
 )
 
 func init() {
-	initializers.LoadEnv()
+	lvl := initializers.LoadEnv()
+	initializers.Logging(lvl)
 	initializers.ConnectDB()
 	initializers.LoadKeys()
 	crons.CRON()
@@ -45,7 +46,6 @@ func main() {
 	routes.SetupGameweekRoutes(router, version1Prefix)
 
 	router.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
-	router.GET("/health3", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
 	router.LoadHTMLGlob("html/*")
 	router.GET("/pp", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "privacy_policy.html", nil)
@@ -64,7 +64,7 @@ func main() {
 		c.File("./static/favicon.png")
 	})
 
-	fmt.Println("Router running...")
+	slog.Info("Router running...")
 	router.Run()
 }
 

@@ -3,10 +3,11 @@ package initializers
 import (
 	"context"
 	"crypto/rsa"
-	"fmt"
-	"github.com/lestrrat-go/jwx/v2/jwk"
+	"log/slog"
 	"math/big"
 	"os"
+
+	"github.com/lestrrat-go/jwx/v2/jwk"
 )
 
 // Maps Apple's RSA header keys to rsa.PublicKeys
@@ -28,19 +29,19 @@ func LoadKeys() {
 		if key.KeyType() == "RSA" {
 			n, ok := key.Get("n")
 			if !ok {
-				fmt.Printf("n not ok")
+				slog.Error("n not ok")
 				os.Exit(1)
 			}
 
 			e, ok := key.Get("e")
 			if !ok {
-				fmt.Printf("e not ok")
+				slog.Error("e not ok")
 				os.Exit(1)
 			}
 
 			kid, ok := key.Get("kid")
 			if !ok {
-				fmt.Printf("kid not ok")
+				slog.Error("kid not ok")
 				os.Exit(1)
 			}
 
@@ -53,5 +54,5 @@ func LoadKeys() {
 		}
 	}
 
-	fmt.Println("Apple JWKs loaded into KEYS")
+	slog.Info("Apple JWKs loaded into KEYS")
 }

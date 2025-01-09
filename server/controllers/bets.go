@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -38,7 +39,7 @@ func GetAllMyBets(c *gin.Context) {
 
 	scores, err := GetScoreById(user.ID)
 	if err != nil {
-		fmt.Printf("ERROR fetching user scores: %s", err.Error())
+		slog.Error("failed to fetch user scores", "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 	}
 
@@ -48,7 +49,7 @@ func GetAllMyBets(c *gin.Context) {
 
 	allBets, err := repositories.GetAllBetsByUserId(user.ID)
 	if err != nil {
-		fmt.Printf("ERROR fetching all bets by user: %s", err.Error())
+		slog.Error("error fetching all bets by user", "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}

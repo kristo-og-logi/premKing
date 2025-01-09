@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
@@ -25,7 +25,7 @@ func CreateleagueFromOwnerId(name string, ownerId string) (*models.League, error
 
 	result := initializers.DB.Preload("Owner").Create(&league)
 	if result.Error != nil {
-		fmt.Printf("Error creating league: %s\n", result.Error.Error())
+		slog.Error("Error creating league", "error", result.Error.Error())
 		return nil, result.Error
 	}
 

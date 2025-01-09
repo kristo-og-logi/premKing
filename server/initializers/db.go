@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"time"
 
@@ -17,7 +18,8 @@ import (
 func autoMigrateDB(db *gorm.DB) {
 	err := db.AutoMigrate(&models.League{}, &models.User{}, &models.Fixture{}, &models.Team{}, &models.Gameweek{}, &models.Bet{})
 	if err != nil {
-		log.Fatal("failed to autoMigrate: " + err.Error())
+		slog.Error("failed to autoMigrate: " + err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -27,7 +29,8 @@ func ConnectDB() {
 	dsn := os.Getenv("DSN")
 
 	if dsn == "" {
-		log.Fatal("environment variable DSN not found")
+		slog.Error("environment variable DSN not found")
+		os.Exit(1)
 	}
 
 	dbLogger := logger.New(
@@ -41,18 +44,19 @@ func ConnectDB() {
 		Logger: dbLogger,
 	})
 	if err != nil {
-		log.Fatal("Failed to connect to database ", err)
+		slog.Error("Failed to connect to database ", err)
+		os.Exit(1)
 	}
 
 	shouldMigrate := false
 	if shouldMigrate {
-		fmt.Println("migrating")
+		slog.Info("migrating")
 		autoMigrateDB(db)
 		migrateTeamsToDB(db)
 		migrateFixturesToDB(db)
 		migrateGameweeksToDB(db)
 	} else {
-		fmt.Println("not migrating")
+		slog.Info("not migrating")
 	}
 
 	DB = db
@@ -62,23 +66,25 @@ func migrateTeamsToDB(db *gorm.DB) {
 	var existingTeams []models.Team
 	result := db.Select("id").Find(&existingTeams)
 	if result.Error != nil {
-		log.Fatalf("error fetching existing teams: %s\n", result.Error.Error())
+		slog.Error("error fetching existing teams", "error", result.Error.Error())
 	}
 
 	if len(existingTeams) >= 20 {
-		fmt.Println("all teams already existing in db")
+		slog.Info("all teams already existing in db. Stopping")
 		return
 	}
 
 	jsonData, err := os.ReadFile("./json/teams.json")
 	if err != nil {
-		log.Fatalf("error reading teams.json: %s\n", err.Error())
+		slog.Error("error reading teams.json", "error", err.Error())
+		os.Exit(1)
 	}
 
 	var teamsData []models.TeamJSON
 	err = json.Unmarshal(jsonData, &teamsData)
 	if err != nil {
-		log.Fatalf("cannot parse teams.json data into JSON: %s\n", err.Error())
+		slog.Error("cannot parse teams.json data into JSON", "error", err.Error())
+		os.Exit(1)
 	}
 
 	for _, team := range teamsData {
@@ -97,12 +103,13 @@ func migrateTeamsToDB(db *gorm.DB) {
 		}
 		if !exists {
 			result := db.Where(models.Team{ID: model.ID}).FirstOrCreate(&model)
-			fmt.Printf("added %s\n", team.Team.Name)
+			slog.Info(fmt.Sprintf("added %s", team.Team.Name))
 			if result.Error != nil {
-				log.Fatalf("Error adding team to DB: %s\n", result.Error.Error())
+				slog.Error("Error adding team to DB", "error", result.Error.Error())
+				os.Exit(1)
 			}
 		} else {
-			fmt.Printf("%s already exists\n", model.Name)
+			slog.Info("already exists", "team", model.Name)
 		}
 	}
 }
@@ -111,29 +118,33 @@ func migrateFixturesToDB(db *gorm.DB) {
 	var existingFixtures []models.Fixture
 	result := db.Select("id").Find(&existingFixtures)
 	if result.Error != nil {
-		log.Fatalf("error fetching existing fixtures: %s\n", result.Error.Error())
+		slog.Error("error fetching existing fixtures", "error", result.Error.Error())
+		os.Exit(1)
 	}
 
 	if len(existingFixtures) >= 380 {
-		fmt.Println("all fixtures already exist in db")
+		slog.Info("all fixtures already exist in db. Stopping")
 		return
 	}
 
 	var teams []models.Team
 	teamResult := db.Find(&teams)
 	if teamResult.Error != nil {
-		log.Fatalf("error fetching all teams: %s\n", result.Error.Error())
+		slog.Error("error fetching all teams", "error", result.Error.Error())
+		os.Exit(1)
 	}
 
 	jsonData, err := os.ReadFile("./json/fixtures3.json")
 	if err != nil {
-		log.Fatalf("error reading fixtures.json: %s\n", err.Error())
+		slog.Error("error reading fixtures.json", "error", err.Error())
+		os.Exit(1)
 	}
 
 	var response models.FixturesResponse
 	err = json.Unmarshal(jsonData, &response)
 	if err != nil {
-		log.Fatalf("cannot parse fixtures.json data into JSON: %s\n", err.Error())
+		slog.Error("cannot parse fixtures.json data into JSON", "error", err.Error())
+		os.Exit(1)
 	}
 
 	fixtureData := response.Response
@@ -185,7 +196,8 @@ func migrateFixturesToDB(db *gorm.DB) {
 
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
 			if result.Error != nil {
-				log.Fatalf("Error adding team to DB: %s\n", result.Error.Error())
+				slog.Error("Error adding team to DB", "error", result.Error.Error())
+				os.Exit(1)
 			}
 		}
 	}
@@ -203,11 +215,12 @@ func migrateGameweeksToDB(db *gorm.DB) {
 	result := db.Find(&existingGameweeks)
 
 	if result.Error != nil {
-		log.Fatalf("error fetching existing gameweeks %s\n", result.Error.Error())
+		slog.Error("error fetching existing gameweeks", "error", result.Error.Error())
+		os.Exit(1)
 	}
 
 	if len(existingGameweeks) == 38 {
-		fmt.Println("gameweeks already exist")
+		slog.Info("gameweeks already exist. Stopping")
 		return
 	}
 
@@ -219,7 +232,8 @@ func migrateGameweeksToDB(db *gorm.DB) {
     FROM fixtures f1`).Scan(&borders).Error
 
 	if err != nil {
-		log.Fatalf("error fetching first and last fixture dates from db: %s\n", err.Error())
+		slog.Error("error fetching first and last fixture dates from db", "error", err.Error())
+		os.Exit(1)
 	}
 
 	for index, border := range borders {
@@ -243,7 +257,8 @@ func migrateGameweeksToDB(db *gorm.DB) {
 		if true {
 			result := db.Where(models.Gameweek{Gameweek: model.Gameweek}).FirstOrCreate(&model)
 			if result.Error != nil {
-				log.Fatalf("Error adding gameweek to DB: %s\n", result.Error.Error())
+				slog.Error("Error adding gameweek to DB", "error", result.Error.Error())
+				os.Exit(1)
 			}
 		}
 	}

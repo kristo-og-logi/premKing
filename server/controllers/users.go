@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -150,21 +151,17 @@ func DeleteUserById(c *gin.Context) {
 func GetUsersLeaguesByUserId(c *gin.Context) {
 	id := c.Param("id")
 
-	fmt.Println("id: " + id)
-
 	if !utils.IsValidUuid(id) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid uuid: %s", id)})
 		return
 	}
-
-	// var leagues []models.League
 
 	var user models.User
 
 	result := initializers.DB.Where("id = ?", id).Preload("Leagues").First(&user)
 
 	if result.Error != nil {
-		fmt.Println("error: " + result.Error.Error())
+		slog.Warn("failed to fetch league by userId", "id", id, "error", result.Error.Error())
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User with id %s not found", id)})
 		return
 	}

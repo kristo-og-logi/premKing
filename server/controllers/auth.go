@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -44,13 +45,12 @@ func GoogleLogin(c *gin.Context) {
 		return
 	}
 
-	tokenInfo, err := checkGoogleTokenStatus(authReq.GoogleToken)
+	_, err := checkGoogleTokenStatus(authReq.GoogleToken)
 	if err != nil {
-		fmt.Printf("token error: %s\n", err.Error())
+		slog.Error("token error", "error", err.Error())
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
 		return
 	}
-	utils.PrettyPrint("Token info: %s\n", tokenInfo)
 
 	userInfo, authError := googleAuthenticate(authReq.GoogleToken)
 	if authError != nil {
@@ -68,7 +68,7 @@ func GoogleLogin(c *gin.Context) {
 	if !userExists {
 		createdUser, err := CreateUserFromGoogleAuth(*userInfo)
 		if err != nil {
-			fmt.Printf("Error creating user: %s\n", err.Error())
+			slog.Error("Error creating user", "error", err.Error())
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating new user"})
 			return
 		}
@@ -140,7 +140,9 @@ func AppleLogin(c *gin.Context) {
 
 	userInfo, err := ParseAppleToken(authReq.AppleToken, key)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// token is either invalid or expired.. well in that case it's also invalid
+		slog.Error("failed to parse apple identity token", "error", err.Error())
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid jwt token"})
 		return
 	}
 
@@ -155,7 +157,7 @@ func AppleLogin(c *gin.Context) {
 	if !userExists {
 		createdUser, err := CreateUserFromAppleAuth(*userInfo, &authReq)
 		if err != nil {
-			fmt.Printf("Error creating user: %s\n", err.Error())
+			slog.Error("Error creating user", "error", err.Error())
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating new user"})
 			return
 		}
@@ -197,28 +199,22 @@ func ParseAppleToken(appleToken string, key *rsa.PublicKey) (*AppleUserInfo, err
 
 	claims, ok := token.Claims.(*AppleClaims)
 	if !ok {
-		fmt.Println("failed to applify claims")
-		return nil, fmt.Errorf("Invalid jwt token")
+		return nil, fmt.Errorf("Unable to parse claims to AppleClaims")
 	}
 
-	// Do some final validation
+	// Aud can be string or []string
 	if aud, _ := claims.GetAudience(); len(aud) != 1 || aud[0] != "com.kristo.premking" {
-		// Aud can be string or []string
-		fmt.Println("bad aud")
-		return nil, fmt.Errorf("Invalid jwt token")
+		return nil, fmt.Errorf("Invalid aud field")
 	}
 	if iss, _ := claims.GetIssuer(); iss != "https://appleid.apple.com" {
-		fmt.Println("bad iss")
-		return nil, fmt.Errorf("Invalid jwt token")
+		return nil, fmt.Errorf("Invalid issuer field")
 	}
 	if exp, _ := claims.GetExpirationTime(); time.Now().After(exp.Time) {
-		fmt.Println("bad exp")
-		return nil, fmt.Errorf("Expired jwt token")
+		return nil, fmt.Errorf("exp field marks token as expired")
 	}
 	sub, _ := claims.GetSubject()
 	if sub == "" {
-		fmt.Println("bad sub")
-		return nil, fmt.Errorf("Invalid jwt token")
+		return nil, fmt.Errorf("identity token's sub field missing")
 	}
 
 	userInfo.Email = claims.Email
@@ -311,8 +307,6 @@ func checkGoogleTokenStatus(accessToken string) (*GoogleTokenInfo, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		// body, _ := io.ReadAll(resp.Body)
-		// fmt.Printf("google error: %s\n", body)
 		return nil, fmt.Errorf("error response from token info endpoint: status code %d", resp.StatusCode)
 	}
 

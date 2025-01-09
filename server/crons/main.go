@@ -1,13 +1,13 @@
 package crons
 
 import (
-	"fmt"
+	"log/slog"
 
 	"github.com/robfig/cron/v3"
 )
 
 func CRON() {
-	fmt.Println("adding cron...")
+	slog.Info("adding cron...")
 	c := cron.New()
 	// every function added to a cronjob runs in a separate goroutine,
 	// no need to do anything here
