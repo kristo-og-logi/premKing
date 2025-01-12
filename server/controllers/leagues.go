@@ -28,6 +28,7 @@ type UserDTO struct {
 }
 
 func GetAllLeagues(c *gin.Context) {
+	slog.Info("ADMIN: Get all leagues")
 	var leagues []models.League
 	result := initializers.DB.Preload("Owner").Preload("Users").Find(&leagues)
 

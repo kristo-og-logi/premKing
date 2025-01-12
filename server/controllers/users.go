@@ -15,9 +15,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// var db *gorm.DB = initializers.DB
-
 func GetAllUsers(c *gin.Context) {
+	slog.Info("ADMIN: Get all users")
 	var users []models.User
 	result := initializers.DB.Preload("Leagues").Find(&users)
 
@@ -167,6 +166,7 @@ func DeleteUserById(c *gin.Context) {
 }
 
 func GetUsersLeaguesByUserId(c *gin.Context) {
+	slog.Info("ADMIN: Get user's leagues by user id")
 	id := c.Param("id")
 
 	if !utils.IsValidUuid(id) {
