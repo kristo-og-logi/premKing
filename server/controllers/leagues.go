@@ -48,6 +48,7 @@ func GetLeagueById(c *gin.Context) {
 
 	id := c.Param("id")
 	if !utils.IsValidPremKingId(id) {
+		slog.Warn("Attempted fetching league with invalid Id", "leagueId", id, "userId", user.ID)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid id: %s", id)})
 		return
 	}
@@ -55,6 +56,7 @@ func GetLeagueById(c *gin.Context) {
 	league := models.League{}
 	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
 	if result.Error != nil {
+		slog.Warn("League not found", "leagueId", id, "userId", user.ID)
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", id)})
 		return
 	}
@@ -62,6 +64,7 @@ func GetLeagueById(c *gin.Context) {
 	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
 	resp.Users = CalculateUsersWithScoresAndPosition(league)
 
+	slog.Info("League fetched by ID", "userId", user.ID, "leagueId", league.ID)
 	c.IndentedJSON(http.StatusOK, resp)
 }
 

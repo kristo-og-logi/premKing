@@ -263,6 +263,7 @@ func GetMyLeagues(c *gin.Context) {
 
 	leagues, err := repositories.GetAllUserLeaguesById(currentUser.ID)
 	if err != nil {
+		slog.Error("Internal error while getting all user leagues", "userId", currentUser.ID)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
