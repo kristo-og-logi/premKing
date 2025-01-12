@@ -55,13 +55,16 @@ type CreateUserRequest struct {
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	registered, err := repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
 	if err != nil {
+		slog.Error("Error while checking whether email is registered on deleted account", "email", user.Email)
 		return nil, err
 	}
 
 	// the user is reviving a deleted account
 	if registered {
+		slog.Info("Email is registered on deleted account", "email", user.Email)
 		revivedUser, err := repositories.ReviveUserByEmail(user.Email)
 		if err != nil {
+			slog.Error("Error reviving user", "email", user.Email)
 			return nil, err
 		}
 
@@ -70,6 +73,7 @@ func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
+		slog.Error("Error while creating user", "email", user.Email)
 		return nil, err
 	}
 

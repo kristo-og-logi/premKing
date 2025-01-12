@@ -54,12 +54,14 @@ func GoogleLogin(c *gin.Context) {
 
 	userInfo, authError := googleAuthenticate(authReq.GoogleToken)
 	if authError != nil {
+		slog.Warn("failure while authenticating google user", "error", authError.Err.Error())
 		c.IndentedJSON(authError.StatusCode, gin.H{"error": authError.Err.Error()})
 		return
 	}
 
 	userExists, err := UserExistsByEmail(userInfo.Email)
 	if err != nil {
+		slog.Error("Internal error while checking whether user exists by email", "email", userInfo.Email, "error", err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error while checking whether user email exists in db"})
 		return
 	}
@@ -68,18 +70,20 @@ func GoogleLogin(c *gin.Context) {
 	if !userExists {
 		createdUser, err := CreateUserFromGoogleAuth(*userInfo)
 		if err != nil {
-			slog.Error("Error creating user", "error", err.Error())
+			slog.Error("Internal error creating new user", "email", userInfo.Email, "error", err.Error())
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating new user"})
 			return
 		}
 
 		tokenString, err := utils.CreateToken(*createdUser)
 		if err != nil {
+			slog.Error("Internal Error creating token for newly created user", "userId", createdUser.ID, "error", err.Error())
 			c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
 			return
 		}
 
 		// Return 201 created
+		slog.Info("User created with Google", "userId", createdUser.ID)
 		c.IndentedJSON(http.StatusCreated, gin.H{"user": createdUser, "token": tokenString})
 		return
 	}
@@ -88,10 +92,12 @@ func GoogleLogin(c *gin.Context) {
 
 	tokenString, err := utils.CreateToken(*user)
 	if err != nil {
+		slog.Error("Internal Error creating token for existing user", "userId", user.ID, "error", err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "error creating token"})
 		return
 	}
 
+	slog.Info("Google login", "userId", user.ID)
 	response := LoginResponse{User: user, Token: tokenString}
 	c.IndentedJSON(200, response)
 }
@@ -265,6 +271,7 @@ func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	// Create a new HTTP request with the token included in the Authorization header
 	req, err := http.NewRequest("GET", userInfoURL, nil)
 	if err != nil {
+		slog.Error("Internal error while creating http request", "error", err.Error())
 		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to create request: %s", err)}
 	}
 	// Set the Authorization header to "Bearer <token>"
@@ -274,11 +281,13 @@ func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		slog.Error("Internal error while fetching userinfo from Google", "error", err.Error())
 		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to send request %s", err)}
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		slog.Warn("Invalid google login attempt", "statusCode", resp.StatusCode)
 		if resp.StatusCode == 401 {
 			return nil, &AuthError{StatusCode: http.StatusUnauthorized, Err: fmt.Errorf("invalid oauth token")}
 		}
@@ -288,6 +297,7 @@ func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	// Read the response body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		slog.Error("Internal error while reading http response", "error", err.Error())
 		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to read response body: %s", err)}
 	}
 
@@ -295,6 +305,7 @@ func googleAuthenticate(token string) (*GoogleUserInfo, *AuthError) {
 	var userInfo GoogleUserInfo
 	err = json.Unmarshal(body, &userInfo)
 	if err != nil {
+		slog.Error("Internal error while unmarshalling http response body to GoogleUserInfo", "body", string(body))
 		return nil, &AuthError{StatusCode: http.StatusInternalServerError, Err: fmt.Errorf("failed to unmarshal JSON: %s", err)}
 	}
 
