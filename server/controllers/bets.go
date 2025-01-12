@@ -175,11 +175,13 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 
 	fixturesForGW, err := repositories.FetchNormalFixturesByGameweek(gameweek)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Internal error while fetching normal fixtures for gameweek %d", gameweek)})
+		slog.Error("Internal error while fetching normal fixtures for gameweek", "GW", gameweekParam, "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
 	if len(body.Bets) != len(fixturesForGW) {
+		slog.Warn("Invalid number of fixtures in placed bet", "userId", user.ID, "fixtures placed", len(body.Bets))
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("number of bets provided does not match normal fixtures in GW%d (%d provided, %d needed)", gameweek, len(body.Bets), len(fixturesForGW))})
 		return
 	}
@@ -193,6 +195,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 
 	currentGW, err := repositories.GetCurrentGameWeek()
 	if err != nil {
+		slog.Warn("Internal error while fetching current gameweek", "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal error while fetching current gameweek"})
 		return
 	}
@@ -232,12 +235,13 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 	}
 
 	err = repositories.SaveBets(bets)
-
 	if err != nil {
+		slog.Error("Failed to save bet", "userId", user.ID, "GW", gameweekParam, "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("error saving bets to db: %s", err.Error())})
 		return
 	}
 
+	slog.Info("Bet placed", "GW", gameweekParam, "userId", user.ID)
 	c.IndentedJSON(http.StatusCreated, bets)
 }
 

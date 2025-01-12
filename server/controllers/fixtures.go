@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -35,5 +36,6 @@ func GetFixturesByGameWeek(c *gin.Context) {
 }
 
 func UpdateFixtures(c *gin.Context) {
+	slog.Info("ADMIN: Updating fixtures")
 	crons.UpdateFixtures()
 }

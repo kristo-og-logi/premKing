@@ -15,9 +15,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// var db *gorm.DB = initializers.DB
-
 func GetAllUsers(c *gin.Context) {
+	slog.Info("ADMIN: Get all users")
 	var users []models.User
 	result := initializers.DB.Preload("Leagues").Find(&users)
 
@@ -55,13 +54,16 @@ type CreateUserRequest struct {
 func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 	registered, err := repositories.IsEmailRegisteredOnDeletedAccount(user.Email)
 	if err != nil {
+		slog.Error("Error while checking whether email is registered on deleted account", "email", user.Email)
 		return nil, err
 	}
 
 	// the user is reviving a deleted account
 	if registered {
+		slog.Info("Email is registered on deleted account", "email", user.Email)
 		revivedUser, err := repositories.ReviveUserByEmail(user.Email)
 		if err != nil {
+			slog.Error("Error reviving user", "email", user.Email)
 			return nil, err
 		}
 
@@ -70,6 +72,7 @@ func CreateUserFromGoogleAuth(user GoogleUserInfo) (*models.User, error) {
 
 	newUser, err := repositories.CreateUser(user.Name, user.Email)
 	if err != nil {
+		slog.Error("Error while creating user", "email", user.Email)
 		return nil, err
 	}
 
@@ -163,6 +166,7 @@ func DeleteUserById(c *gin.Context) {
 }
 
 func GetUsersLeaguesByUserId(c *gin.Context) {
+	slog.Info("ADMIN: Get user's leagues by user id")
 	id := c.Param("id")
 
 	if !utils.IsValidUuid(id) {
@@ -259,6 +263,7 @@ func GetMyLeagues(c *gin.Context) {
 
 	leagues, err := repositories.GetAllUserLeaguesById(currentUser.ID)
 	if err != nil {
+		slog.Error("Internal error while getting all user leagues", "userId", currentUser.ID)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -318,14 +323,19 @@ func CreateMyLeague(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body attribute `leagueName` missing"})
 			return
 		}
+		slog.Error("Internal error while binding body to CreateMyLeagueRequestBody struct", "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	league, err := repositories.CreateleagueFromOwnerId(body.LeagueName, currentUser.ID)
+	if err != nil {
+		slog.Error("Internal error while creating league", "userId", currentUser.ID, "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	users := CalculateUsersWithScoresAndPosition(*league)
-
 	leagueDTO := LeagueDTO{
 		Id:       league.ID,
 		Name:     league.Name,
@@ -334,11 +344,7 @@ func CreateMyLeague(c *gin.Context) {
 		Position: calculatePositions(users, currentUser.ID),
 	}
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
+	slog.Info("League created", "leagueId", league.ID, "userId", currentUser.ID)
 	c.IndentedJSON(http.StatusCreated, leagueDTO)
 }
 
