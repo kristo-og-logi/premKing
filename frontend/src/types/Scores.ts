@@ -3,4 +3,5 @@ export default interface Score {
   score: number;
   total: number;
   place: number;
+  missed: boolean;
 }

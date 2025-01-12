@@ -2,8 +2,12 @@ import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useAppSelector } from '../../redux/hooks';
 import { colors, scoreboardWidths } from '../../styles/styles';
+import type Gameweek from '../../types/Gameweek';
+import { GameweekStatus } from '../../types/Gameweek';
 import type { Player } from '../../types/Player';
+import { getGameweekStatus } from '../../utils/leagueUtils';
 import PremText from '../basic/PremText';
 
 interface Props {
@@ -18,6 +22,29 @@ const renderPointChange = (gw: number, player: Player) => {
   const increase = player.scores[gw - 1].score;
 
   return <PremText order={4}>{increase === 0 ? '' : `+ x${increase.toFixed(2)}`}</PremText>;
+};
+
+const renderPoints = (gw: Gameweek, player: Player) => {
+  const bet = player.scores[gw.gameweek - 1];
+  const gwStatus = getGameweekStatus(gw);
+
+  let txt = '';
+
+  if (bet.missed) {
+    // if the gameweek has closed, its missed
+    if (gwStatus >= GameweekStatus.CLOSED) {
+      txt = 'missed';
+      // if the gameweek has not yet closed, its unknown (bet not 'yet' placed)
+    } else {
+      txt = '??';
+    }
+    // if the bet was placed, render the total
+    // use two decimals if the gw score is < 10, else use one decimal
+  } else {
+    txt = `x${bet.total < 10 ? bet.total.toFixed(2) : bet.total.toFixed(1)}`;
+  }
+
+  return <PremText>{txt}</PremText>;
 };
 
 const renderPositionChange = (player: Player, gw: number) => {
@@ -49,6 +76,8 @@ export const renderChange = (posChange: number, gw: number, opposite = false) =>
 };
 
 const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
+  const gameweekSlice = useAppSelector((state) => state.gameweek);
+
   return (
     <View style={[styles.container, player.id === userId && styles.myScore]}>
       <View style={[styles.scoreWrapper, styles.shrinker]}>
@@ -77,7 +106,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
 
       <View style={[styles.scoreWrapper, styles.rightSide, scoreboardWidths.pointsWidth]}>
         {renderPointChange(gw, player)}
-        <PremText>{`x${player.scores[gw - 1].total < 10 ? player.scores[gw - 1].total.toFixed(2) : player.scores[gw - 1].total.toFixed(1)}`}</PremText>
+        {renderPoints(gameweekSlice.allGameweeks[gw - 1], player)}
       </View>
     </View>
   );

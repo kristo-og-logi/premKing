@@ -54,16 +54,20 @@ func GetLeagueById(c *gin.Context) {
 		return
 	}
 
-	league := models.League{}
-	result := initializers.DB.Preload("Users").First(&league, "id = ?", id)
-	if result.Error != nil {
+	league, err := repositories.GetLeagueById(id)
+	if err != nil {
+		slog.Error("Internal error while fetching league by id", "leagueId", id, "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	if league == nil {
 		slog.Warn("League not found", "leagueId", id, "userId", user.ID)
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", id)})
 		return
 	}
 
 	resp := GetLeagueByIdResponse{Id: league.ID, Name: league.Name, OwnerId: league.OwnerID}
-	resp.Users = CalculateUsersWithScoresAndPosition(league)
+	resp.Users = CalculateUsersWithScoresAndPosition(*league)
 
 	slog.Info("League fetched by ID", "userId", user.ID, "leagueId", league.ID)
 	c.IndentedJSON(http.StatusOK, resp)
