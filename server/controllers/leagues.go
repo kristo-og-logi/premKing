@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"sort"
 
@@ -122,24 +123,27 @@ func JoinLeague(c *gin.Context) {
 
 	leagueId := c.Param("id")
 	if !utils.IsValidPremKingId(leagueId) {
+		slog.Error("Attempted to join league with invalid ID", "leagueId", leagueId, "userId", currentUser.ID)
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Invalid id: %s", leagueId)})
 		return
 	}
 
 	league, err := repositories.GetLeagueById(leagueId)
-
 	if err != nil {
+		slog.Error("Internal error while fetching league by id", "leagueId", leagueId)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if league == nil {
+		slog.Warn("League not found", "leagueId", league.ID)
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", leagueId)})
 		return
 	}
 
 	for _, leagueUser := range league.Users {
 		if leagueUser.ID == currentUser.ID {
+			slog.Warn("User already in league", "userId", currentUser.ID, "leagueId", league.ID)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "user already in league"})
 			return
 		}
@@ -147,6 +151,7 @@ func JoinLeague(c *gin.Context) {
 
 	league.Users = append(league.Users, *currentUser)
 	if err := initializers.DB.Save(&league).Error; err != nil {
+		slog.Error("Internal error while adding user to league", "userId", currentUser.ID, "leagueId", league.ID)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -161,5 +166,6 @@ func JoinLeague(c *gin.Context) {
 		Position: calculatePositions(users, currentUser.ID),
 	}
 
+	slog.Info("user joined league", "userId", currentUser.ID, "leagueId", league.ID)
 	c.IndentedJSON(http.StatusOK, leagueDTO)
 }

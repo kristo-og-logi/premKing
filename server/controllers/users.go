@@ -322,14 +322,19 @@ func CreateMyLeague(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body attribute `leagueName` missing"})
 			return
 		}
+		slog.Error("Internal error while binding body to CreateMyLeagueRequestBody struct", "error", err.Error())
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	league, err := repositories.CreateleagueFromOwnerId(body.LeagueName, currentUser.ID)
+	if err != nil {
+		slog.Error("Internal error while creating league", "userId", currentUser.ID, "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	users := CalculateUsersWithScoresAndPosition(*league)
-
 	leagueDTO := LeagueDTO{
 		Id:       league.ID,
 		Name:     league.Name,
@@ -338,11 +343,7 @@ func CreateMyLeague(c *gin.Context) {
 		Position: calculatePositions(users, currentUser.ID),
 	}
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
+	slog.Info("League created", "leagueId", league.ID, "userId", currentUser.ID)
 	c.IndentedJSON(http.StatusCreated, leagueDTO)
 }
 
