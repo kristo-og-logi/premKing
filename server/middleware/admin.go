@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,8 +9,10 @@ import (
 )
 
 func Admin(c *gin.Context) {
+	slog.Info("Admin request")
 	authenticateUser(c)
 	if c.IsAborted() {
+		slog.Warn("Attempted admin request", "error", c.Err().Error(), "ip", c.ClientIP())
 		return
 	}
 
