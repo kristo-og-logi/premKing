@@ -3,7 +3,7 @@
     "name": "premKing",
     "slug": "premking",
     "scheme": "premking",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "orientation": "portrait",
     "icon": "./assets/newpk-ios.png",
     "userInterfaceStyle": "dark",
@@ -53,7 +53,7 @@
       "bundler": "metro",
       "favicon": "./assets/newpk-ios.png"
     },
-    "plugins": ["expo-router", "expo-apple-authentication"],
+    "plugins": ["expo-router", "expo-apple-authentication", "expo-notifications"],
     "extra": {
       "router": {
         "origin": false
