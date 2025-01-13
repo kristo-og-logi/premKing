@@ -11,6 +11,7 @@
     "web": "expo start --web",
     "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios --clear-cache",
     "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios",
+    "ios:device:dev:build": "npx expo run:ios --device",
     "ios": "expo run:ios"
   },
   "dependencies": {
