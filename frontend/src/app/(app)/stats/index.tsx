@@ -10,11 +10,14 @@ import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
+import { usePushNotification } from '../../../notifications/notifications';
 
 const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+
+  const { expoPushToken, notification } = usePushNotification();
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));
@@ -82,6 +85,19 @@ const Stats = () => {
           }}
         >
           Delete account
+        </PremButton>
+      </View>
+
+      <View>
+        <PremText>Notification</PremText>
+        <PremText>{`data: ${expoPushToken?.data}`}</PremText>
+        <PremText>{`notification: ${JSON.stringify(notification, undefined, 2)}`}</PremText>
+        <PremButton
+          onPress={() => {
+            console.log(`${expoPushToken?.data ?? 'none'}`);
+          }}
+        >
+          Press me for notification
         </PremButton>
       </View>
     </View>
