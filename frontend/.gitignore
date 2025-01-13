@@ -12,6 +12,7 @@ web-build/
 .env
 .env.DEV
 .env.PROD
+.env.DEVICE
 
 # macOS
 .DS_Store

@@ -38,14 +38,33 @@ To successfully build, use the link provided in the error message above ([https:
 
 #### Notifications
 
-Developing with notifications can be painful on IOS, as IOS simulator does not receive notifications. 
-Therefore, you must build & install a development build on a provisioned IOS device to test notifications.
+Developing with notifications can be painful on IOS, as IOS simulators do not receive notifications. 
+Therefore, you must build & install a development build on a provisioned IOS device (iPhone) to test notifications.
 
 For this, you must follow the Expo Guides: 
 - [Create a development build on a device](https://docs.expo.dev/develop/development-builds/create-a-build/#create-a-development-build-for-the-device)
 - [Setup ad hoc provisioning profile for IOS device](https://docs.expo.dev/build/internal-distribution/#22-configure-app-signing-credentials-for-ios) using `npx eas device:create` (Requires enabling [developer mode](https://docs.expo.dev/guides/ios-developer-mode/) on your IOS device)
 - [Test push notifications using expo tool](https://docs.expo.dev/push-notifications/push-notifications-setup/#get-credentials-for-development-builds)
 - Generating a new Apple Push Notificiations Key using `npx eas credentials` -> `ios` -> `Setup Project to use Push Notifications` -> `Generate new key`
+
+1. 
+To build the app for your iPhone, you'll have to clear the expo cache with `npx expo start --clear`, 
+then insert the device environment variables with `cat .env.DEVICE > .env`.
+Ensure that the `BACKEND_URL` attribute in your `.env.DEVICE` includes the LAN ip address of your mac, 
+as your app's request will come from your iPhone. Ensure your firewall rules allow incoming requests to the backend.
+
+2. 
+Run `npx expo run:ios --device` (`npm run ios:device:dev:build`), and **you must build for your specific iPhone**, not a simulator. 
+You'll see your iPhone marked with a 🔌. Mine is called 🔌kristo. (Both devices have to be on the same LAN for your iPhone to be visible in the list)
+
+You might have to do this a couple times, making sure to `rm -rf ios/` inbetween turns to get the app on your phone.
+
+3. 
+Once the app is running on your phone, start up a development client on your mac using `npx expo start --dev-client`.
+Then, open your iPhone's camera to scan the QR code in your terminal.
+
+4. 
+Now you should be good to go. PremKing should be running on your development iPhone.
 
 
 ## Deployment
