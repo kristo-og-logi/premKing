@@ -12,6 +12,7 @@ import (
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
+	expo "github.com/oliveroneill/exponent-server-sdk-golang/sdk"
 	"gorm.io/gorm"
 )
 
@@ -368,4 +369,48 @@ func DeleteMyAccount(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, "account successfully deleted")
 	return
 
+}
+
+type AddPushTokenRequestBody struct {
+	PushToken string `json:"pushToken" binding:"required"`
+}
+
+// Called by users when allowing push notifications
+// Stores the user's push token
+func AddPushToken(c *gin.Context) {
+	me := utils.GetUserFromContext(c)
+
+	var body AddPushTokenRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		if err == io.EOF {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "body missing"})
+			return
+		}
+
+		if body.PushToken == "" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "attribute `pushToken` missing from body"})
+			return
+		}
+
+		slog.Error("Internal error while binding body to AddPushTokenRequestBody struct", "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	_, err := expo.NewExponentPushToken(body.PushToken)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid expo push token"})
+		return
+	}
+
+	// Token is likely valid
+	err = repositories.SavePushTokenByUserId(me.ID, body.PushToken)
+	if err != nil {
+		slog.Error("Internal error while saving push token by user id", "userId", me.ID, "token", body.PushToken)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	slog.Info("Added Notification token", "userId", me.ID)
+	c.IndentedJSON(http.StatusCreated, "success")
 }
