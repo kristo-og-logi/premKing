@@ -48,7 +48,7 @@ func ConnectDB() {
 		os.Exit(1)
 	}
 
-	shouldMigrate := false
+	shouldMigrate := true
 	if shouldMigrate {
 		slog.Info("migrating")
 		autoMigrateDB(db)
