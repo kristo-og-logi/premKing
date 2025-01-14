@@ -31,7 +31,7 @@ func GetAllGameWeeks() ([]models.Gameweek, error) {
 	return gameweeks, nil
 }
 
-func GetGameweekById(id int) (*models.Gameweek, error) {
+func GetGameweekById(id uint8) (*models.Gameweek, error) {
 	gameweek := &models.Gameweek{}
 
 	result := initializers.DB.Find(gameweek, "gameweek = ?", id)
