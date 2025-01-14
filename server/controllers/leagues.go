@@ -144,7 +144,7 @@ func JoinLeague(c *gin.Context) {
 	}
 
 	if league == nil {
-		slog.Warn("League not found", "leagueId", league.ID)
+		slog.Warn("League not found", "leagueId", leagueId)
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("league with id %s not found", leagueId)})
 		return
 	}
