@@ -22,11 +22,15 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	// gw, _ := repositories.GetCurrentGameWeek()
+	// utils.PrettyPrint("current GW: %s\n", gw)
 	// ShortenFixtureNames()
-	// crons.UpdateFixtures()
+	fmt.Println("updating fixtures")
+	crons.UpdateFixtures()
+	fmt.Println("done updating fixtures")
 	// FindTeamsFromFixtures()
 	// FetchAndCreateFixturesInDB()
-	// FindAndSaveNormalFixtures()
+	crons.FindAndSaveNormalFixtures()
 	// CreateBets()
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
@@ -411,45 +415,6 @@ func ChangeGWTimes() {
 	fmt.Printf("gw.Opens updated: %d\n", opensUpdated)
 	fmt.Printf("gw.Closes updated: %d\n", closesUpdated)
 	fmt.Printf("gw.Finishes updated: %d\n", finishesUpdated)
-}
-
-// FindNormalFixtures groups and saves all fixtures
-// by their gameweek, and finds out which are normal,
-// meaning that they occur within the gameweek's timeframe.
-func FindAndSaveNormalFixtures() {
-	fixtureList := make([][]models.Fixture, 38)
-
-	for gw := 1; gw <= 38; gw++ {
-		fixtures, err := repositories.FetchFixturesByGameweek(uint8(gw))
-		if err != nil {
-			fmt.Printf("couldn't find fixtures for GW%d: %s", gw, err.Error())
-			continue
-		}
-
-		fixtureList[gw-1] = fixtures
-	}
-
-	for gw := 1; gw <= 38; gw++ {
-		fmt.Printf("GW%d\n", gw)
-		fixtures := fixtureList[gw-1]
-
-		for idx, fix := range fixtures {
-			isNormal := false
-			if fix.GameWeek == 38 || fix.MatchDate.Sub(fixtureList[gw][0].MatchDate).Hours() <= 48 {
-				isNormal = true
-			}
-
-			fmt.Printf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
-
-			if isNormal {
-				fmt.Println(" - X")
-				fixtures[idx].IsNormal = true
-			} else {
-				fmt.Println()
-			}
-		}
-		initializers.DB.Save(&fixtures)
-	}
 }
 
 func getGWs() []models.Gameweek {
