@@ -13,4 +13,7 @@ func CRON() {
 	// no need to do anything here
 	c.AddFunc("0 * * * *", UpdateFixtures)
 	c.Start()
+
+	// specific coroutine sets notifications for each gameweek
+	go SetupNotifications()
 }
