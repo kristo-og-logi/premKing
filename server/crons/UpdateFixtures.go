@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
+	"github.com/kristo-og-logi/premKing/server/repositories"
 )
 
 // Compares all fixtures between Sportmonks and DB
@@ -18,9 +20,10 @@ import (
 //
 // Collects and prints statistics about successful updates
 func UpdateFixtures() {
-	fmt.Println("updating fixtures...")
+	slog.Info("Fetching fixtures for updates")
 	fixtures := FetchFixtures()
 	dbFixtures := GetFixturesFromDB()
+	gwsChanged := map[uint8]bool{}
 
 	var totalOUpdated, totalDUpdated, totalSsUpdated, matches int = 0, 0, 0, 0
 	for _, dbfix := range dbFixtures {
@@ -33,6 +36,7 @@ func UpdateFixtures() {
 				}
 				if UpdateDate(dbfix, jsonfix) {
 					totalDUpdated++
+					gwsChanged[dbfix.GameWeek] = true
 				}
 				if UpdateStatusAndScores(dbfix, jsonfix) {
 					totalSsUpdated++
@@ -50,8 +54,51 @@ func UpdateFixtures() {
 	// If any dates are updated,
 	// it might affect when the gameweeks start
 	if totalDUpdated > 0 {
+		fmt.Printf("gws changed: %+v\n", gwsChanged)
 		fmt.Println("\nFixture dates updated... checking for gw updates")
+		FindAndSaveNormalFixtures() // we updated a fixture's date, we must check to see whether its normal status has changed
 		ChangeGWTimes()
+	}
+}
+
+// FindNormalFixtures groups and saves all fixtures
+// by their gameweek, and finds out which are normal,
+// meaning that they occur within the gameweek's timeframe.
+//
+// This is not a cron job, but needs to exist here for cron jobs to use
+func FindAndSaveNormalFixtures() {
+	fixtureList := make([][]models.Fixture, 38)
+
+	for gw := 1; gw <= 38; gw++ {
+		fixtures, err := repositories.FetchFixturesByGameweek(uint8(gw))
+		if err != nil {
+			fmt.Printf("couldn't find fixtures for GW%d: %s", gw, err.Error())
+			continue
+		}
+
+		fixtureList[gw-1] = fixtures
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		fmt.Printf("GW%d\n", gw)
+		fixtures := fixtureList[gw-1]
+
+		for idx, fix := range fixtures {
+			isNormal := false
+			if fix.GameWeek == 38 || fix.MatchDate.Sub(fixtureList[gw][0].MatchDate).Hours() <= 48 {
+				isNormal = true
+			}
+
+			fmt.Printf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
+
+			if isNormal {
+				fmt.Println(" - X")
+			} else {
+				fmt.Println()
+			}
+			fixtures[idx].IsNormal = isNormal
+		}
+		initializers.DB.Save(&fixtures)
 	}
 }
 
