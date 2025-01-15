@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Switch } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';
 import PremText from '../../../components/basic/PremText';
