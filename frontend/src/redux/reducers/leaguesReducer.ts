@@ -85,7 +85,6 @@ export const leagueSlice = createSlice({
         state.joinIsLoading = true;
       })
       .addCase(joinLeague.rejected, (state, action: RejectedActionFromAsyncThunk<typeof joinLeague>) => {
-        console.log('in builder: action = ', action);
         state.joinHasError = true;
         state.joinIsLoading = false;
         state.joinErrorMessage = action.error.message ?? '';
@@ -122,7 +121,7 @@ export const getSelectedLeague = createAsyncThunk<SelectedLeague, GetSelectedLea
       const data: SelectedLeague = await response.json();
       return data;
     } catch (error) {
-      console.log('ERROR: ', error);
+      console.error('error thrown fetching selected league: ', error);
       throw error;
     }
   },
@@ -147,6 +146,7 @@ export const createLeague = createAsyncThunk<League, CreateLeagueParams>(
 
     if (!response.ok) {
       const message: { error: string } = await response.json();
+      console.error(`error creating league: ${message.error}`);
       throw new Error(message.error);
     }
 
@@ -165,13 +165,14 @@ export const getMyLeagues = createAsyncThunk<League[], string>('leagues/getMyLea
 
     if (!response.ok) {
       const message: { error: string } = await response.json();
+      console.error(`error fetching my leagues: ${message.error}`);
       throw new Error(message.error);
     }
 
     const myLeagues: League[] = await response.json();
     return myLeagues;
   } catch (error) {
-    console.log('ERROR in leagues/getMyLeagues: ', error);
+    console.error('ERROR in leagues/getMyLeagues: ', error);
     throw error;
   }
 });
@@ -194,13 +195,14 @@ export const joinLeague = createAsyncThunk<League, JoinLeagueParams>(
 
       if (!response.ok) {
         const data: { error: string } = await response.json();
+        console.error(`error joining league: ${data.error}`);
         throw new Error(data.error);
       }
 
       const joinedLeague: League = await response.json();
       return joinedLeague;
     } catch (error) {
-      console.log('ERROR in leagues/joinLeague: ', error);
+      console.error('ERROR in leagues/joinLeague: ', error);
       throw error;
     }
   },
