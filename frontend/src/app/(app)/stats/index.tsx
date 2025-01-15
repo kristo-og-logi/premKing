@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Switch, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';
 import PremText from '../../../components/basic/PremText';
@@ -10,11 +10,42 @@ import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
+import { addPush, usePushNotification } from '../../../notifications/notifications';
 
 const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+
+  const { expoPushToken, notification, isRegistered, setIsRegistered } = usePushNotification();
+
+  useEffect(() => {
+    console.log(
+      'received notification at',
+      new Date((notification?.date ?? 0) * 1000),
+      `${notification?.request.content.title}: ${notification?.request.content.body}`,
+    );
+  }, [notification]);
+
+  useEffect(() => {
+    if (!expoPushToken) return;
+
+    addPush(authSlice.token, expoPushToken.data)
+      .then((success) => {
+        if (!success) {
+          console.error("failed to save user's push token");
+          setIsRegistered(false); // we failed, so we're not yet registered
+        } else {
+          console.log('successfully stored push token');
+        }
+      })
+      .catch((err) => {
+        console.error('failed to add push token', err);
+      });
+    console.log(`expoPushToken: ${expoPushToken.data}`);
+
+    // Send expoPushToken to backend
+  }, [expoPushToken]);
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));
@@ -84,12 +115,25 @@ const Stats = () => {
           Delete account
         </PremButton>
       </View>
+
+      <View>
+        <View style={[styles.bar]}>
+          <PremText>Notifications</PremText>
+          <Switch
+            value={isRegistered}
+            onValueChange={async () => {
+              setIsRegistered(!isRegistered);
+            }}
+          />
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   horizontal: { flexDirection: 'row', gap: 24, marginHorizontal: 16 },
+  bar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 16 },
 });
 
 export default Stats;

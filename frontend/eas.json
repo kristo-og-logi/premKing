@@ -11,10 +11,22 @@
       },
       "ios": {
         "buildConfiguration": "Debug"
+      },
+      "env": {
+        "ENVIRONMENT": "development",
+        "BACKEND_URL": "http://localhost:8080"
       }
     },
-    "preview": {
-      "distribution": "internal"
+    "device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "buildConfiguration": "Debug"
+      },
+      "env": {
+        "ENVIRONMENT": "device",
+        "BACKEND_URL": "http://localhost:8080"
+      }
     },
     "production": {
       "env": {

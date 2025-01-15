@@ -11,6 +11,7 @@
     "web": "expo start --web",
     "eas:ios:build": "cat .env.PROD > .env && eas build --platform ios --clear-cache",
     "eas:ios:submit": "cat .env.PROD > .env && eas submit --platform ios",
+    "ios:device:dev:build": "cat .env.DEVICE > .env && expo run:ios --device",
     "ios": "expo run:ios"
   },
   "dependencies": {
@@ -39,7 +40,10 @@
     "react-native-screens": "~3.29.0",
     "react-native-web": "0.19.11",
     "react-redux": "^9.1.1",
-    "expo-apple-authentication": "~6.3.0"
+    "expo-apple-authentication": "~6.3.0",
+    "expo-notifications": "~0.27.8",
+    "expo-device": "~5.9.4",
+    "expo-dev-client": "~3.3.12"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

@@ -27,5 +27,7 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		userGroup.GET("/me/scores", middleware.Authenticate, controllers.GetMyScores)
 
 		userGroup.DELETE("/me", middleware.Authenticate, controllers.DeleteMyAccount)
+
+		userGroup.POST("/me/push", middleware.Authenticate, controllers.AddPushToken)
 	}
 }

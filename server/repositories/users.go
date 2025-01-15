@@ -129,3 +129,32 @@ func AssignAppleIdToUserByEmail(email string, appleId string) (*models.User, err
 	}
 	return user, nil
 }
+
+func SavePushTokenByUserId(userId, pushToken string) error {
+	user := models.User{ID: userId}
+	// TODO: find some better way to update this without using string literals for the column names
+	result := initializers.DB.Model(user).Update("expo_push_token", pushToken)
+
+	return result.Error
+}
+
+// gets the push tokens for all users (with notifications enabled)
+// that have not placed bets on a specific gw
+//
+// This can get very expensive as the userbase grows
+func GetAllPushTokensWithNoBetsOnGameweekById(gw uint8) ([]string, error) {
+	var tokens []string
+
+	// find all user ids that have placed bets on gw
+	placed := initializers.DB.Model(&models.Bet{}).Select("DISTINCT user_id").Where("game_week = ?", gw)
+
+	// find the users' tokens, for the users with tokens, for the users that haven't placed bets
+	result := initializers.DB.Model(&models.User{}).Select("expo_push_token").Where("id NOT IN (?)", placed).
+		Where("expo_push_token IS NOT NULL AND expo_push_token <> ''"). // expo_push_token must be set as the user must have enabled notifications
+		Find(&tokens)
+	if result.Error != nil {
+		return []string{}, result.Error
+	}
+
+	return tokens, nil
+}

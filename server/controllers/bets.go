@@ -101,7 +101,7 @@ func GetMyBetByGameweek(c *gin.Context) {
 		return
 	}
 
-	gw, err := repositories.GetGameweekById(gameweek)
+	gw, err := repositories.GetGameweekById(uint8(gameweek))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("internal error: %s", err.Error())})
 		return
