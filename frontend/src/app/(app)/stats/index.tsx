@@ -10,7 +10,7 @@ import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
 import { removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
-import { usePushNotification } from '../../../notifications/notifications';
+import { addPush, usePushNotification } from '../../../notifications/notifications';
 
 const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -28,8 +28,24 @@ const Stats = () => {
   }, [notification]);
 
   useEffect(() => {
-    console.log(`isRegistered: ${isRegistered}`);
-  }, [isRegistered]);
+    if (!expoPushToken) return;
+
+    addPush(authSlice.token, expoPushToken.data)
+      .then((success) => {
+        if (!success) {
+          console.error("failed to save user's push token");
+          setIsRegistered(false); // we failed, so we're not yet registered
+        } else {
+          console.log('successfully stored push token');
+        }
+      })
+      .catch((err) => {
+        console.error('failed to add push token', err);
+      });
+    console.log(`expoPushToken: ${expoPushToken.data}`);
+
+    // Send expoPushToken to backend
+  }, [expoPushToken]);
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));

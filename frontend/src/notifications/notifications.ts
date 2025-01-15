@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { BACKEND_URL } from '@env';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { useEffect, useRef, useState } from 'react';
@@ -54,6 +55,8 @@ export const usePushNotification = (): NotificationState => {
     }
 
     if (finalStatus !== 'granted') {
+      // TODO: do not throw this alert when the user denies notifications the first time around
+      // only when wanting to enable them when he has previously disabled them.
       alert('You seem to have disabled notifications for this app. Please enable them in your device settings.');
       throw Error();
     }
@@ -113,4 +116,25 @@ export const usePushNotification = (): NotificationState => {
   }, [isRegistered]);
 
   return { expoPushToken, notification, isRegistered, setIsRegistered };
+};
+
+// POST request to backend to save the user's push token
+export const addPush = async (authToken: string, pushToken: string): Promise<boolean> => {
+  const url = `${BACKEND_URL}/api/v1/users/me/push`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${authToken}` },
+    body: JSON.stringify({
+      pushToken: pushToken,
+    }),
+  });
+
+  if (!response.ok) {
+    const message: { error: string } = await response.json();
+    throw new Error(message.error);
+  }
+
+  const data = await response.json();
+  return data === 'success';
 };
