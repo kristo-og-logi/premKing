@@ -55,8 +55,10 @@ export const usePushNotification = (): NotificationState => {
 
     if (finalStatus !== 'granted') {
       alert('You seem to have disabled notifications for this app. Please enable them in your device settings.');
+      throw Error();
     }
 
+    // TODO: handle throws here, most would be handled by just checking whether the user is online
     const token = await getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
 
     // some extra android stuff
