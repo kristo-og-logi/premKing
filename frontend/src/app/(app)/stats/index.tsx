@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Switch } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';
 import PremText from '../../../components/basic/PremText';
@@ -17,7 +17,19 @@ const Stats = () => {
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const { expoPushToken, notification } = usePushNotification();
+  const { expoPushToken, notification, isRegistered, setIsRegistered } = usePushNotification();
+
+  useEffect(() => {
+    console.log(
+      'received notification at',
+      new Date((notification?.date ?? 0) * 1000),
+      `${notification?.request.content.title}: ${notification?.request.content.body}`,
+    );
+  }, [notification]);
+
+  useEffect(() => {
+    console.log(`isRegistered: ${isRegistered}`);
+  }, [isRegistered]);
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));
@@ -89,16 +101,15 @@ const Stats = () => {
       </View>
 
       <View>
-        <PremText>Notification</PremText>
-        <PremText>{`data: ${expoPushToken?.data}`}</PremText>
-        <PremText>{`notification: ${JSON.stringify(notification, undefined, 2)}`}</PremText>
-        <PremButton
-          onPress={() => {
-            console.log(`${expoPushToken?.data ?? 'none'}`);
-          }}
-        >
-          Press me for notification
-        </PremButton>
+        <View style={[styles.bar]}>
+          <PremText>Notifications</PremText>
+          <Switch
+            value={isRegistered}
+            onValueChange={async () => {
+              setIsRegistered(!isRegistered);
+            }}
+          />
+        </View>
       </View>
     </View>
   );
@@ -106,6 +117,7 @@ const Stats = () => {
 
 const styles = StyleSheet.create({
   horizontal: { flexDirection: 'row', gap: 24, marginHorizontal: 16 },
+  bar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', margin: 16 },
 });
 
 export default Stats;
