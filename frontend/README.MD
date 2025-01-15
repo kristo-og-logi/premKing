@@ -54,8 +54,10 @@ Ensure that the `BACKEND_URL` attribute in your `.env.DEVICE` includes the LAN i
 as your app's request will come from your iPhone. Ensure your firewall rules allow incoming requests to the backend.
 
 2. 
-Run `npx expo run:ios --device` (`npm run ios:device:dev:build`), and **you must build for your specific iPhone**, not a simulator. 
-You'll see your iPhone marked with a 🔌. Mine is called 🔌kristo. (Both devices have to be on the same LAN for your iPhone to be visible in the list)
+Connect your iPhone to your mac with a cable, then run `npx expo run:ios --device` (`npm run ios:device:dev:build`). 
+**You must build for your specific iPhone**, not a simulator. 
+You'll see your iPhone marked with a 🔌. Mine is called 🔌kristo. 
+(Both devices have to be on the same LAN and the phone has to be connected for your iPhone to be visible in the list)
 
 You might have to do this a couple times, making sure to `rm -rf ios/` inbetween turns to get the app on your phone.
 
