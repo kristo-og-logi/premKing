@@ -68,11 +68,13 @@ func GetAllMyBets(c *gin.Context) {
 }
 
 type FriendBetsDTO struct {
-	Bets []AllBetsResponse
-	User models.User
+	Bets   []AllBetsResponse `json:"tickets"`
+	Friend models.User       `json:"friend"`
 }
 
 func GetFriendBets(c *gin.Context) {
+	var friendBets FriendBetsDTO
+
 	user := utils.GetUserFromContext(c)
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "authentication error, token possibly invalid"})
@@ -80,9 +82,35 @@ func GetFriendBets(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	fmt.Printf("id: %s\n", id)
+	if !utils.IsValidUuid(id) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
 
-	var friendBets FriendBetsDTO
+	user, err := repositories.GetUserById(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	friendBets.Friend = *user
+
+	allBets, err := repositories.GetAllBetsByUserId(id)
+	if err != nil {
+		slog.Error("error fetching all bets by user", "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	for _, bet := range allBets {
+		dto := BetsDTO{
+			FixtureId: bet.FixtureId,
+			Result:    bet.Result,
+			Odd:       bet.Odd,
+			Won:       bet.Won,
+		}
+		friendBets.Bets[bet.GameWeek-1].Bets = append(friendBets.Bets[bet.GameWeek-1].Bets, dto)
+	}
 
 	c.IndentedJSON(http.StatusOK, friendBets)
 }

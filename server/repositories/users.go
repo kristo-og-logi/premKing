@@ -69,6 +69,8 @@ func GetUserById(id string) (*models.User, error) {
 	var user models.User
 	result := initializers.DB.Preload("Leagues").First(&user, "id = ?", id)
 
+	// TODO: if the user is not found, it's not the same as all other errors,
+	// we should return nil, nil if the user is not found
 	if result.Error != nil {
 		return nil, fmt.Errorf("user with ID %s not found", id)
 	}
