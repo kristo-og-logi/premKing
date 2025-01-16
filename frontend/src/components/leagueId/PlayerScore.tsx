@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppSelector } from '../../redux/hooks';
 import { colors, scoreboardWidths } from '../../styles/styles';
@@ -9,6 +9,7 @@ import { GameweekStatus } from '../../types/Gameweek';
 import type { Player } from '../../types/Player';
 import { getGameweekStatus } from '../../utils/leagueUtils';
 import PremText from '../basic/PremText';
+import { router } from 'expo-router';
 
 interface Props {
   player: Player;
@@ -79,7 +80,13 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   return (
-    <View style={[styles.container, player.id === userId && styles.myScore]}>
+    <Pressable
+      style={[styles.container, player.id === userId && styles.myScore]}
+      onPress={() => {
+        console.log(`pressed ${player.name}`);
+        router.push(`/bet/${player.id}`);
+      }}
+    >
       <View style={[styles.scoreWrapper, styles.shrinker]}>
         <View
           style={[
@@ -108,7 +115,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
         {renderPointChange(gw, player)}
         {renderPoints(gameweekSlice.allGameweeks[gw - 1], player)}
       </View>
-    </View>
+    </Pressable>
   );
 };
 
