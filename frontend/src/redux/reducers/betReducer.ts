@@ -1,6 +1,8 @@
 import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { Bet, Ticket } from '../../types/Bet';
+import type { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
+import type { Bet, FriendBets, Ticket } from '../../types/Bet';
 import { backend } from '../../utils/constants';
+import { BACKEND_URL } from '@env';
 
 export interface BetState {
   bets: Ticket[];
@@ -9,6 +11,9 @@ export interface BetState {
   hasError: boolean;
   createBetIsLoading: boolean;
   createBetHasError: boolean;
+  friendBets?: FriendBets;
+  friendBetsIsLoading: boolean;
+  friendBetsHasError: boolean;
 }
 
 const initialState: BetState = {
@@ -18,6 +23,9 @@ const initialState: BetState = {
   hasError: false,
   createBetIsLoading: false,
   createBetHasError: false,
+  friendBets: undefined,
+  friendBetsIsLoading: false,
+  friendBetsHasError: false,
 };
 
 export const betSlice = createSlice({
@@ -59,6 +67,16 @@ export const betSlice = createSlice({
           score: 0,
         };
         state.selectedGameweek = action.payload.gameweek;
+      })
+      .addCase(getFriendBets.pending, (state) => {
+        console.log('pending');
+      })
+
+      .addCase(getFriendBets.rejected, (state, action: RejectedActionFromAsyncThunk<typeof getFriendBets>) => {
+        console.log('rejected', action.error.message);
+      })
+      .addCase(getFriendBets.fulfilled, (state, action: PayloadAction<FriendBets>) => {
+        console.log('fulfilled');
       });
   },
 });
@@ -106,6 +124,40 @@ export const submitBet = createAsyncThunk<{ createdBets: Bet[]; gameweek: number
 
     const createdBets: Bet[] = await response.json();
     return { createdBets, gameweek };
+  },
+);
+
+interface FriendBetsRequest {
+  userId: string;
+  gw: number;
+  token: string;
+}
+export const getFriendBets = createAsyncThunk<FriendBets, FriendBetsRequest>(
+  'fixtures/friendBets',
+  async ({ userId, gw, token }: FriendBetsRequest) => {
+    try {
+      console.log(`getFriendBets: userId=${userId}, gw=${gw}`);
+      const url = `${BACKEND_URL}/api/v1/users/${userId}/bets`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const message: { error: string } = await response.json();
+        throw new Error(message.error);
+      }
+
+      const friendBets: FriendBets = await response.json();
+      console.log(JSON.stringify(friendBets, undefined, 4));
+      return friendBets;
+    } catch (err) {
+      console.error('there was an error', err);
+      throw err;
+    }
   },
 );
 
