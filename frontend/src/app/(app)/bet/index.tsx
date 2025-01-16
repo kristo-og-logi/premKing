@@ -59,7 +59,7 @@ const BetScreen = () => {
               <PremText>loading...</PremText>
             ) : fixtureSlice.hasError ? (
               <PremText>Error</PremText>
-            ) : fixtureSlice.fixtures.length == 0 ? (
+            ) : fixtureSlice.fixtures.length === 0 ? (
               <PremText>no fixture for this gameweek</PremText>
             ) : selectedGW === gameweekSlice.currentGameweek ? (
               <CurrentGameweekBet bet={bet} setBet={setBet} />

@@ -69,14 +69,19 @@ export const betSlice = createSlice({
         state.selectedGameweek = action.payload.gameweek;
       })
       .addCase(getFriendBets.pending, (state) => {
-        console.log('pending');
+        state.friendBetsIsLoading = true;
+        state.friendBetsHasError = false;
       })
 
       .addCase(getFriendBets.rejected, (state, action: RejectedActionFromAsyncThunk<typeof getFriendBets>) => {
-        console.log('rejected', action.error.message);
+        state.friendBetsIsLoading = false;
+        state.friendBetsHasError = true;
+        console.error('rejected', action.error.message);
       })
       .addCase(getFriendBets.fulfilled, (state, action: PayloadAction<FriendBets>) => {
-        console.log('fulfilled');
+        state.friendBetsIsLoading = false;
+        state.friendBetsHasError = false;
+        state.friendBets = action.payload;
       });
   },
 });
