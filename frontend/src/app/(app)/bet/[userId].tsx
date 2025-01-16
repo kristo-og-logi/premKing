@@ -9,6 +9,7 @@ import { getFriendBets } from '../../../redux/reducers/betReducer';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
+import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 
 const UserBet = () => {
   const { userId } = useLocalSearchParams();
@@ -19,7 +20,11 @@ const UserBet = () => {
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
-  const [selectedGW, setSelectedGW] = useState<number>(1);
+  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
+
+  useEffect(() => {
+    dispatch(getFixtures(selectedGW));
+  }, [selectedGW]);
 
   useEffect(() => {
     if (!userId) return;
