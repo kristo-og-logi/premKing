@@ -67,6 +67,26 @@ func GetAllMyBets(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, betsResp)
 }
 
+type FriendBetsDTO struct {
+	Bets []AllBetsResponse
+	User models.User
+}
+
+func GetFriendBets(c *gin.Context) {
+	user := utils.GetUserFromContext(c)
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "authentication error, token possibly invalid"})
+		return
+	}
+
+	id := c.Param("id")
+	fmt.Printf("id: %s\n", id)
+
+	var friendBets FriendBetsDTO
+
+	c.IndentedJSON(http.StatusOK, friendBets)
+}
+
 type MyBetsResponse struct {
 	Bets  []models.Bet `json:"bets"`
 	Score float32      `json:"score"`

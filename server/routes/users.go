@@ -15,6 +15,8 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		// userGroup.DELETE("/:id", middleware.Admin, controllers.DeleteUserById)
 
 		userGroup.GET("/:id/leagues", middleware.Admin, controllers.GetUsersLeaguesByUserId)
+		// Maybe we shouldn't need to authenticate here - but I don't want an anonymous client spamming endpoints
+		userGroup.GET("/:id/bets", middleware.Authenticate, controllers.GetFriendBets)
 
 		// /me/... require token
 		userGroup.GET("/me/leagues", middleware.Authenticate, controllers.GetMyLeagues)
