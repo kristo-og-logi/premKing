@@ -34,7 +34,7 @@ const UserBet = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
-  const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes, selectedGW);
+  const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
@@ -57,8 +57,12 @@ const UserBet = () => {
     )
       return (
         <>
-          <PremText>{timeUntil}</PremText>
-          <PremText>{`You can view ${findHeaderTitle(betSlice)} once gameweek ${selectedGW} closes`}</PremText>
+          <PremText centered order={2}>{`Closes in ${timeUntil}`}</PremText>
+          <PremText
+            order={3}
+            centered
+            padding={32}
+          >{`You can view ${findHeaderTitle(betSlice)} once GW${selectedGW} closes`}</PremText>
         </>
       );
 

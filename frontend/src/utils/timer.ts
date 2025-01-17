@@ -19,7 +19,7 @@ export const calculateTimer = (from: Date, to: Date): string => {
 // receives a string declaring a date
 // and returns a formatted time until
 // string that updates every second
-export const useTimeUntil = (until: string, gw: number) => {
+export const useTimeUntil = (until: string) => {
   const [timeUntil, setTimeUntil] = useState<string>('');
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const useTimeUntil = (until: string, gw: number) => {
     updateTimer();
 
     return () => clearInterval(timerId);
-  }, [gw]);
+  }, [until]); // every time `until` changes, we want to reset the timer
 
   return timeUntil;
 };
