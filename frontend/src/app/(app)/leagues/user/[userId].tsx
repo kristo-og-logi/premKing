@@ -56,14 +56,14 @@ const UserBet = () => {
       (selectedGW === gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN)
     )
       return (
-        <>
-          <PremText centered order={2}>{`Closes in ${timeUntil}`}</PremText>
+        <View style={{ marginTop: -8 }}>
+          <PremText centered order={2}>{`closes in ${timeUntil}`}</PremText>
           <PremText
             order={3}
             centered
-            padding={32}
+            padding={16}
           >{`You can view ${findHeaderTitle(betSlice)} once GW${selectedGW} closes`}</PremText>
-        </>
+        </View>
       );
 
     return (
