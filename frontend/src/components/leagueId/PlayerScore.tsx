@@ -83,8 +83,8 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
     <Pressable
       style={[styles.container, player.id === userId && styles.myScore]}
       onPress={() => {
-        console.log(`pressed ${player.name}`);
-        router.push(`/bet/${player.id}`);
+        if (player.id === userId) router.replace('/bet');
+        else router.push(`/bet/${player.id}`);
       }}
     >
       <View style={[styles.scoreWrapper, styles.shrinker]}>

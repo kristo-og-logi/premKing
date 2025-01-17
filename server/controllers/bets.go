@@ -112,14 +112,18 @@ func GetFriendBets(c *gin.Context) {
 		return
 	}
 
+	currGW, _ := repositories.GetCurrentGameWeek()
 	for _, bet := range allBets {
-		dto := BetsDTO{
-			FixtureId: bet.FixtureId,
-			Result:    bet.Result,
-			Odd:       bet.Odd,
-			Won:       bet.Won,
+		// users can only see friends' bets for closed gameweeks
+		if bet.GameWeek < currGW.Gameweek || time.Now().After(currGW.Closes) {
+			dto := BetsDTO{
+				FixtureId: bet.FixtureId,
+				Result:    bet.Result,
+				Odd:       bet.Odd,
+				Won:       bet.Won,
+			}
+			friendBets.Bets[bet.GameWeek-1].Bets = append(friendBets.Bets[bet.GameWeek-1].Bets, dto)
 		}
-		friendBets.Bets[bet.GameWeek-1].Bets = append(friendBets.Bets[bet.GameWeek-1].Bets, dto)
 	}
 
 	c.IndentedJSON(http.StatusOK, friendBets)
