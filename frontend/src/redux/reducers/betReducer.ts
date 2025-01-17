@@ -140,7 +140,6 @@ export const getFriendBets = createAsyncThunk<FriendBets, FriendBetsRequest>(
   'fixtures/friendBets',
   async ({ userId, gw, token }: FriendBetsRequest) => {
     try {
-      console.log(`getFriendBets: userId=${userId}, gw=${gw}`);
       const url = `${BACKEND_URL}/api/v1/users/${userId}/bets`;
 
       const response = await fetch(url, {
@@ -156,7 +155,6 @@ export const getFriendBets = createAsyncThunk<FriendBets, FriendBetsRequest>(
       }
 
       const friendBets: FriendBets = await response.json();
-      console.log(JSON.stringify(friendBets, undefined, 4));
       return friendBets;
     } catch (err) {
       console.error('there was an error', err);
