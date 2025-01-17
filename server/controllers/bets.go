@@ -75,8 +75,8 @@ type FriendBetsDTO struct {
 func GetFriendBets(c *gin.Context) {
 	var friendBets FriendBetsDTO
 
-	user := utils.GetUserFromContext(c)
-	if user == nil {
+	me := utils.GetUserFromContext(c)
+	if me == nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "authentication error, token possibly invalid"})
 		return
 	}
@@ -94,6 +94,16 @@ func GetFriendBets(c *gin.Context) {
 	}
 
 	friendBets.Friend = *user
+
+	scores, err := GetScoreById(user.ID)
+	if err != nil {
+		slog.Error("failed to fetch user scores", "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		friendBets.Bets = append(friendBets.Bets, AllBetsResponse{Gameweek: gw, Bets: make([]BetsDTO, 0), Score: scores[gw-1].Score})
+	}
 
 	allBets, err := repositories.GetAllBetsByUserId(id)
 	if err != nil {
