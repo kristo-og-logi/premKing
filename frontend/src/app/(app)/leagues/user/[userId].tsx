@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import GameweekShifter from '../../../../components/basic/GameweekShifter';
 import PremText from '../../../../components/basic/PremText';
-import FutureGameweekBet from '../../../../components/bet/future/FutureGameweekBet';
 import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hooks';
 import { getFriendBets } from '../../../../redux/reducers/betReducer';
@@ -13,7 +12,7 @@ import { getFixtures } from '../../../../redux/reducers/fixtureReducer';
 import { globalStyles } from '../../../../styles/styles';
 import { GameweekStatus } from '../../../../types/Gameweek';
 import { getGameweekStatus } from '../../../../utils/leagueUtils';
-import { calculateTimer, useTimeUntil } from '../../../../utils/timer';
+import { useTimeUntil } from '../../../../utils/timer';
 
 const findHeaderTitle = (betSlice: BetState) => {
   if (betSlice.friendBetsIsLoading) return 'Loading...';
@@ -25,7 +24,8 @@ const findHeaderTitle = (betSlice: BetState) => {
   return `${firstName}'s bets`;
 };
 const UserBet = () => {
-  const { userId } = useLocalSearchParams();
+  const { userId, gw } = useLocalSearchParams();
+  if (!gw || typeof gw !== 'string' || Number.isNaN(Number(gw))) return <PremText>Gameweek error</PremText>;
 
   const dispatch = useAppDispatch();
   const authSlice = useAppSelector((state) => state.auth);
@@ -33,7 +33,7 @@ const UserBet = () => {
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
-  const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
+  const [selectedGW, setSelectedGW] = useState<number>(Number(gw));
   const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
 
   useEffect(() => {
