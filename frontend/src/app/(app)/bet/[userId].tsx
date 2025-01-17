@@ -6,11 +6,21 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { getFriendBets } from '../../../redux/reducers/betReducer';
+import type { BetState } from '../../../redux/reducers/betReducer';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
 import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
 import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 
+const findHeaderTitle = (betSlice: BetState) => {
+  if (betSlice.friendBetsIsLoading) return 'Loading...';
+  if (betSlice.friendBetsHasError) return ':(';
+
+  const name = betSlice.friendBets?.friend.name || '';
+
+  const firstName = name.split(' ')[0];
+  return `${firstName}'s bets`;
+};
 const UserBet = () => {
   const { userId } = useLocalSearchParams();
 
@@ -35,7 +45,7 @@ const UserBet = () => {
 
   return (
     <View style={globalStyles.container}>
-      <Stack.Screen options={{ headerTitle: `${betSlice.friendBets?.friend.name}'s bets` }} />
+      <Stack.Screen options={{ headerTitle: findHeaderTitle(betSlice) }} />
       {betSlice.friendBetsIsLoading ? (
         <PremText>Loading...</PremText>
       ) : betSlice.friendBetsHasError ? (
