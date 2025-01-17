@@ -84,7 +84,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
       style={[styles.container, player.id === userId && styles.myScore]}
       onPress={() => {
         if (player.id === userId) router.replace('/bet');
-        else router.push(`/bet/${player.id}`);
+        else router.push(`/leagues/user/${player.id}`);
       }}
     >
       <View style={[styles.scoreWrapper, styles.shrinker]}>

@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
-import PremText from '../../../components/basic/PremText';
-import { globalStyles } from '../../../styles/styles';
+import PremText from '../../../../components/basic/PremText';
+import { globalStyles } from '../../../../styles/styles';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { getFriendBets } from '../../../redux/reducers/betReducer';
-import type { BetState } from '../../../redux/reducers/betReducer';
-import GameweekShifter from '../../../components/basic/GameweekShifter';
-import FutureGameweekBet from '../../../components/bet/future/FutureGameweekBet';
-import PastGameweekBet from '../../../components/bet/past/PastGameweekBet';
-import { getFixtures } from '../../../redux/reducers/fixtureReducer';
+import { useAppDispatch, useAppSelector } from '../../../../redux/hooks';
+import { getFriendBets } from '../../../../redux/reducers/betReducer';
+import type { BetState } from '../../../../redux/reducers/betReducer';
+import GameweekShifter from '../../../../components/basic/GameweekShifter';
+import FutureGameweekBet from '../../../../components/bet/future/FutureGameweekBet';
+import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
+import { getFixtures } from '../../../../redux/reducers/fixtureReducer';
+import { getGameweekStatus } from '../../../../utils/leagueUtils';
+import { GameweekStatus } from '../../../../types/Gameweek';
+import { calculateTimer, useTimeUntil } from '../../../../utils/timer';
 
 const findHeaderTitle = (betSlice: BetState) => {
   if (betSlice.friendBetsIsLoading) return 'Loading...';
@@ -31,6 +34,7 @@ const UserBet = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const [selectedGW, setSelectedGW] = useState<number>(gameweekSlice.currentGameweek);
+  const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes, selectedGW);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
@@ -42,6 +46,29 @@ const UserBet = () => {
 
     dispatch(getFriendBets({ userId: userId, gw: 1, token: authSlice.token }));
   }, [userId]);
+
+  const renderGameweekBet = () => {
+    const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);
+
+    // if the gameweek is not closed, we will not display any bets
+    if (
+      selectedGW > gameweekSlice.currentGameweek ||
+      (selectedGW === gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN)
+    )
+      return (
+        <>
+          <PremText>{timeUntil}</PremText>
+          <PremText>{`You can view ${findHeaderTitle(betSlice)} once gameweek ${selectedGW} closes`}</PremText>
+        </>
+      );
+
+    return (
+      <PastGameweekBet
+        fixtures={fixtureSlice.fixtures}
+        bets={betSlice.friendBets?.tickets[selectedGW - 1].bets || []}
+      />
+    );
+  };
 
   return (
     <View style={globalStyles.container}>
@@ -73,13 +100,8 @@ const UserBet = () => {
               <PremText>loading...</PremText>
             ) : fixtureSlice.hasError ? (
               <PremText>Error</PremText>
-            ) : selectedGW > gameweekSlice.currentGameweek ? (
-              <FutureGameweekBet />
             ) : (
-              <PastGameweekBet
-                fixtures={fixtureSlice.fixtures}
-                bets={betSlice.friendBets?.tickets[selectedGW - 1].bets || []}
-              />
+              renderGameweekBet()
             )}
           </ScrollView>
         </>
