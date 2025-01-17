@@ -48,9 +48,12 @@ const UserBet = () => {
               setSelectedGW(newGw);
             }}
           />
-          {betSlice.bets[selectedGW - 1].bets.length > 0 ? (
+          {(betSlice.friendBets?.tickets[selectedGW - 1].bets || []).length > 0 ? (
             <View style={{ marginBottom: 8, marginTop: -8 }}>
-              <PremText centered order={2}>{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
+              <PremText
+                centered
+                order={2}
+              >{`score: x${betSlice.friendBets?.tickets[selectedGW - 1].score.toFixed(2)}`}</PremText>
             </View>
           ) : (
             <></>
@@ -63,7 +66,10 @@ const UserBet = () => {
             ) : selectedGW > gameweekSlice.currentGameweek ? (
               <FutureGameweekBet />
             ) : (
-              <PastGameweekBet />
+              <PastGameweekBet
+                fixtures={fixtureSlice.fixtures}
+                bets={betSlice.friendBets?.tickets[selectedGW - 1].bets || []}
+              />
             )}
           </ScrollView>
         </>

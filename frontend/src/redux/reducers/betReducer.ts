@@ -72,16 +72,15 @@ export const betSlice = createSlice({
         state.friendBetsIsLoading = true;
         state.friendBetsHasError = false;
       })
-
       .addCase(getFriendBets.rejected, (state, action: RejectedActionFromAsyncThunk<typeof getFriendBets>) => {
-        state.friendBetsIsLoading = false;
         state.friendBetsHasError = true;
+        state.friendBetsIsLoading = false;
         console.error('rejected', action.error.message);
       })
       .addCase(getFriendBets.fulfilled, (state, action: PayloadAction<FriendBets>) => {
-        state.friendBetsIsLoading = false;
-        state.friendBetsHasError = false;
         state.friendBets = action.payload;
+        state.friendBetsHasError = false;
+        state.friendBetsIsLoading = false;
       });
   },
 });
