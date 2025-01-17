@@ -2,6 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { router } from 'expo-router';
 import { useAppSelector } from '../../redux/hooks';
 import { colors, scoreboardWidths } from '../../styles/styles';
 import type Gameweek from '../../types/Gameweek';
@@ -9,7 +10,6 @@ import { GameweekStatus } from '../../types/Gameweek';
 import type { Player } from '../../types/Player';
 import { getGameweekStatus } from '../../utils/leagueUtils';
 import PremText from '../basic/PremText';
-import { router } from 'expo-router';
 
 interface Props {
   player: Player;

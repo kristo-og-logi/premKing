@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { View, ScrollView } from 'react-native';
-import PremText from '../../../../components/basic/PremText';
-import { globalStyles } from '../../../../styles/styles';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
 import { useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
+import GameweekShifter from '../../../../components/basic/GameweekShifter';
+import PremText from '../../../../components/basic/PremText';
+import FutureGameweekBet from '../../../../components/bet/future/FutureGameweekBet';
+import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hooks';
 import { getFriendBets } from '../../../../redux/reducers/betReducer';
 import type { BetState } from '../../../../redux/reducers/betReducer';
-import GameweekShifter from '../../../../components/basic/GameweekShifter';
-import FutureGameweekBet from '../../../../components/bet/future/FutureGameweekBet';
-import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
 import { getFixtures } from '../../../../redux/reducers/fixtureReducer';
-import { getGameweekStatus } from '../../../../utils/leagueUtils';
+import { globalStyles } from '../../../../styles/styles';
 import { GameweekStatus } from '../../../../types/Gameweek';
+import { getGameweekStatus } from '../../../../utils/leagueUtils';
 import { calculateTimer, useTimeUntil } from '../../../../utils/timer';
 
 const findHeaderTitle = (betSlice: BetState) => {

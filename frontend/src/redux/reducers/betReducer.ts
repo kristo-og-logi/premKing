@@ -1,8 +1,8 @@
+import { BACKEND_URL } from '@env';
 import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import type { Bet, FriendBets, Ticket } from '../../types/Bet';
 import { backend } from '../../utils/constants';
-import { BACKEND_URL } from '@env';
 
 export interface BetState {
   bets: Ticket[];

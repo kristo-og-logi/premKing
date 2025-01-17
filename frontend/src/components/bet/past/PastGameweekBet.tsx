@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { Bet } from '../../../types/Bet';
-import PastMatchUp from './PastMatchUp';
 import type Fixture from '../../../types/Fixture';
+import PastMatchUp from './PastMatchUp';
 
 interface Props {
   fixtures: Fixture[];
