@@ -357,10 +357,13 @@ func CreateBets() {
 	user := getUser(string(userEmail))
 	guess := string(userGuess)
 
-	for gw := 1; gw < 36; gw++ {
+	curr, _ := repositories.GetCurrentGameWeek()
+
+	for gw := 1; gw <= int(curr.Gameweek); gw++ {
 		fixtures := getNormalFixturesByGW(gw)
 		bets := createBets(user, fixtures, guess)
 		saveBets(bets)
+		calculateBets(bets, fixtures)
 	}
 
 	fmt.Println("all bets saved :)")
@@ -501,8 +504,8 @@ func getUser(email string) *models.User {
 	return user
 }
 
-func createBets(user *models.User, fixtures []models.Fixture, result string) []models.Bet {
-	bets := []models.Bet{}
+func createBets(user *models.User, fixtures []models.Fixture, result string) []*models.Bet {
+	bets := []*models.Bet{}
 
 	for _, fix := range fixtures {
 		var odd float32
@@ -525,13 +528,13 @@ func createBets(user *models.User, fixtures []models.Fixture, result string) []m
 			odd = fix.AwayOdds
 		}
 		bet := models.Bet{ID: uuid.NewString(), UserId: user.ID, FixtureId: fix.ID, Result: result, GameWeek: fix.GameWeek, Won: won, Odd: odd}
-		bets = append(bets, bet)
+		bets = append(bets, &bet)
 	}
 
 	return bets
 }
 
-func saveBets(bets []models.Bet) {
+func saveBets(bets []*models.Bet) {
 	result := initializers.DB.Save(&bets)
 	if result.Error != nil {
 		fmt.Printf("error saving bets: %s", result.Error.Error())

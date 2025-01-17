@@ -1,4 +1,5 @@
 import type { FixtureResult } from './Fixture';
+import type User from './User';
 
 export interface Bet {
   fixtureId: number;
@@ -11,4 +12,9 @@ export interface Ticket {
   gameweek: number;
   bets: Bet[];
   score: number;
+}
+
+export interface FriendBets {
+  friend: User;
+  tickets: Ticket[];
 }

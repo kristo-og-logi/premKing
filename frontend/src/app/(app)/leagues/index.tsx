@@ -14,7 +14,7 @@ import type { League } from '../../../types/League';
 
 const renderLeagues = (leagues: League[], gw: number) => {
   return leagues.map((league) => (
-    <LeagueItem key={league.id} league={league} gw={gw} onPress={() => router.push(`/leagues/${league.id}`)} />
+    <LeagueItem key={league.id} league={league} gw={gw} onPress={() => router.push(`/leagues/league/${league.id}`)} />
   ));
 };
 

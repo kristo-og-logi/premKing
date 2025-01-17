@@ -59,14 +59,17 @@ const BetScreen = () => {
               <PremText>loading...</PremText>
             ) : fixtureSlice.hasError ? (
               <PremText>Error</PremText>
-            ) : fixtureSlice.fixtures.length == 0 ? (
+            ) : fixtureSlice.fixtures.length === 0 ? (
               <PremText>no fixture for this gameweek</PremText>
             ) : selectedGW === gameweekSlice.currentGameweek ? (
               <CurrentGameweekBet bet={bet} setBet={setBet} />
             ) : selectedGW >= gameweekSlice.currentGameweek ? (
               <FutureGameweekBet />
             ) : (
-              <PastGameweekBet />
+              <PastGameweekBet
+                fixtures={fixtureSlice.fixtures}
+                bets={betSlice.bets[betSlice.selectedGameweek - 1].bets}
+              />
             )}
           </ScrollView>
           <Confirm selectedGW={selectedGW} bet={bet} setBet={setBet} />

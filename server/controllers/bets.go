@@ -67,6 +67,68 @@ func GetAllMyBets(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, betsResp)
 }
 
+type FriendBetsDTO struct {
+	Bets   []AllBetsResponse `json:"tickets"`
+	Friend models.User       `json:"friend"`
+}
+
+func GetFriendBets(c *gin.Context) {
+	var friendBets FriendBetsDTO
+
+	me := utils.GetUserFromContext(c)
+	if me == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "authentication error, token possibly invalid"})
+		return
+	}
+
+	id := c.Param("id")
+	if !utils.IsValidUuid(id) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	user, err := repositories.GetUserById(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	friendBets.Friend = *user
+
+	scores, err := GetScoreById(user.ID)
+	if err != nil {
+		slog.Error("failed to fetch user scores", "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+	}
+
+	for gw := 1; gw <= 38; gw++ {
+		friendBets.Bets = append(friendBets.Bets, AllBetsResponse{Gameweek: gw, Bets: make([]BetsDTO, 0), Score: scores[gw-1].Score})
+	}
+
+	allBets, err := repositories.GetAllBetsByUserId(id)
+	if err != nil {
+		slog.Error("error fetching all bets by user", "error", err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	currGW, _ := repositories.GetCurrentGameWeek()
+	for _, bet := range allBets {
+		// users can only see friends' bets for closed gameweeks
+		if bet.GameWeek < currGW.Gameweek || time.Now().After(currGW.Closes) {
+			dto := BetsDTO{
+				FixtureId: bet.FixtureId,
+				Result:    bet.Result,
+				Odd:       bet.Odd,
+				Won:       bet.Won,
+			}
+			friendBets.Bets[bet.GameWeek-1].Bets = append(friendBets.Bets[bet.GameWeek-1].Bets, dto)
+		}
+	}
+
+	c.IndentedJSON(http.StatusOK, friendBets)
+}
+
 type MyBetsResponse struct {
 	Bets  []models.Bet `json:"bets"`
 	Score float32      `json:"score"`

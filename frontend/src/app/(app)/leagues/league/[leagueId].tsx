@@ -2,13 +2,13 @@ import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 
-import GameweekShifter from '../../../components/basic/GameweekShifter';
-import PremText from '../../../components/basic/PremText';
-import BetInfo from '../../../components/leagueId/BetInfo';
-import Scoreboard from '../../../components/leagueId/Scoreboard';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { getSelectedLeague, unselect } from '../../../redux/reducers/leaguesReducer';
-import { globalStyles } from '../../../styles/styles';
+import GameweekShifter from '../../../../components/basic/GameweekShifter';
+import PremText from '../../../../components/basic/PremText';
+import BetInfo from '../../../../components/leagueId/BetInfo';
+import Scoreboard from '../../../../components/leagueId/Scoreboard';
+import { useAppDispatch, useAppSelector } from '../../../../redux/hooks';
+import { getSelectedLeague, unselect } from '../../../../redux/reducers/leaguesReducer';
+import { globalStyles } from '../../../../styles/styles';
 
 const LeagueView = () => {
   const navigation = useNavigation();
