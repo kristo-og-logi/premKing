@@ -24,36 +24,46 @@ import (
 func SetupNotifications() {
 	// each iteration is a gameweek
 	for true {
-		// Step 1 - wait until gameweek is about to close
-		gw, err := findTargetGameweek()
+		gw, err := repositories.GetCurrentGameWeek()
 		if err != nil {
 			slog.Error("NOTIFICATIONS: There will be no notifications from here on")
 			return // no notifications
 		}
 
+		// Step 1 - wait until gameweek is about to close
 		target := gw.Closes.Add(-2 * time.Hour) // wait until two hours before our moment
-		until := time.Until(target)
-		slog.Debug("NOTIFICATIONS: Timer set", "goesOffIn", until, "goesOffAt", target)
+		if time.Now().Before(target) {
+			until := time.Until(target)
+			slog.Debug("NOTIFICATIONS: Timer set", "goesOffIn", until, "goesOffAt", target)
 
-		timer := time.NewTimer(until)
-		<-timer.C // thread waits until timer goes off
+			timer := time.NewTimer(until)
+			<-timer.C // thread waits until timer goes off
 
-		// Step 2 - send notifications
-		slog.Info("NOTIFICATIONS: Timer up - sending notifications!")
-		success, failed, err := sendGameweekWarningNotifications(gw.Gameweek)
-		if err != nil {
-			slog.Error("No notifications sent due to error :(", "error", err.Error())
-			return
+			// Step 2 - send notifications
+			slog.Info("NOTIFICATIONS: Timer up - sending notifications!")
+			success, failed, err := sendGameweekWarningNotifications(gw.Gameweek)
+			if err != nil {
+				slog.Error("No 'GW warning' notifications sent due to error :(", "error", err.Error())
+				return
+			}
+			slog.Info("NOTIFICATIONS: 'GW warning' notifications sent!", "success", success, "failed", failed)
 		}
 
-		slog.Info("NOTIFICATIONS: Notifications sent!", "success", success, "failed", failed)
-
-		// Step 3 - wait until gameweek closes
-		// give some leeway -- we really don't want to mess this up
-		waiter := time.Until(gw.Closes.Add(2 * time.Hour))
-		timer = time.NewTimer(waiter)
-		slog.Info("NOTIFICATIONS: coroutine sleeping until waiter is up", "goesOffIn", waiter, "goesOffAt", gw.Finishes)
+		// Step 3 - wait until gameweek finishes
+		// give some leeway -- we want the last bets to be updated before we notify users
+		target = gw.Finishes.Add(1 * time.Hour)
+		waiter := time.Until(target)
+		timer := time.NewTimer(waiter)
+		slog.Info("NOTIFICATIONS: coroutine sleeping until waiter is up", "goesOffIn", waiter, "goesOffAt", target)
 		<-timer.C // wait until next week has opened, then start a new iteration for that gameweek
+
+		// Step 4 - let everyone know the gameweek's over
+		success, failed, err := sendGameweekFinishedNotifications(gw.Gameweek)
+		if err != nil {
+			slog.Error("NOTIFICATIONS: No 'GW finished' notifications sent due to error :(", "error", err.Error())
+			return
+		}
+		slog.Info("NOTIFICATIONS: 'GW finished' notifications sent!", "success", success, "failed", failed)
 	}
 }
 
@@ -69,7 +79,6 @@ func findTargetGameweek() (*models.Gameweek, error) {
 	}
 
 	now := time.Now()
-	var target time.Time
 
 	// At boot, find next non-closed gameweek to be the moment
 	// when our notifications are run
@@ -80,7 +89,6 @@ func findTargetGameweek() (*models.Gameweek, error) {
 			return nil, err
 		}
 	}
-	slog.Debug("next cron", "GW", gw.Gameweek, "time", target)
 
 	return gw, err
 }
@@ -96,11 +104,35 @@ func sendGameweekWarningNotifications(gw uint8) (int, int, error) {
 
 	success, failed := 0, 0
 	for _, token := range tokens {
-		err = PublishNotification(token, client, "Gameweek Closing!", fmt.Sprintf("You have 2hrs to place a bet for GW %d", gw))
+		err = PublishNotification(token, client, "Gameweek Closing!", fmt.Sprintf("You have <2hrs to place a bet for GW %d", gw))
 		if err == nil {
 			success++
 		} else {
-			slog.Error("Failed to send push notification", "token", token)
+			slog.Error("Failed to send 'GW closing warning' push notification", "token", token)
+			failed++
+		}
+	}
+	return success, failed, nil
+}
+
+func sendGameweekFinishedNotifications(gw uint8) (int, int, error) {
+	tokens, err := repositories.GetAllUserPushTokens()
+	if err != nil {
+		slog.Warn("Failed to get push tokens for users that haven't placed bets for gw", "GW", gw, "error", err.Error())
+		return 0, 0, err
+	}
+
+	client := expo.NewPushClient(nil)
+
+	success, failed := 0, 0
+	for _, token := range tokens {
+		// TODO: maybe alter messages if the user forgot to bet for the finishing gameweek,
+		// Also, send something else if they've already placed a bet for the next gameweek (or if there isn't a next gameweek)
+		err = PublishNotification(token, client, fmt.Sprintf("Gameweek %d Finished!", gw), fmt.Sprintf("See how you did this week! Also, GW%d has opened", gw))
+		if err == nil {
+			success++
+		} else {
+			slog.Error("Failed to send 'GW finished' push notification", "token", token)
 			failed++
 		}
 	}

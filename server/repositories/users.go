@@ -160,3 +160,18 @@ func GetAllPushTokensWithNoBetsOnGameweekById(gw uint8) ([]string, error) {
 
 	return tokens, nil
 }
+
+// Used for sending notifications to all users
+func GetAllUserPushTokens() ([]string, error) {
+	var tokens []string
+
+	result := initializers.DB.Model(&models.User{}).Select("expo_push_token").
+		Where("expo_push_token IS NOT NULL AND expo_push_token <> ''"). // expo_push_token must be set as the user must have enabled notifications
+		Find(&tokens)
+
+	if result.Error != nil {
+		return []string{}, result.Error
+	}
+
+	return tokens, nil
+}
