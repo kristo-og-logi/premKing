@@ -22,6 +22,7 @@ func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	// AddBetsForUser()
 	// ShortenFixtureNames()
 	// crons.UpdateFixtures()
 	// FindTeamsFromFixtures()
@@ -31,6 +32,67 @@ func main() {
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
 	// RecalculateBetsForGameweek()
+}
+
+func AddBetsForUser() {
+	fmt.Print("gameweek: ")
+	gameweekBytes, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+	gameweekString := string(gameweekBytes)
+	gameweek, err := strconv.Atoi(gameweekString)
+	if err != nil {
+		panic("invalid gameweek")
+	}
+
+	fmt.Print("email: ")
+	userEmail, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+	user := getUser(string(userEmail))
+
+	curr, _ := repositories.GetCurrentGameWeek()
+	if gameweek > int(curr.Gameweek) {
+		panic("gameweek has not started")
+	}
+
+	dbBets, _ := repositories.GetBetsByUserIdAndGameweek(user.ID, gameweek)
+	if len(dbBets) > 0 {
+		panic("user already has bets for gameweek")
+	}
+
+	fixtures := getNormalFixturesByGW(gameweek)
+	bets := []*models.Bet{}
+	for _, fix := range fixtures {
+		fmt.Println(fix.Name)
+		fmt.Print("bet (1 | X | 2): ")
+		userGuess, _, _ := bufio.NewReader(os.Stdin).ReadLine()
+		guess := string(userGuess)
+
+		var odd float32
+		var won bool = false
+		switch guess {
+		case "1":
+			if fix.Result == "1" {
+				won = true
+			}
+			odd = fix.HomeOdds
+		case "X":
+			if fix.Result == "X" {
+				won = true
+			}
+			odd = fix.DrawOdds
+		case "2":
+			if fix.Result == "2" {
+				won = true
+			}
+			odd = fix.AwayOdds
+		default:
+			panic("invalid guess")
+		}
+		bet := models.Bet{ID: uuid.NewString(), UserId: user.ID, FixtureId: fix.ID, Result: guess, GameWeek: fix.GameWeek, Won: won, Odd: odd}
+		bets = append(bets, &bet)
+	}
+	saveBets(bets)
+	calculateBets(bets, fixtures)
+
+	fmt.Println("all bets saved :)")
 }
 
 // Make fixture names (team1 vs team2) use teams' short names
@@ -498,7 +560,11 @@ func getUser(email string) *models.User {
 	result := initializers.DB.Find(user, "email = ?", email)
 	if result.Error != nil {
 		fmt.Printf("error fetching user with email %s: %s", email, result.Error.Error())
-		return nil
+		panic("oh no")
+	}
+
+	if result.RowsAffected == 0 {
+		panic("No user with provided email")
 	}
 
 	return user
