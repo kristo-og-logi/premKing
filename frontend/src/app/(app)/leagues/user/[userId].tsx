@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
+import GameweekScorer from '../../../../components/basic/GameweekScorer';
 import GameweekShifter from '../../../../components/basic/GameweekShifter';
 import PremText from '../../../../components/basic/PremText';
 import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
@@ -34,7 +35,7 @@ const UserBet = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const [selectedGW, setSelectedGW] = useState<number>(Number(gw));
-  const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
+  const [timeUntil, _] = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
@@ -56,8 +57,8 @@ const UserBet = () => {
       (selectedGW === gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN)
     )
       return (
-        <View style={{ marginTop: -8 }}>
-          <PremText centered order={2}>{`closes in ${timeUntil}`}</PremText>
+        <View>
+          {false && <PremText centered order={2}>{`closes in ${timeUntil}`}</PremText>}
           <PremText
             order={3}
             centered
@@ -89,16 +90,7 @@ const UserBet = () => {
               setSelectedGW(newGw);
             }}
           />
-          {(betSlice.friendBets?.tickets[selectedGW - 1].bets || []).length > 0 ? (
-            <View style={{ marginBottom: 8, marginTop: -8 }}>
-              <PremText
-                centered
-                order={2}
-              >{`score: x${betSlice.friendBets?.tickets[selectedGW - 1].score.toFixed(2)}`}</PremText>
-            </View>
-          ) : (
-            <></>
-          )}
+          {betSlice.friendBets && <GameweekScorer ticket={betSlice.friendBets.tickets[selectedGW - 1]} />}
           <ScrollView>
             {fixtureSlice.isLoading ? (
               <PremText>loading...</PremText>

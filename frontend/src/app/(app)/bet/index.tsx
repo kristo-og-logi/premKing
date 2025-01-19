@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
+import GameweekScorer from '../../../components/basic/GameweekScorer';
 import GameweekShifter from '../../../components/basic/GameweekShifter';
 import PremText from '../../../components/basic/PremText';
 import { Confirm } from '../../../components/bet/Confirm';
@@ -47,13 +48,7 @@ const BetScreen = () => {
             selectedGW={betSlice.selectedGameweek}
             setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
           />
-          {betSlice.bets[selectedGW - 1].bets.length > 0 ? (
-            <View style={{ marginBottom: 8, marginTop: -8 }}>
-              <PremText centered order={2}>{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
-            </View>
-          ) : (
-            <></>
-          )}
+          <GameweekScorer ticket={betSlice.bets[selectedGW - 1]} />
           <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
             {fixtureSlice.isLoading ? (
               <PremText>loading...</PremText>
