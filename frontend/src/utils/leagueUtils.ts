@@ -2,7 +2,6 @@ import type { Bet } from '../types/Bet';
 import type Gameweek from '../types/Gameweek';
 import { GameweekStatus } from '../types/Gameweek';
 import type { Player } from '../types/Player';
-import { dateFormatter } from './constants';
 
 export const calculateYourPlace = (players: Player[], gw: number, userId?: string): string => {
   const me = players.find((p) => p.id === userId);
@@ -52,18 +51,4 @@ export const calculateGwAction = (gameweek: Gameweek, bets: Bet[]): BetStatus =>
   }
 
   return message;
-};
-
-export const calculateTimeUntilGW = (gameweek: Gameweek) => {
-  const now = new Date();
-  const opens = new Date(gameweek.opens);
-  const closes = new Date(gameweek.closes);
-  const finishes = new Date(gameweek.finishes);
-
-  if (now < opens) return `Opens on ${dateFormatter.format(opens)}`;
-  if (now < closes) return 'Open';
-  if (now < finishes) return 'Ongoing';
-  if (finishes < now) return `Finished on ${dateFormatter.format(finishes)}`;
-
-  return 'unknown';
 };

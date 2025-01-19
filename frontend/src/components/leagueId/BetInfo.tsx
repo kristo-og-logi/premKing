@@ -5,9 +5,9 @@ import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../redux/hooks';
 import type { Bet } from '../../types/Bet';
 import { GameweekStatus } from '../../types/Gameweek';
-import { calculateGwAction, calculateTimeUntilGW, getGameweekStatus } from '../../utils/leagueUtils';
+import { calculateGwAction, getGameweekStatus } from '../../utils/leagueUtils';
 import PremButton from '../basic/PremButton';
-import PremText from '../basic/PremText';
+import GameweekTimer from '../basic/GameweekTimer';
 
 interface Props {
   selectedGW: number;
@@ -21,7 +21,6 @@ const BetInfo = ({ selectedGW, bets }: Props) => {
 
   return (
     <View style={styles.betWrapper}>
-      <PremText centered>{calculateTimeUntilGW(gameweekSlice.allGameweeks[selectedGW - 1])}</PremText>
       <PremButton
         disabled={
           !(getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]) === GameweekStatus.OPEN && bets.length === 0)
