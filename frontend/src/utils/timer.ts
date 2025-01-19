@@ -20,12 +20,17 @@ export const calculateTimer = (from: Date, to: Date): string => {
 // and returns a formatted time until
 // string that updates every second
 export const useTimeUntil = (until: string) => {
+  const [untilDate, setUntilDate] = useState<string>(until);
   const [timeUntil, setTimeUntil] = useState<string>('');
+
+  useEffect(() => {
+    if (untilDate !== until) setUntilDate(until);
+  }, [until]);
 
   useEffect(() => {
     const updateTimer = () => {
       // returns a "hh:mm:ss" timer
-      const timer = calculateTimer(new Date(), new Date(until));
+      const timer = calculateTimer(new Date(), new Date(untilDate));
       setTimeUntil(timer);
     };
 
@@ -34,7 +39,7 @@ export const useTimeUntil = (until: string) => {
     updateTimer();
 
     return () => clearInterval(timerId);
-  }, [until]); // every time `until` changes, we want to reset the timer
+  }, [untilDate]); // every time `until` changes, we want to reset the timer
 
-  return timeUntil;
+  return [timeUntil, setUntilDate] as const;
 };

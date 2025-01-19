@@ -34,7 +34,7 @@ const UserBet = () => {
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
   const [selectedGW, setSelectedGW] = useState<number>(Number(gw));
-  const timeUntil = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
+  const [timeUntil, _] = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
 
   useEffect(() => {
     dispatch(getFixtures(selectedGW));
