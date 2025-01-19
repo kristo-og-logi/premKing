@@ -19,31 +19,24 @@ interface Props {
   leagueSize: number;
 }
 
-const renderPointChange = (gw: number, player: Player) => {
-  const increase = player.scores[gw - 1].score;
-
-  return <PremText order={4}>{increase === 0 ? '' : `+ x${increase.toFixed(2)}`}</PremText>;
-};
-
-const renderPoints = (gw: Gameweek, player: Player) => {
+const renderPointChange = (gw: Gameweek, player: Player) => {
   const bet = player.scores[gw.gameweek - 1];
+  const increase = bet.score;
   const gwStatus = getGameweekStatus(gw);
 
   let txt = '';
 
   if (bet.missed) {
-    // if the gameweek has closed, its missed
-    if (gwStatus >= GameweekStatus.CLOSED) {
-      txt = 'missed';
-      // if the gameweek has not yet closed, its unknown (bet not 'yet' placed)
-    } else {
-      txt = '??';
-    }
-    // if the bet was placed, render the total
-    // use two decimals if the gw score is < 10, else use one decimal
-  } else {
-    txt = `x${bet.total < 10 ? bet.total.toFixed(2) : bet.total.toFixed(1)}`;
-  }
+    if (gwStatus >= GameweekStatus.CLOSED) txt = 'missed';
+    else txt = '??';
+  } else txt = `x${increase.toFixed(2)}`;
+
+  return <PremText order={4}>{txt}</PremText>;
+};
+
+const renderPoints = (gw: Gameweek, player: Player) => {
+  const bet = player.scores[gw.gameweek - 1];
+  const txt = `x${bet.total < 10 ? bet.total.toFixed(2) : bet.total.toFixed(1)}`;
 
   return <PremText>{txt}</PremText>;
 };
@@ -112,7 +105,7 @@ const PlayerScore = ({ player, userId, position, gw, leagueSize }: Props) => {
       </View>
 
       <View style={[styles.scoreWrapper, styles.rightSide, scoreboardWidths.pointsWidth]}>
-        {renderPointChange(gw, player)}
+        {renderPointChange(gameweekSlice.allGameweeks[gw - 1], player)}
         {renderPoints(gameweekSlice.allGameweeks[gw - 1], player)}
       </View>
     </Pressable>
