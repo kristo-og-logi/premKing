@@ -13,6 +13,7 @@ import { globalStyles } from '../../../../styles/styles';
 import { GameweekStatus } from '../../../../types/Gameweek';
 import { getGameweekStatus } from '../../../../utils/leagueUtils';
 import { useTimeUntil } from '../../../../utils/timer';
+import GameweekScorer from '../../../../components/basic/GameweekScorer';
 
 const findHeaderTitle = (betSlice: BetState) => {
   if (betSlice.friendBetsIsLoading) return 'Loading...';
@@ -56,8 +57,8 @@ const UserBet = () => {
       (selectedGW === gameweekSlice.currentGameweek && gwStatus === GameweekStatus.OPEN)
     )
       return (
-        <View style={{ marginTop: -8 }}>
-          <PremText centered order={2}>{`closes in ${timeUntil}`}</PremText>
+        <View>
+          {false && <PremText centered order={2}>{`closes in ${timeUntil}`}</PremText>}
           <PremText
             order={3}
             centered
@@ -89,16 +90,7 @@ const UserBet = () => {
               setSelectedGW(newGw);
             }}
           />
-          {(betSlice.friendBets?.tickets[selectedGW - 1].bets || []).length > 0 ? (
-            <View style={{ marginBottom: 8, marginTop: -8 }}>
-              <PremText
-                centered
-                order={2}
-              >{`score: x${betSlice.friendBets?.tickets[selectedGW - 1].score.toFixed(2)}`}</PremText>
-            </View>
-          ) : (
-            <></>
-          )}
+          {betSlice.friendBets && <GameweekScorer ticket={betSlice.friendBets.tickets[selectedGW - 1]} />}
           <ScrollView>
             {fixtureSlice.isLoading ? (
               <PremText>loading...</PremText>

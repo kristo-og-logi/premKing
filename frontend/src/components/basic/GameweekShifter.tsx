@@ -47,7 +47,6 @@ const GameweekShifter = ({ selectedGW, setSelectedGameweek }: Props) => {
 
 const styles = StyleSheet.create({
   gameweekSection: {
-    paddingVertical: 4,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',

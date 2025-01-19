@@ -12,6 +12,7 @@ import { setSelectedGameweek } from '../../../redux/reducers/betReducer';
 import { getFixtures } from '../../../redux/reducers/fixtureReducer';
 import { globalStyles } from '../../../styles/styles';
 import type { Bet } from '../../../types/Bet';
+import GameweekScorer from '../../../components/basic/GameweekScorer';
 
 const BetScreen = () => {
   const dispatch = useAppDispatch();
@@ -47,13 +48,7 @@ const BetScreen = () => {
             selectedGW={betSlice.selectedGameweek}
             setSelectedGameweek={(newGw) => dispatch(setSelectedGameweek(newGw))}
           />
-          {betSlice.bets[selectedGW - 1].bets.length > 0 ? (
-            <View style={{ marginBottom: 8, marginTop: -8 }}>
-              <PremText centered order={2}>{`score: x${betSlice.bets[selectedGW - 1].score.toFixed(2)}`}</PremText>
-            </View>
-          ) : (
-            <></>
-          )}
+          <GameweekScorer ticket={betSlice.bets[selectedGW - 1]} />
           <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
             {fixtureSlice.isLoading ? (
               <PremText>loading...</PremText>
