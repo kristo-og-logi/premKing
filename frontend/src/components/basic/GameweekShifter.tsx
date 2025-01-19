@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/styles';
 import PremText from './PremText';
@@ -14,24 +14,24 @@ interface Props {
 const GameweekShifter = ({ selectedGW, setSelectedGameweek }: Props) => {
   return (
     <View>
-      <View style={styles.gameweekSection}>
-        <AntDesign
-          name="left"
-          size={24}
-          color={selectedGW > 1 ? colors.gray[0] : colors.gray[2]}
+      <View style={[styles.gameweekSection]}>
+        <Pressable
+          style={[styles.shifter]}
           onPress={() => {
             if (selectedGW > 1) setSelectedGameweek(selectedGW - 1);
           }}
-        />
+        >
+          <AntDesign name="left" size={32} color={selectedGW > 1 ? colors.gray[0] : colors.gray[2]} />
+        </Pressable>
         <PremText order={1} centered>{`Gameweek ${selectedGW}`}</PremText>
-        <AntDesign
-          name="right"
-          size={24}
-          color={selectedGW < 38 ? colors.gray[0] : colors.gray[2]}
+        <Pressable
+          style={[styles.shifter]}
           onPress={() => {
             if (selectedGW < 38) setSelectedGameweek(selectedGW + 1);
           }}
-        />
+        >
+          <AntDesign name="right" size={32} color={selectedGW < 38 ? colors.gray[0] : colors.gray[2]} />
+        </Pressable>
       </View>
 
       <GameweekTimer selectedGW={selectedGW} />
@@ -41,11 +41,14 @@ const GameweekShifter = ({ selectedGW, setSelectedGameweek }: Props) => {
 
 const styles = StyleSheet.create({
   gameweekSection: {
-    paddingVertical: 12,
+    paddingVertical: 4,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  shifter: {
+    padding: 8,
   },
 });
 

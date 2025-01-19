@@ -33,11 +33,7 @@ const GameweekTimer = ({ selectedGW }: Props) => {
     } else if (finishes < now) txt = `Finished ${dateFormatter.format(finishes)}`;
   }
 
-  return (
-    <PremText centered overflowing>
-      {txt}
-    </PremText>
-  );
+  return <PremText centered>{txt}</PremText>;
 };
 
 export default GameweekTimer;
