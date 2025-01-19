@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import PremText from './PremText';
 import type { Ticket } from '../../types/Bet';
+import PremText from './PremText';
 
 interface Props {
   ticket: Ticket;

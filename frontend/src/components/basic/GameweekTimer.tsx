@@ -1,7 +1,7 @@
 import React from 'react';
-import PremText from './PremText';
 import { useAppSelector } from '../../redux/hooks';
 import { dateFormatter } from '../../utils/constants';
+import PremText from './PremText';
 
 interface Props {
   selectedGW: number;

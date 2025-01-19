@@ -6,8 +6,8 @@ import { useAppSelector } from '../../redux/hooks';
 import type { Bet } from '../../types/Bet';
 import { GameweekStatus } from '../../types/Gameweek';
 import { calculateGwAction, getGameweekStatus } from '../../utils/leagueUtils';
-import PremButton from '../basic/PremButton';
 import GameweekTimer from '../basic/GameweekTimer';
+import PremButton from '../basic/PremButton';
 
 interface Props {
   selectedGW: number;

@@ -3,8 +3,8 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/styles';
-import PremText from './PremText';
 import GameweekTimer from './GameweekTimer';
+import PremText from './PremText';
 
 interface Props {
   selectedGW: number;

@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
+import GameweekScorer from '../../../../components/basic/GameweekScorer';
 import GameweekShifter from '../../../../components/basic/GameweekShifter';
 import PremText from '../../../../components/basic/PremText';
 import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
@@ -13,7 +14,6 @@ import { globalStyles } from '../../../../styles/styles';
 import { GameweekStatus } from '../../../../types/Gameweek';
 import { getGameweekStatus } from '../../../../utils/leagueUtils';
 import { useTimeUntil } from '../../../../utils/timer';
-import GameweekScorer from '../../../../components/basic/GameweekScorer';
 
 const findHeaderTitle = (betSlice: BetState) => {
   if (betSlice.friendBetsIsLoading) return 'Loading...';
