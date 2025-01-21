@@ -26,7 +26,7 @@ const GameweekTimer = ({ selectedGW }: Props) => {
       txt = `Opens ${dateFormatter.format(opens)}`;
     } else if (now < closes) {
       target = gameweek.closes;
-      txt = `Closes ${closes}`;
+      txt = `Closes ${dateFormatter.format(closes)}`;
     } else if (now < finishes) {
       target = gameweek.finishes;
       txt = `Finishes ${dateFormatter.format(finishes)}`;
