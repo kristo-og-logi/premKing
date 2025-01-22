@@ -140,6 +140,14 @@ func SavePushTokenByUserId(userId, pushToken string) error {
 	return result.Error
 }
 
+func RemovePushTokenByUserId(userId string) error {
+	user := models.User{ID: userId}
+	// TODO: find some better way to update this without using string literals for the column names
+	result := initializers.DB.Model(user).Update("expo_push_token", "")
+
+	return result.Error
+}
+
 // gets the push tokens for all users (with notifications enabled)
 // that have not placed bets on a specific gw
 //

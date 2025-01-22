@@ -31,5 +31,6 @@ func SetupUserRoutes(router *gin.Engine, prefix string) {
 		userGroup.DELETE("/me", middleware.Authenticate, controllers.DeleteMyAccount)
 
 		userGroup.POST("/me/push", middleware.Authenticate, controllers.AddPushToken)
+		userGroup.DELETE("/me/push", middleware.Authenticate, controllers.DeletePushToken)
 	}
 }
