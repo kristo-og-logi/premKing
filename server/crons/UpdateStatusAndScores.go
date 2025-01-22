@@ -2,6 +2,7 @@ package crons
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/kristo-og-logi/premKing/server/initializers"
 	"github.com/kristo-og-logi/premKing/server/models"
@@ -59,5 +60,5 @@ func UpdateBetsByFixture(dbFix *models.Fixture) {
 
 	initializers.DB.Save(&bets)
 
-	fmt.Printf("Updated %d / %d bets for fixture %s\n", updated, len(bets), dbFix.Name)
+	slog.Info(fmt.Sprintf("Updated %d / %d bets for fixture %s\n", updated, len(bets), dbFix.Name))
 }

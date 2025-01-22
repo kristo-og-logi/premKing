@@ -15,7 +15,7 @@ import (
 // It repeats three steps:
 //
 //  1. Find the next non-closed gameweek and wait until it's about to close
-
+//
 //  2. Just before it closes, find all users that have not placed bets for the gameweek.
 //     Send them notifications, encouraging them to place bets
 //
@@ -34,13 +34,13 @@ func SetupNotifications() {
 		target := gw.Closes.Add(-2 * time.Hour) // wait until two hours before our moment
 		if time.Now().Before(target) {
 			until := time.Until(target)
-			slog.Debug("NOTIFICATIONS: Timer set", "goesOffIn", until, "goesOffAt", target)
+			slog.Debug("NOTIFICATIONS: Waiting until just before gameweek closes", "GW", gw.Gameweek, "goesOffIn", until, "goesOffAt", target)
 
 			timer := time.NewTimer(until)
 			<-timer.C // thread waits until timer goes off
 
 			// Step 2 - send notifications
-			slog.Info("NOTIFICATIONS: Timer up - sending notifications!")
+			slog.Info("NOTIFICATIONS: Gameweek about to close - sending warning notifications!")
 			success, failed, err := sendGameweekWarningNotifications(gw.Gameweek)
 			if err != nil {
 				slog.Error("No 'GW warning' notifications sent due to error :(", "error", err.Error())
@@ -54,7 +54,7 @@ func SetupNotifications() {
 		target = gw.Finishes.Add(1 * time.Hour)
 		waiter := time.Until(target)
 		timer := time.NewTimer(waiter)
-		slog.Info("NOTIFICATIONS: coroutine sleeping until waiter is up", "goesOffIn", waiter, "goesOffAt", target)
+		slog.Info("NOTIFICATIONS: Waiting until just after gameweek finishes", "GW", gw.Gameweek, "goesOffIn", waiter, "goesOffAt", target)
 		<-timer.C // wait until next week has opened, then start a new iteration for that gameweek
 
 		// Step 4 - let everyone know the gameweek's over

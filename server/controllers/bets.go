@@ -204,6 +204,7 @@ func PlaceMyBetForGameweek(c *gin.Context) {
 	gameweekParam := c.Param("gameweek")
 	user := utils.GetUserFromContext(c)
 	if user == nil {
+		slog.Warn("auth error while placing bet, user not in context")
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization error"})
 		return
 	}

@@ -2,15 +2,21 @@ package initializers
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() (lvl *string) {
+type EnvOptions struct {
+	EnvFile string
+	Loglvl  string
+}
+
+func LoadEnv() (envOptions EnvOptions) {
 	env := flag.String("environment", "", "Specify the environment: DEV | PROD | LOCAL")
-	lvl = flag.String("loglvl", "DEBUG", "Specify the log level: DEBUG | INFO | WARN | ERROR")
+	lvl := flag.String("loglvl", "DEBUG", "Specify the log level: DEBUG | INFO | WARN | ERROR")
 	flag.Parse()
 
 	if *env != "DEV" && *env != "PROD" && *env != "LOCAL" {
@@ -19,7 +25,12 @@ func LoadEnv() (lvl *string) {
 		os.Exit(2)
 	}
 
-	err := godotenv.Load(".env." + *env)
+	envFile := fmt.Sprintf(".env.%s", *env)
+
+	envOptions.EnvFile = envFile
+	envOptions.Loglvl = *lvl
+
+	err := godotenv.Load(envFile)
 	if err != nil {
 		log.Fatalf("Error loading .env.%s file. Does it exist?", *env)
 	}

@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func Logging(lvl *string) {
+func Logging(env EnvOptions) {
 	dirname := "./logs"
 	fileName := "app.log"
 	fileLocation := fmt.Sprintf("%s/%s", dirname, fileName)
@@ -22,7 +22,7 @@ func Logging(lvl *string) {
 	}
 
 	var loglvl slog.Leveler
-	switch *lvl {
+	switch env.Loglvl {
 	case "DEBUG":
 		loglvl = slog.LevelDebug
 	case "INFO":
@@ -43,5 +43,7 @@ func Logging(lvl *string) {
 		slog.Error("failed to write to file", "file", fileLocation)
 		os.Exit(1)
 	}
-	slog.Info(fmt.Sprintf("Setup logger with lvl: %s", *lvl))
+
+	slog.Debug("Environment loaded from file", "file", env.EnvFile)
+	slog.Info(fmt.Sprintf("Setup logger with lvl: %s", env.Loglvl))
 }
