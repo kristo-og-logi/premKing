@@ -17,9 +17,10 @@ import {
   setNotificationHandler,
 } from 'expo-notifications';
 import type { Subscription } from 'expo-notifications';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { colors } from '../styles/styles';
+import { getExpoPushTokenFromStorage, saveExpoPushTokenFromStorage } from '../utils/storage';
 
 export interface NotificationState {
   notification?: Notification;
@@ -57,7 +58,7 @@ export const usePushNotification = (): NotificationState => {
     if (finalStatus !== 'granted') {
       // TODO: do not throw this alert when the user denies notifications the first time around
       // only when wanting to enable them when he has previously disabled them.
-      alert('You seem to have disabled notifications for this app. Please enable them in your device settings.');
+      alert('Notifications are disabled for this app. To enable them,  go to \nSettings -> Apps -> PremKing');
       throw Error();
     }
 
@@ -81,6 +82,8 @@ export const usePushNotification = (): NotificationState => {
     const token = await registerForPushNotificationAsync();
     setExpoPushToken(token);
 
+    saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: true, expoPushToken: token.data });
+
     notificationListener.current = addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
@@ -93,6 +96,9 @@ export const usePushNotification = (): NotificationState => {
   const unregister = async () => {
     await unregisterForNotificationsAsync();
     setExpoPushToken(undefined);
+
+    saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: '' });
+
     if (notificationListener.current) {
       removeNotificationSubscription(notificationListener.current);
       notificationListener.current = undefined;
@@ -104,16 +110,26 @@ export const usePushNotification = (): NotificationState => {
   };
 
   // for the user to check whether they are currently registered or not
-  const [isRegistered, setIsRegistered] = useState<boolean>(!!expoPushToken);
+  const [isRegistered, _setIsRegistered] = useState<boolean>(!!expoPushToken);
 
-  useEffect(() => {
-    if (isRegistered)
+  getExpoPushTokenFromStorage().then((ept) => {
+    _setIsRegistered(ept.isRegistered);
+  });
+
+  const setIsRegistered = (_isRegistered: boolean) => {
+    _setIsRegistered(_isRegistered);
+
+    if (_isRegistered) {
       register().catch(() => {
-        // if we fail to register, we must unregister
+        console.error('failed to register for notifications');
+
+        // call function again, setting registered to false
         setIsRegistered(false);
       });
-    else unregister();
-  }, [isRegistered]);
+    } else {
+      unregister();
+    }
+  };
 
   return { expoPushToken, notification, isRegistered, setIsRegistered };
 };

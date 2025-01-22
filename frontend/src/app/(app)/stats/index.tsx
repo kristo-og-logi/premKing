@@ -35,8 +35,6 @@ const Stats = () => {
         if (!success) {
           console.error("failed to save user's push token");
           setIsRegistered(false); // we failed, so we're not yet registered
-        } else {
-          console.log('successfully stored push token');
         }
       })
       .catch((err) => {

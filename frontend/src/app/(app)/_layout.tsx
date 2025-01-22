@@ -6,6 +6,8 @@ import { getAllBets, setSelectedGameweek } from '../../redux/reducers/betReducer
 import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';
 import { fetchScores } from '../../redux/reducers/scoreReducer';
 import { colors } from '../../styles/styles';
+import { usePushNotification } from '../../notifications/notifications';
+import { getExpoPushTokenFromStorage } from '../../utils/storage';
 
 export default function MainLayout() {
   const authSlice = useAppSelector((state) => state.auth);
@@ -13,8 +15,22 @@ export default function MainLayout() {
 
   const dispatch = useAppDispatch();
 
+  const { setIsRegistered } = usePushNotification();
+
   useEffect(() => {
     dispatch(getAllGameweeks());
+
+    // on first load, check whether user has been asked before
+    // whether they'd like notifications
+    getExpoPushTokenFromStorage().then((ept) => {
+      if (!ept.hasAsked) {
+        console.log('never asked for notifications');
+        // attempt to register
+        setIsRegistered(true);
+      } else {
+        console.log(`notifications: ${JSON.stringify(ept)}`);
+      }
+    });
   }, []);
 
   // necessary to avoid having the initial selectedGameweek
