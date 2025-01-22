@@ -13,8 +13,8 @@ import (
 )
 
 func init() {
-	lvl := initializers.LoadEnv()
-	initializers.Logging(lvl)
+	env := initializers.LoadEnv()
+	initializers.Logging(env)
 	initializers.ConnectDB()
 	initializers.LoadKeys()
 	crons.CRON()

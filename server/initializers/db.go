@@ -48,6 +48,9 @@ func ConnectDB() {
 		os.Exit(1)
 	}
 
+	dbName := db.Migrator().CurrentDatabase()
+	slog.Debug("Connected to DB", "dbname", dbName, "name", db.Name())
+
 	shouldMigrate := true
 	if shouldMigrate {
 		slog.Info("migrating")

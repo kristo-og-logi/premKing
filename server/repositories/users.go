@@ -72,7 +72,7 @@ func GetUserById(id string) (*models.User, error) {
 	// TODO: if the user is not found, it's not the same as all other errors,
 	// we should return nil, nil if the user is not found
 	if result.Error != nil {
-		return nil, fmt.Errorf("user with ID %s not found", id)
+		return nil, fmt.Errorf("user with ID %s not found (%s)", id, result.Error.Error())
 	}
 
 	return &user, nil
