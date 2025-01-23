@@ -24,7 +24,7 @@ import { getExpoPushTokenFromStorage, saveExpoPushTokenFromStorage } from '../ut
 
 export interface NotificationState {
   notification?: Notification;
-  expoPushToken?: ExpoPushToken;
+  expoPushToken?: string;
   isRegistered: boolean;
   setIsRegistered: (isRegistered: boolean) => void;
 }
@@ -38,7 +38,7 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
     }),
   });
 
-  const [expoPushToken, setExpoPushToken] = useState<ExpoPushToken | undefined>();
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notification | undefined>();
 
   const notificationListener = useRef<Subscription>();
@@ -62,8 +62,37 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
       throw Error();
     }
 
-    // TODO: handle throws here, most would be handled by just checking whether the user is online
-    const token = await getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
+    let token: string;
+    try {
+      console.log(`finalStatus: ${finalStatus}`);
+      // TODO: handle throws here, most would be handled by just checking whether the user is online
+      const tokenPromise = getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
+
+      // If we haven't gotten a push token after the timeout,
+      // either we're offline (TODO), expo servers are down,
+      // or we have just enabled notifications from the IOS settings
+      // and haven't reloaded the app since.
+      const expoToken = await Promise.race<ExpoPushToken>([
+        tokenPromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      ]);
+
+      token = expoToken.data;
+    } catch (err) {
+      // There are a couple of steps we can take to recover,
+      // 1. expo servers are down OR we've just enabled notifications (IOS)
+      // == check if we have stored the token and use that one
+
+      const storedToken = await getExpoPushTokenFromStorage();
+      if (storedToken.expoPushToken) {
+        console.log("found push token in storage - we're saved!");
+        token = storedToken.expoPushToken;
+      } else {
+        alert('Failed to setup notifications :(\nRefresh and try again!');
+        throw new Error('failed to get Expo Token');
+      }
+    }
+    console.log(`token: ${JSON.stringify(token)}`);
 
     // some extra android stuff
     if (Platform.OS === 'android') {
@@ -83,11 +112,11 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
     const token = await registerForPushNotificationAsync();
     setExpoPushToken(token);
 
-    const success = await addPush(jwtToken, token.data);
+    const success = await addPush(jwtToken, token);
     // caller catches error
     if (!success) throw new Error('failed to add push token to backend');
 
-    saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: true, expoPushToken: token.data });
+    await saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: true, expoPushToken: token });
 
     notificationListener.current = addNotificationReceivedListener((notification) => {
       setNotification(notification);
@@ -101,14 +130,15 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   const unregister = async () => {
     console.log('unregister()');
     await unregisterForNotificationsAsync();
+    // this must be run before the expoPushToken is set to undefined
+    await saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: expoPushToken ?? '' });
+
     setExpoPushToken(undefined);
 
     const success = await removePush(jwtToken);
     if (!success) {
       console.error('failed to remove push token in backend');
     }
-
-    saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: '' });
 
     if (notificationListener.current) {
       removeNotificationSubscription(notificationListener.current);
@@ -127,7 +157,20 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   useEffect(() => {
     getExpoPushTokenFromStorage().then((ept) => {
       console.log('got push token from storage', JSON.stringify(ept));
-      _setIsRegistered(ept.isRegistered);
+
+      if (ept.hasAsked) {
+        // we've already asked -- user won't be prompted
+        // let's double check that the user hasn't disabled notifications from settings
+        getPermissionsAsync().then((status) => {
+          if ((status.status === 'granted') != ept.isRegistered) {
+            // user has changed their notification preferences
+            // lets update our app's state to reflect that change
+            setIsRegistered(status.status === 'granted');
+          } else {
+            _setIsRegistered(ept.isRegistered);
+          }
+        });
+      }
     });
   }, []);
 
