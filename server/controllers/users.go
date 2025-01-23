@@ -414,3 +414,19 @@ func AddPushToken(c *gin.Context) {
 	slog.Info("Added Notification token", "userId", me.ID)
 	c.IndentedJSON(http.StatusCreated, "success")
 }
+
+// Called by users when disabling push notifications
+// Deletes the user's push token
+func DeletePushToken(c *gin.Context) {
+	me := utils.GetUserFromContext(c)
+
+	err := repositories.RemovePushTokenByUserId(me.ID)
+	if err != nil {
+		slog.Error("Internal error while deleting push token by user id", "userId", me.ID)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	slog.Info("Removed Notification token", "userId", me.ID)
+	c.IndentedJSON(http.StatusOK, "success")
+}

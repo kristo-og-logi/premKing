@@ -20,15 +20,16 @@ import type { Subscription } from 'expo-notifications';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { colors } from '../styles/styles';
+import { getExpoPushTokenFromStorage, saveExpoPushTokenFromStorage } from '../utils/storage';
 
 export interface NotificationState {
   notification?: Notification;
-  expoPushToken?: ExpoPushToken;
+  expoPushToken?: string;
   isRegistered: boolean;
   setIsRegistered: (isRegistered: boolean) => void;
 }
 
-export const usePushNotification = (): NotificationState => {
+export const usePushNotification = (jwtToken: string): NotificationState => {
   setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: false,
@@ -37,7 +38,7 @@ export const usePushNotification = (): NotificationState => {
     }),
   });
 
-  const [expoPushToken, setExpoPushToken] = useState<ExpoPushToken | undefined>();
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notification | undefined>();
 
   const notificationListener = useRef<Subscription>();
@@ -57,12 +58,38 @@ export const usePushNotification = (): NotificationState => {
     if (finalStatus !== 'granted') {
       // TODO: do not throw this alert when the user denies notifications the first time around
       // only when wanting to enable them when he has previously disabled them.
-      alert('You seem to have disabled notifications for this app. Please enable them in your device settings.');
+      alert('Notifications are disabled for this app. To enable them,  go to \nSettings -> Apps -> PremKing');
       throw Error();
     }
 
-    // TODO: handle throws here, most would be handled by just checking whether the user is online
-    const token = await getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
+    let token: string;
+    try {
+      // TODO: handle throws here, most would be handled by just checking whether the user is online
+      const tokenPromise = getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
+
+      // If we haven't gotten a push token after the timeout,
+      // either we're offline (TODO), expo servers are down,
+      // or we have just enabled notifications from the IOS settings
+      // and haven't reloaded the app since.
+      const expoToken = await Promise.race<ExpoPushToken>([
+        tokenPromise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      ]);
+
+      token = expoToken.data;
+    } catch (err) {
+      // There are a couple of steps we can take to recover,
+      // 1. expo servers are down OR we've just enabled notifications (IOS)
+      // == check if we have stored the token and use that one
+
+      const storedToken = await getExpoPushTokenFromStorage();
+      if (storedToken.expoPushToken) {
+        token = storedToken.expoPushToken;
+      } else {
+        alert('Failed to setup notifications :(\nRefresh and try again!');
+        throw new Error('failed to get Expo Token');
+      }
+    }
 
     // some extra android stuff
     if (Platform.OS === 'android') {
@@ -81,6 +108,12 @@ export const usePushNotification = (): NotificationState => {
     const token = await registerForPushNotificationAsync();
     setExpoPushToken(token);
 
+    const success = await addPush(jwtToken, token);
+    // caller catches error
+    if (!success) throw new Error('failed to add push token to backend');
+
+    await saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: true, expoPushToken: token });
+
     notificationListener.current = addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
@@ -92,7 +125,16 @@ export const usePushNotification = (): NotificationState => {
 
   const unregister = async () => {
     await unregisterForNotificationsAsync();
+    // this must be run before the expoPushToken is set to undefined
+    await saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: expoPushToken ?? '' });
+
     setExpoPushToken(undefined);
+
+    const success = await removePush(jwtToken);
+    if (!success) {
+      console.error('failed to remove push token in backend');
+    }
+
     if (notificationListener.current) {
       removeNotificationSubscription(notificationListener.current);
       notificationListener.current = undefined;
@@ -104,16 +146,41 @@ export const usePushNotification = (): NotificationState => {
   };
 
   // for the user to check whether they are currently registered or not
-  const [isRegistered, setIsRegistered] = useState<boolean>(!!expoPushToken);
+  const [isRegistered, _setIsRegistered] = useState<boolean>(!!expoPushToken);
 
+  // set initial value on load
   useEffect(() => {
-    if (isRegistered)
+    getExpoPushTokenFromStorage().then((ept) => {
+      if (ept.hasAsked) {
+        // we've already asked -- user won't be prompted
+        // let's double check that the user hasn't disabled notifications from settings
+        getPermissionsAsync().then((status) => {
+          if ((status.status === 'granted') != ept.isRegistered) {
+            // user has changed their notification preferences
+            // lets update our app's state to reflect that change
+            setIsRegistered(status.status === 'granted');
+          } else {
+            _setIsRegistered(ept.isRegistered);
+          }
+        });
+      }
+    });
+  }, []);
+
+  const setIsRegistered = (_isRegistered: boolean) => {
+    _setIsRegistered(_isRegistered);
+
+    if (_isRegistered) {
       register().catch(() => {
-        // if we fail to register, we must unregister
+        console.error('failed to register for notifications');
+
+        // call function again, setting registered to false
         setIsRegistered(false);
       });
-    else unregister();
-  }, [isRegistered]);
+    } else {
+      unregister();
+    }
+  };
 
   return { expoPushToken, notification, isRegistered, setIsRegistered };
 };
@@ -132,9 +199,34 @@ export const addPush = async (authToken: string, pushToken: string): Promise<boo
 
   if (!response.ok) {
     const message: { error: string } = await response.json();
-    throw new Error(message.error);
+    console.error(`failed to add push token: ${message.error}`);
+    return false;
   }
 
   const data = await response.json();
   return data === 'success';
+};
+
+// DELETE request to backend to delete the user's push token
+export const removePush = async (authToken: string): Promise<boolean> => {
+  try {
+    const url = `${BACKEND_URL}/api/v1/users/me/push`;
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      console.error(`failed to remove push token: ${message.error}`);
+      return false;
+    }
+
+    const data = await response.json();
+    return data === 'success';
+  } catch (err) {
+    console.error('unknown error', err);
+    return false;
+  }
 };

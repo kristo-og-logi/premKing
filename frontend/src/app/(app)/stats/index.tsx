@@ -7,45 +7,17 @@ import { colors, globalStyles } from '../../../styles/styles';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
-import { removeTokenFromStorage } from '../../../utils/storage';
+import { removeExpoPushTokenFromStorage, removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
-import { addPush, usePushNotification } from '../../../notifications/notifications';
+import { usePushNotification } from '../../../notifications/notifications';
 
 const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const { expoPushToken, notification, isRegistered, setIsRegistered } = usePushNotification();
-
-  useEffect(() => {
-    console.log(
-      'received notification at',
-      new Date((notification?.date ?? 0) * 1000),
-      `${notification?.request.content.title}: ${notification?.request.content.body}`,
-    );
-  }, [notification]);
-
-  useEffect(() => {
-    if (!expoPushToken) return;
-
-    addPush(authSlice.token, expoPushToken.data)
-      .then((success) => {
-        if (!success) {
-          console.error("failed to save user's push token");
-          setIsRegistered(false); // we failed, so we're not yet registered
-        } else {
-          console.log('successfully stored push token');
-        }
-      })
-      .catch((err) => {
-        console.error('failed to add push token', err);
-      });
-    console.log(`expoPushToken: ${expoPushToken.data}`);
-
-    // Send expoPushToken to backend
-  }, [expoPushToken]);
+  const { isRegistered, setIsRegistered } = usePushNotification(authSlice.token);
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));
@@ -127,6 +99,13 @@ const Stats = () => {
           />
         </View>
       </View>
+      <PremButton
+        onPress={async () => {
+          await removeExpoPushTokenFromStorage();
+        }}
+      >
+        Delete notification
+      </PremButton>
     </View>
   );
 };

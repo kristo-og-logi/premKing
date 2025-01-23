@@ -43,6 +43,7 @@ export const betSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getAllBets.rejected, (state) => {
+        console.error('failed to get bets');
         state.isLoading = false;
         state.hasError = true;
       })
