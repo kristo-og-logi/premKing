@@ -14,11 +14,8 @@ export default function Page() {
     // whether they'd like notifications
     getExpoPushTokenFromStorage().then((ept) => {
       if (!ept.hasAsked) {
-        console.log('never asked for notifications');
         // attempt to register
         setIsRegistered(true);
-      } else {
-        console.log(`notifications: ${JSON.stringify(ept)}`);
       }
     });
   }, []);

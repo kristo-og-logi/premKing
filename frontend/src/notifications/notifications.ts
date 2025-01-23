@@ -64,7 +64,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
 
     let token: string;
     try {
-      console.log(`finalStatus: ${finalStatus}`);
       // TODO: handle throws here, most would be handled by just checking whether the user is online
       const tokenPromise = getExpoPushTokenAsync({ projectId: Constants.expoConfig?.extra?.eas?.projectId });
 
@@ -85,14 +84,12 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
 
       const storedToken = await getExpoPushTokenFromStorage();
       if (storedToken.expoPushToken) {
-        console.log("found push token in storage - we're saved!");
         token = storedToken.expoPushToken;
       } else {
         alert('Failed to setup notifications :(\nRefresh and try again!');
         throw new Error('failed to get Expo Token');
       }
     }
-    console.log(`token: ${JSON.stringify(token)}`);
 
     // some extra android stuff
     if (Platform.OS === 'android') {
@@ -108,7 +105,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   }
 
   const register = async () => {
-    console.log('register()');
     const token = await registerForPushNotificationAsync();
     setExpoPushToken(token);
 
@@ -128,7 +124,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   };
 
   const unregister = async () => {
-    console.log('unregister()');
     await unregisterForNotificationsAsync();
     // this must be run before the expoPushToken is set to undefined
     await saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: expoPushToken ?? '' });
@@ -156,8 +151,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   // set initial value on load
   useEffect(() => {
     getExpoPushTokenFromStorage().then((ept) => {
-      console.log('got push token from storage', JSON.stringify(ept));
-
       if (ept.hasAsked) {
         // we've already asked -- user won't be prompted
         // let's double check that the user hasn't disabled notifications from settings
@@ -175,7 +168,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
   }, []);
 
   const setIsRegistered = (_isRegistered: boolean) => {
-    console.log(`setting isRegistered(${_isRegistered})`);
     _setIsRegistered(_isRegistered);
 
     if (_isRegistered) {
@@ -195,7 +187,6 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
 
 // POST request to backend to save the user's push token
 export const addPush = async (authToken: string, pushToken: string): Promise<boolean> => {
-  console.log('adding push token');
   const url = `${BACKEND_URL}/api/v1/users/me/push`;
 
   const response = await fetch(url, {
@@ -218,7 +209,6 @@ export const addPush = async (authToken: string, pushToken: string): Promise<boo
 
 // DELETE request to backend to delete the user's push token
 export const removePush = async (authToken: string): Promise<boolean> => {
-  console.log('removing push token');
   try {
     const url = `${BACKEND_URL}/api/v1/users/me/push`;
 

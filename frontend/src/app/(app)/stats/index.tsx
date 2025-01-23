@@ -17,15 +17,7 @@ const Stats = () => {
   const authSlice = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const { notification, isRegistered, setIsRegistered } = usePushNotification(authSlice.token);
-
-  useEffect(() => {
-    console.log(
-      'received notification at',
-      new Date((notification?.date ?? 0) * 1000),
-      `${notification?.request.content.title}: ${notification?.request.content.body}`,
-    );
-  }, [notification]);
+  const { isRegistered, setIsRegistered } = usePushNotification(authSlice.token);
 
   const deleteAcc = async () => {
     dispatch(deleteAccount({ token: authSlice.token }));
