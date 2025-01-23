@@ -17,7 +17,7 @@ import {
   setNotificationHandler,
 } from 'expo-notifications';
 import type { Subscription } from 'expo-notifications';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { colors } from '../styles/styles';
 import { getExpoPushTokenFromStorage, saveExpoPushTokenFromStorage } from '../utils/storage';
@@ -29,7 +29,7 @@ export interface NotificationState {
   setIsRegistered: (isRegistered: boolean) => void;
 }
 
-export const usePushNotification = (): NotificationState => {
+export const usePushNotification = (jwtToken: string): NotificationState => {
   setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: false,
@@ -79,8 +79,13 @@ export const usePushNotification = (): NotificationState => {
   }
 
   const register = async () => {
+    console.log('register()');
     const token = await registerForPushNotificationAsync();
     setExpoPushToken(token);
+
+    const success = await addPush(jwtToken, token.data);
+    // caller catches error
+    if (!success) throw new Error('failed to add push token to backend');
 
     saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: true, expoPushToken: token.data });
 
@@ -94,8 +99,14 @@ export const usePushNotification = (): NotificationState => {
   };
 
   const unregister = async () => {
+    console.log('unregister()');
     await unregisterForNotificationsAsync();
     setExpoPushToken(undefined);
+
+    const success = await removePush(jwtToken);
+    if (!success) {
+      console.error('failed to remove push token in backend');
+    }
 
     saveExpoPushTokenFromStorage({ hasAsked: true, isRegistered: false, expoPushToken: '' });
 
@@ -112,11 +123,16 @@ export const usePushNotification = (): NotificationState => {
   // for the user to check whether they are currently registered or not
   const [isRegistered, _setIsRegistered] = useState<boolean>(!!expoPushToken);
 
-  getExpoPushTokenFromStorage().then((ept) => {
-    _setIsRegistered(ept.isRegistered);
-  });
+  // set initial value on load
+  useEffect(() => {
+    getExpoPushTokenFromStorage().then((ept) => {
+      console.log('got push token from storage', JSON.stringify(ept));
+      _setIsRegistered(ept.isRegistered);
+    });
+  }, []);
 
   const setIsRegistered = (_isRegistered: boolean) => {
+    console.log(`setting isRegistered(${_isRegistered})`);
     _setIsRegistered(_isRegistered);
 
     if (_isRegistered) {
@@ -136,6 +152,7 @@ export const usePushNotification = (): NotificationState => {
 
 // POST request to backend to save the user's push token
 export const addPush = async (authToken: string, pushToken: string): Promise<boolean> => {
+  console.log('adding push token');
   const url = `${BACKEND_URL}/api/v1/users/me/push`;
 
   const response = await fetch(url, {
@@ -148,9 +165,35 @@ export const addPush = async (authToken: string, pushToken: string): Promise<boo
 
   if (!response.ok) {
     const message: { error: string } = await response.json();
-    throw new Error(message.error);
+    console.error(`failed to add push token: ${message.error}`);
+    return false;
   }
 
   const data = await response.json();
   return data === 'success';
+};
+
+// DELETE request to backend to delete the user's push token
+export const removePush = async (authToken: string): Promise<boolean> => {
+  console.log('removing push token');
+  try {
+    const url = `${BACKEND_URL}/api/v1/users/me/push`;
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+
+    if (!response.ok) {
+      const message: { error: string } = await response.json();
+      console.error(`failed to remove push token: ${message.error}`);
+      return false;
+    }
+
+    const data = await response.json();
+    return data === 'success';
+  } catch (err) {
+    console.error('unknown error', err);
+    return false;
+  }
 };
