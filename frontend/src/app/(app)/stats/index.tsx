@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';
@@ -7,7 +7,7 @@ import { colors, globalStyles } from '../../../styles/styles';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
-import { removeExpoPushTokenFromStorage, removeTokenFromStorage } from '../../../utils/storage';
+import { removeTokenFromStorage } from '../../../utils/storage';
 
 import { BACKEND_URL, ENVIRONMENT } from '@env';
 import { usePushNotification } from '../../../notifications/notifications';
@@ -99,13 +99,6 @@ const Stats = () => {
           />
         </View>
       </View>
-      <PremButton
-        onPress={async () => {
-          await removeExpoPushTokenFromStorage();
-        }}
-      >
-        Delete notification
-      </PremButton>
     </View>
   );
 };
