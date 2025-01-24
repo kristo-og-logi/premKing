@@ -2,6 +2,8 @@
 
 ![](assets/LOGO.png)
 
+[![Available on the App Store](https://f.v1.n0.cdn.getcloudapp.com/items/3i3e3H392x2z3u30470v/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/is/app/premking/id6476774713)
+
 ## Frontend
 
 Written in react native, using expo, typescript and redux.
