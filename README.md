@@ -2,13 +2,13 @@
 
 ![](assets/LOGO.png)
 
-[![Available on the App Store](https://f.v1.n0.cdn.getcloudapp.com/items/3i3e3H392x2z3u30470v/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/is/app/premking/id6476774713)
-
-<div style="display: flex; flex-direction: row;">
-  <img src="assets/6_9_cover_1.jpg" alt="Image 1" width="200" style="margin-right: 10px;" />
-  <img src="assets/6_9_cover_2.jpg" alt="Image 2" width="200" style="margin-right: 10px;" />
+<div style="display: flex; flex-direction: row; justify-content; space-between; align-items: center;">
+  <img src="assets/6_9_cover_1.jpg" alt="Image 1" width="200"  />
+  <img src="assets/6_9_cover_2.jpg" alt="Image 2" width="200"  />
   <img src="assets/6_9_cover_3.jpg" alt="Image 3" width="200" />
 </div>
+
+[![Available on the App Store](https://f.v1.n0.cdn.getcloudapp.com/items/3i3e3H392x2z3u30470v/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/is/app/premking/id6476774713)
 
 ## About
 
