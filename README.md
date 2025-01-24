@@ -4,50 +4,24 @@
 
 [![Available on the App Store](https://f.v1.n0.cdn.getcloudapp.com/items/3i3e3H392x2z3u30470v/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/is/app/premking/id6476774713)
 
-## Frontend
+## About
 
-Written in react native, using expo, typescript and redux.
+_PremKing_ is a full-stack mobile application where friends create leagues, place bets on Premier League fixtures and compete for who's the best guesser!
 
-### Setup
+Fixtures are split into Gameweeks, and users must place bets on a per-Gameweek basis.
 
-To install dependencies, within `/frontend`, run
+Users bet on fixture results: either Home, Draw or Away, and if correctly guessed, are awarded with points determined by the betting odds of that result.
 
-```
-npm install
-```
+Points are accumulated into a total score over gameweeks, and the friend with the highest score by the season's end wins the league!
 
-Then, to start the frontend, run
+## Technology
 
-```
-npm run start
-```
+The frontend is built using React-Native, using TypeScript and [Redux](https://redux.js.org/) for state management. It is built and deployed through [Expo](https://expo.dev/), which feels a little like magic.
 
-**For more detailed instructions, setup, deployment and troubleshooting, visit the [frontend README](./frontend/README.md)**
+The backend is created using [Gin](https://gin-gonic.com/), a Go framework, with [Gorm](https://gorm.io/) as an _orm_. Hosted on AWS under [api.premking.net](https://api.premking.net).
 
-## Backend
+A PostgreSQL database is hosted by Supabase, which offers a suprisingly generous free-tier.
 
-Made with gin, a Go framework, with gorm as an _orm_.
+## Development
 
-To install packages, within `/server`, run
-
-```
-go get .
-```
-
-Then, to start the backend, make sure you have added the necessary environment variables in a `.env` file. Refer to [`/server/.env.example`](/server/.env.example) for help.
-
-Then, run
-
-```
-go run . --environment {DEV || PROD}
-```
-
-If you haven't used Go on your machine before, this probably won't work. Refer to [`/server/README.md`](/server/README.md) for help to boot up the backend.
-
-If running the backend in development, you **need to follow** the [`/server/README.md`](/server/README.md) documentation. Having completed that, run
-
-```
-CompileDaemon -command="./server --environment {DEV || PROD}"
-```
-
-**For more detailed instructions, setup, endpoints and troubleshooting, visit the [server README](./server/README.md)**
+**For instructions on how to setup the project locally visit both the [frontend README](./frontend/README.md) & [backend README](./server/README.md)**
