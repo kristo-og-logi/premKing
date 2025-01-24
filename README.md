@@ -2,7 +2,7 @@
 
 ![](assets/LOGO.png)
 
-<div style="display: flex; flex-direction: row; justify-content; space-between; align-items: center;">
+<div style="display: flex; flex-direction: row; gap: 20px">
   <img src="assets/6_9_cover_1.jpg" alt="Image 1" width="200"  />
   <img src="assets/6_9_cover_2.jpg" alt="Image 2" width="200"  />
   <img src="assets/6_9_cover_3.jpg" alt="Image 3" width="200" />
