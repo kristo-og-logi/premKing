@@ -1,6 +1,6 @@
 # PremKing
 
-![](assets/LOGO.png)
+![](assets/newpk_banner.png)
 
 <div style="display: flex; flex-direction: row;">
   <img src="assets/6_9_cover_1.jpg" alt="Image 1" width="200" />
