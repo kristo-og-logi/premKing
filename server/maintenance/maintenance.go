@@ -16,12 +16,14 @@ import (
 	"github.com/kristo-og-logi/premKing/server/models"
 	"github.com/kristo-og-logi/premKing/server/repositories"
 	"github.com/kristo-og-logi/premKing/server/utils"
+	expo "github.com/oliveroneill/exponent-server-sdk-golang/sdk"
 )
 
 func main() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
 
+	// SendNotification("test@test.com")
 	// AddBetsForUser()
 	// ShortenFixtureNames()
 	// crons.UpdateFixtures()
@@ -32,6 +34,12 @@ func main() {
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
 	// RecalculateBetsForGameweek()
+}
+
+func SendNotification(email string) {
+	user := getUser(email)
+	client := expo.NewPushClient(nil)
+	crons.PublishNotification(user.ExpoPushToken, client, "test", "this")
 }
 
 func AddBetsForUser() {
