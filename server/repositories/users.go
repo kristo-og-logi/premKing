@@ -169,6 +169,25 @@ func GetAllPushTokensWithNoBetsOnGameweekById(gw uint8) ([]string, error) {
 	return tokens, nil
 }
 
+// Gets the push tokens for all users that HAVE placed bets on the specified gw
+func GetAllPushTokensWITHBetsOnGameweekById(gw uint8) ([]string, error) {
+	var tokens []string
+
+	// find all user ids that have placed bets on gw
+	placed := initializers.DB.Model(&models.Bet{}).Select("DISTINCT user_id").Where("game_week = ?", gw)
+
+	// find the users' tokens, for the users with tokens, for the users that HAVE placed bets
+	result := initializers.DB.Model(&models.User{}).Select("expo_push_token").Where("id IN (?)", placed).
+		Where("expo_push_token IS NOT NULL AND expo_push_token <> ''"). // expo_push_token must be set as the user must have enabled notifications
+		Find(&tokens)
+
+	if result.Error != nil {
+		return []string{}, result.Error
+	}
+
+	return tokens, nil
+}
+
 // Used for sending notifications to all users
 func GetAllUserPushTokens() ([]string, error) {
 	var tokens []string
