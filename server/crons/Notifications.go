@@ -68,6 +68,25 @@ func SetupNotifications() {
 			slog.Info("NOTIFICATIONS: 'GW 2hr warning' notifications sent!", "success", success, "failed", failed)
 		}
 
+		// Step 1.3 - wait until just after gameweek closes
+		target = gw.Closes.Add(2 * time.Hour) // wait until two hours *after* gameweek closes - this is when the first fixtures start
+		if time.Now().Before(target) {
+			until := time.Until(target)
+			slog.Debug("NOTIFICATIONS: Waiting until just after gameweek closes", "GW", gw.Gameweek, "goesOffIn", until, "goesOffAt", target)
+
+			timer := time.NewTimer(until)
+			<-timer.C // thread waits until timer goes off
+
+			// Step 2 - send notifications
+			slog.Info("NOTIFICATIONS: Gameweek has just closed - first fixtures are starting")
+			success, failed, err := sendGameweekStartedNotifications(gw.Gameweek)
+			if err != nil {
+				slog.Error("No 'GW started' notifications sent due to error :(", "error", err.Error())
+				return
+			}
+			slog.Info("NOTIFICATIONS: 'GW started' notifications sent!", "success", success, "failed", failed)
+		}
+
 		// Step 3 - wait until gameweek finishes
 		// give some leeway -- we want the last bets to be updated before we notify users
 		target = gw.Finishes.Add(1 * time.Hour)
@@ -154,6 +173,30 @@ func sendGameweekWarningNotifications(gw uint8, nType NotificationType) (int, in
 			success++
 		} else {
 			slog.Error("Failed to send 'GW closing warning' push notification", "token", token)
+			failed++
+		}
+	}
+	return success, failed, nil
+}
+
+func sendGameweekStartedNotifications(gw uint8) (int, int, error) {
+	// Users that did not place bets for the GW probably don't care for this information
+	// lets not bother them
+	tokens, err := repositories.GetAllPushTokensWITHBetsOnGameweekById(gw)
+	if err != nil {
+		slog.Warn("Failed to get push tokens for users that haven't placed bets for gw", "GW", gw, "error", err.Error())
+		return 0, 0, err
+	}
+
+	client := expo.NewPushClient(nil)
+
+	success, failed := 0, 0
+	for _, token := range tokens {
+		err = PublishNotification(token, client, "Gameweek started!", "You can now view friends' bets - Good luck🫡")
+		if err == nil {
+			success++
+		} else {
+			slog.Error("Failed to send 'GW started' push notification", "token", token)
 			failed++
 		}
 	}
