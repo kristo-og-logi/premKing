@@ -85,8 +85,33 @@ func FindAndSaveNormalFixtures() {
 
 		for idx, fix := range fixtures {
 			isNormal := false
-			if fix.GameWeek == 38 || fix.MatchDate.Sub(fixtureList[gw][0].MatchDate).Hours() <= 48 {
+
+			// fixture is normal if its in gw 38 or..
+			if fix.GameWeek == 38 {
 				isNormal = true
+			} else {
+				succ, err := firstNormalFixture(fixtureList[gw])
+				if err != nil {
+					fmt.Printf("error finding first normal fixture for gw%v\n", gw)
+					return
+				}
+
+				if gw == 1 {
+					if fix.MatchDate.Sub(succ.MatchDate).Hours() <= 48 {
+						isNormal = true
+					}
+				} else {
+					pred, err := firstNormalFixture(fixtureList[gw-2])
+					if err != nil {
+						fmt.Printf("error finding first normal fixture for gw%v\n", gw)
+						return
+					}
+
+					// ..or if it's at least 48 hours before the first normal fixture of the succeeding gw
+					if fix.MatchDate.Sub(succ.MatchDate).Hours() <= 48 && pred.MatchDate.Sub(fix.MatchDate).Hours() <= 48 {
+						isNormal = true
+					}
+				}
 			}
 
 			fmt.Printf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
@@ -100,6 +125,16 @@ func FindAndSaveNormalFixtures() {
 		}
 		initializers.DB.Save(&fixtures)
 	}
+}
+
+func firstNormalFixture(fx []models.Fixture) (*models.Fixture, error) {
+	for _, f := range fx {
+		if f.IsNormal {
+			return &f, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no normal fixture in group")
 }
 
 func FetchFixtures() []models.SportmonksFixture {
