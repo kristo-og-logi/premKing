@@ -69,18 +69,20 @@ func UpdateFixtures() {
 func FindAndSaveNormalFixtures() {
 	fixtureList := make([][]models.Fixture, 38)
 
+	// All fixtures have to be fetched before modifying the first one
+	// Since calculating a fixture's normal status depends on fixtures in succeeding GWs
 	for gw := 1; gw <= 38; gw++ {
 		fixtures, err := repositories.FetchFixturesByGameweek(uint8(gw))
 		if err != nil {
-			fmt.Printf("couldn't find fixtures for GW%d: %s", gw, err.Error())
-			continue
+			slog.Error(fmt.Sprintf("couldn't find fixtures for GW%d", gw), "message", err.Error())
+			return;
 		}
 
 		fixtureList[gw-1] = fixtures
 	}
 
 	for gw := 1; gw <= 38; gw++ {
-		fmt.Printf("GW%d\n", gw)
+		slog.Info(fmt.Sprintf("GW%d\n", gw))
 		fixtures := fixtureList[gw-1]
 
 		for idx, fix := range fixtures {
@@ -92,7 +94,7 @@ func FindAndSaveNormalFixtures() {
 			} else {
 				succ, err := firstNormalFixture(fixtureList[gw])
 				if err != nil {
-					fmt.Printf("error finding first normal fixture for gw%v\n", gw)
+					slog.Error("error finding first normal fixture", "GW", gw)
 					return
 				}
 
@@ -103,11 +105,12 @@ func FindAndSaveNormalFixtures() {
 				} else {
 					pred, err := firstNormalFixture(fixtureList[gw-2])
 					if err != nil {
-						fmt.Printf("error finding first normal fixture for gw%v\n", gw)
+						slog.Error("error finding first normal fixture", "GW", gw)
 						return
 					}
 
 					// ..or if it's at least 48 hours before the first normal fixture of the succeeding gw
+					// AND at least 48 hours after the first normal fixture of the preceding gw
 					if fix.MatchDate.Sub(succ.MatchDate).Hours() <= 48 && pred.MatchDate.Sub(fix.MatchDate).Hours() <= 48 {
 						isNormal = true
 					}
