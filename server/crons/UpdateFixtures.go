@@ -75,7 +75,7 @@ func FindAndSaveNormalFixtures() {
 		fixtures, err := repositories.FetchFixturesByGameweek(uint8(gw))
 		if err != nil {
 			slog.Error(fmt.Sprintf("couldn't find fixtures for GW%d", gw), "message", err.Error())
-			return;
+			return
 		}
 
 		fixtureList[gw-1] = fixtures
@@ -117,13 +117,12 @@ func FindAndSaveNormalFixtures() {
 				}
 			}
 
-			fmt.Printf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
-
+			s := fmt.Sprintf("	%v", fix.MatchDate.Format("2006-01-02 15:04"))
 			if isNormal {
-				fmt.Println(" - X")
-			} else {
-				fmt.Println()
+				s += " - X"
 			}
+			slog.Info(s)
+
 			fixtures[idx].IsNormal = isNormal
 		}
 		initializers.DB.Save(&fixtures)
