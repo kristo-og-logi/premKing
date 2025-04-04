@@ -151,11 +151,11 @@ func sendGameweekWarningNotifications(gw uint8, nType NotificationType) (int, in
 
 	switch nType {
 	case Warning24Hr:
-		title = "Gameweek closes in 2 hours⌛️"
-		desc = fmt.Sprintf("Hurry up! You still haven't placed a bet for GW %d", gw)
-	case Warning2Hr:
 		title = "Gameweek closes tomorrow"
 		desc = fmt.Sprintf("You have 24hrs to place a bet for GW %d", gw)
+	case Warning2Hr:
+		title = "Gameweek closes in 2 hours⌛️"
+		desc = fmt.Sprintf("Hurry up! You still haven't placed a bet for GW %d", gw)
 	default:
 		slog.Error("Unable to send notifications - Missing NotificationType from switch case", "nType", nType)
 		return 0, 0, fmt.Errorf("Missing NotificationType from switch case")
