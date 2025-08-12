@@ -30,6 +30,17 @@ func SetupNotifications() {
 			return // no notifications
 		}
 
+		// Step 0 - Check if it's all over
+		// If the current gameweek is finished,
+		// either something is very wrong
+		// or the last gameweek has just finished
+		//
+		// This could have fixed so much
+		if gw.Finishes.Before(time.Now()) {
+			slog.Warn("NOTIFICATIONS: Current gameweek is finished. Stopping notifications.", "GW", gw.Gameweek, "finishes", gw.Finishes)
+			break
+		}
+
 		// Step 1.1 - wait until a day before gameweek closes
 		target := gw.Closes.Add(-24 * time.Hour)
 		if time.Now().Before(target) {
