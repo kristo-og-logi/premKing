@@ -23,3 +23,7 @@ type TeamJSON struct {
 		Logo      string `json:"logo"`
 	} `json:"team"`
 }
+
+type RapidApiTeamsResponse struct {
+	Response []TeamJSON
+}

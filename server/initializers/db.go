@@ -3,8 +3,11 @@ package initializers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
+	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -65,6 +68,68 @@ func ConnectDB() {
 	DB = db
 }
 
+func getRapidApiUrl(base string) string {
+	baseUrl, err := url.Parse(base)
+	if err != nil {
+		fmt.Printf("error creating url: %s\n", err.Error())
+		os.Exit(1)
+	}
+	baseUrl.RawQuery = url.Values{"league": []string{"39"}, "season": []string{"2025"}}.Encode()
+	return baseUrl.String()
+}
+
+func getRapidApiRequest(base string) *http.Request {
+	url := getRapidApiUrl(base)
+
+	fmt.Printf("URL: %s\n", url)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Printf("Error creating GET request: %v\n", err.Error())
+		os.Exit(1)
+	}
+
+	rapidApiKey := "RAPID_API_KEY"
+	apiKey := os.Getenv(rapidApiKey)
+	if apiKey == "" {
+		fmt.Printf("%s not found in env\n", rapidApiKey)
+		os.Exit(1)
+	}
+	req.Header.Set("x-rapidapi-key", apiKey)
+
+	return req
+}
+
+func getRapidApiResponseBody(base string) []byte {
+	req := getRapidApiRequest(base)
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		fmt.Printf("Error fetching request: %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading body: %s\n", err.Error())
+		os.Exit(1)
+	}
+
+	return body
+}
+
+func getRapidApiTeamsResponse() models.RapidApiTeamsResponse {
+	body := getRapidApiResponseBody("https://v3.football.api-sports.io/teams")
+
+	var teamsResponse = models.RapidApiTeamsResponse{}
+	err := json.Unmarshal(body, &teamsResponse)
+	if err != nil {
+		slog.Error("cannot parse teams data into JSON", "error", err.Error())
+		os.Exit(1)
+	}
+	return teamsResponse
+}
+
 func migrateTeamsToDB(db *gorm.DB) {
 	var existingTeams []models.Team
 	result := db.Select("id").Find(&existingTeams)
@@ -77,18 +142,7 @@ func migrateTeamsToDB(db *gorm.DB) {
 		return
 	}
 
-	jsonData, err := os.ReadFile("./json/teams.json")
-	if err != nil {
-		slog.Error("error reading teams.json", "error", err.Error())
-		os.Exit(1)
-	}
-
-	var teamsData []models.TeamJSON
-	err = json.Unmarshal(jsonData, &teamsData)
-	if err != nil {
-		slog.Error("cannot parse teams.json data into JSON", "error", err.Error())
-		os.Exit(1)
-	}
+	teamsData := getRapidApiTeamsResponse().Response
 
 	for _, team := range teamsData {
 		model := models.Team{
@@ -108,7 +162,7 @@ func migrateTeamsToDB(db *gorm.DB) {
 			result := db.Where(models.Team{ID: model.ID}).FirstOrCreate(&model)
 			slog.Info(fmt.Sprintf("added %s", team.Team.Name))
 			if result.Error != nil {
-				slog.Error("Error adding team to DB", "error", result.Error.Error())
+				slog.Error("Error adding team to DB", "teamName", team.Team.Name, "error", result.Error.Error())
 				os.Exit(1)
 			}
 		} else {
@@ -137,20 +191,18 @@ func migrateFixturesToDB(db *gorm.DB) {
 		os.Exit(1)
 	}
 
-	jsonData, err := os.ReadFile("./json/fixtures3.json")
-	if err != nil {
-		slog.Error("error reading fixtures.json", "error", err.Error())
-		os.Exit(1)
-	}
+	body := getRapidApiResponseBody("https://v3.football.api-sports.io/fixtures")
 
 	var response models.FixturesResponse
-	err = json.Unmarshal(jsonData, &response)
+	err := json.Unmarshal(body, &response)
 	if err != nil {
-		slog.Error("cannot parse fixtures.json data into JSON", "error", err.Error())
+		slog.Error("cannot parse fixtures body into JSON", "error", err.Error())
 		os.Exit(1)
 	}
 
 	fixtureData := response.Response
+
+	fmt.Printf("got %d fixtures from API\n", len(fixtureData))
 
 	for _, fixture := range fixtureData {
 		exists := false
@@ -180,26 +232,27 @@ func migrateFixturesToDB(db *gorm.DB) {
 			}
 
 			model := models.Fixture{
-				ID:         fixture.Fixture.ID,
-				CreatedAt:  time.Now(),
-				UpdatedAt:  time.Now(),
-				HomeTeamId: homeTeam.ID,
-				HomeTeam:   homeTeam,
-				AwayTeamId: awayTeam.ID,
-				AwayTeam:   awayTeam,
-				Finished:   fixture.Fixture.Status.Elapsed == 90,
-				HomeGoals:  fixture.Goals.Home,
-				AwayGoals:  fixture.Goals.Away,
-				Result:     fixtureResult,
-				MatchDate:  fixture.Fixture.Date,
-				GameWeek:   utils.GetGameweekFromRound(fixture.League.Round),
-				Name:       utils.CreateFixtureName(homeTeam, awayTeam),
-				LongName:   fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
+				ID:           fixture.Fixture.ID,
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+				HomeTeamId:   homeTeam.ID,
+				HomeTeam:     homeTeam,
+				AwayTeamId:   awayTeam.ID,
+				AwayTeam:     awayTeam,
+				Finished:     fixture.Fixture.Status.Elapsed == 90,
+				HomeGoals:    fixture.Goals.Home,
+				AwayGoals:    fixture.Goals.Away,
+				Result:       fixtureResult,
+				MatchDate:    fixture.Fixture.Date,
+				GameWeek:     utils.GetGameweekFromRound(fixture.League.Round),
+				Name:         utils.CreateFixtureName(homeTeam, awayTeam),
+				LongName:     fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
+				SportmonksID: fixture.Fixture.ID, // PLACEHOLDER: this is not correct
 			}
 
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)
 			if result.Error != nil {
-				slog.Error("Error adding team to DB", "error", result.Error.Error())
+				slog.Error("Error adding fixture to DB", "fixtureName", model.Name, "homeTeamId", homeTeam.ID, "awayTeamId", awayTeam.ID, "error", result.Error.Error())
 				os.Exit(1)
 			}
 		}
