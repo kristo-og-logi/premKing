@@ -25,5 +25,5 @@ type TeamJSON struct {
 }
 
 type RapidApiTeamsResponse struct {
-	Response []TeamJSON
+	Response []TeamJSON `json:"response"`
 }

@@ -145,10 +145,11 @@ func migrateTeamsToDB(db *gorm.DB) {
 	teamsData := getRapidApiTeamsResponse().Response
 
 	for _, team := range teamsData {
+		name := utils.ConvertTeamName(team.Team.Name)
 		model := models.Team{
 			ID:        team.Team.ID,
-			Name:      team.Team.Name,
-			ShortName: team.Team.ShortName,
+			Name:      name,
+			ShortName: utils.GetShortName(name),
 			Logo:      team.Team.Logo,
 		}
 
