@@ -249,6 +249,7 @@ func migrateFixturesToDB(db *gorm.DB) {
 				Name:         utils.CreateFixtureName(homeTeam, awayTeam),
 				LongName:     fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
 				SportmonksID: fixture.Fixture.ID, // PLACEHOLDER: this is not correct
+				IsNormal:     true,
 			}
 
 			result := db.Where(models.Fixture{ID: model.ID}).FirstOrCreate(&model)

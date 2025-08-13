@@ -18,7 +18,8 @@ import (
 )
 
 func main() {
-	initializers.LoadEnv()
+	env := initializers.LoadEnv()
+	initializers.Logging(env)
 	initializers.ConnectDB()
 
 	// SendNotification("test@test.com")
@@ -30,6 +31,16 @@ func main() {
 	// ChangeGWTimes()
 	// AddOddsAndWonToBets()
 	// RecalculateBetsForGameweek()
+
+	NEWSEASON()
+}
+
+func NEWSEASON() {
+	// Run this whenever you have a new season
+
+	crons.FindAndSaveNormalFixtures()
+	ChangeGWTimes()
+	crons.UpdateFixtures()
 }
 
 func SendNotification(email string) {

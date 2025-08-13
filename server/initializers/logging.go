@@ -44,7 +44,7 @@ func Logging(env EnvOptions) {
 		os.Exit(1)
 	}
 
-	slog.Debug("Environment loaded from file", "file", env.EnvFile)
+	slog.Info("Environment loaded from file", "file", env.EnvFile)
 	slog.Info(fmt.Sprintf("Setup logger with lvl: %s", env.Loglvl))
 	fmt.Printf("Setup logger with lvl: %s in %s\n", env.Loglvl, fileLocation)
 }

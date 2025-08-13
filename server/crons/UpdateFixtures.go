@@ -82,7 +82,7 @@ func FindAndSaveNormalFixtures() {
 	}
 
 	for gw := 1; gw <= 38; gw++ {
-		slog.Info(fmt.Sprintf("GW%d\n", gw))
+		slog.Info(fmt.Sprintf("GW%d", gw))
 		fixtures := fixtureList[gw-1]
 
 		for idx, fix := range fixtures {
@@ -207,8 +207,14 @@ func createUrl(page int) string {
 		return ""
 	}
 
+	// Sportmonks Season ID
+	// 23/24: 21644
+	// 24/25: 23614
+	// 25/26: 25583
+	seasonID := 25583
+
 	params := map[string]string{
-		"filters":  "fixtureSeasons:23614;bookmakers:2;markets:1",
+		"filters":  fmt.Sprintf("fixtureSeasons:%v;bookmakers:2;markets:1", seasonID),
 		"include":  "round;odds;scores;state",
 		"per_page": "50",
 		"page":     fmt.Sprint(page)}
