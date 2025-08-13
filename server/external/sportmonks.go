@@ -32,7 +32,7 @@ func FetchSportmonksFixtures() []models.SportmonksFixture {
 		fixt := Convert(res)
 		fixtures = append(fixtures, fixt...)
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	fmt.Printf("found %d fixtures from API\n", len(fixtures))

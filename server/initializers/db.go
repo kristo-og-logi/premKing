@@ -5,6 +5,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/kristo-og-logi/premKing/server/external"
@@ -108,14 +109,14 @@ func migrateTeamsToDB(db *gorm.DB) {
 }
 
 func migrateFixturesToDB(db *gorm.DB) {
-	var existingFixtures []models.Fixture
-	result := db.Select("id").Find(&existingFixtures)
+	var dbFixtures []models.Fixture
+	result := db.Select("id").Find(&dbFixtures)
 	if result.Error != nil {
 		slog.Error("error fetching existing fixtures", "error", result.Error.Error())
 		os.Exit(1)
 	}
 
-	if len(existingFixtures) >= 380 {
+	if len(dbFixtures) >= 380 {
 		slog.Info("all fixtures already exist in db. Stopping")
 		return
 	}
@@ -127,19 +128,20 @@ func migrateFixturesToDB(db *gorm.DB) {
 		os.Exit(1)
 	}
 
-	fixtureData := external.GetRapidApiFixturesResponse().Response
+	rapidFixtures := external.GetRapidApiFixturesResponse().Response
+	slog.Info(fmt.Sprintf("got %d fixtures from rapidAPI", len(rapidFixtures)))
 
-	slog.Info(fmt.Sprintf("got %d fixtures from API", len(fixtureData)))
+	sportmonksFixtures := external.FetchSportmonksFixtures()
 
-	for _, fixture := range fixtureData {
+	for _, fixture := range rapidFixtures {
+
 		exists := false
-		for _, existingFixture := range existingFixtures {
-			if existingFixture.ID == fixture.Fixture.ID {
+		for _, dbFixture := range dbFixtures {
+			if dbFixture.ID == fixture.Fixture.ID {
 				exists = true
 			}
 		}
 		if !exists {
-
 			var homeTeam models.Team
 			var awayTeam models.Team
 			for _, team := range teams {
@@ -149,6 +151,21 @@ func migrateFixturesToDB(db *gorm.DB) {
 				if team.ID == fixture.Teams.Away.ID {
 					awayTeam = team
 				}
+			}
+
+			sportmonksID := -fixture.Fixture.ID
+			for _, sFix := range sportmonksFixtures {
+				teams := strings.Split(sFix.Name, " vs ")
+				home, away := teams[0], teams[1]
+
+				if home == homeTeam.Name && away == awayTeam.Name {
+					sportmonksID = sFix.Id
+				}
+			}
+
+			fixtureName := utils.CreateFixtureName(homeTeam, awayTeam)
+			if sportmonksID < 0 {
+				slog.Error("Could not find a sportmonksID for fixture", "FixtureID", fixture.Fixture.ID, "Name", fixtureName)
 			}
 
 			fixtureResult := "X"
@@ -172,9 +189,9 @@ func migrateFixturesToDB(db *gorm.DB) {
 				Result:       fixtureResult,
 				MatchDate:    fixture.Fixture.Date,
 				GameWeek:     utils.GetGameweekFromRound(fixture.League.Round),
-				Name:         utils.CreateFixtureName(homeTeam, awayTeam),
+				Name:         fixtureName,
 				LongName:     fmt.Sprintf("%s vs %s", homeTeam.Name, awayTeam.Name),
-				SportmonksID: fixture.Fixture.ID, // PLACEHOLDER: this is not correct
+				SportmonksID: sportmonksID,
 				IsNormal:     true,
 			}
 
