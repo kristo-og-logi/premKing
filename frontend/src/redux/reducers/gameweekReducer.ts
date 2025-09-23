@@ -1,4 +1,4 @@
-import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type Gameweek from '../../types/Gameweek';
 import { backend } from '../../utils/constants';
 

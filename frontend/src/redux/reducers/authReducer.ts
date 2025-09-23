@@ -1,10 +1,9 @@
-import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { BACKEND_URL } from '@env';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type User from '../../types/User';
+import { jwtDecode } from '../../utils/jwtDecode';
 import { removeTokenFromStorage, saveTokenInStorage } from '../../utils/storage';
 import type { RootState } from '../store';
-
-import { BACKEND_URL } from '@env';
-import { jwtDecode } from '../../utils/jwtDecode';
 
 export interface AuthState {
   user?: User;
@@ -140,7 +139,7 @@ export const login = createAsyncThunk<LoginResponse, LoginParams>(
       await saveTokenInStorage(data);
 
       const tokenPayload = jwtDecode(data.token);
-      const secLeft = tokenPayload.exp - Date.now()/ 1000;
+      const secLeft = tokenPayload.exp - Date.now() / 1000;
 
       // HACK: when the token expires, we want to clear the user metadata,
       // causing the app to automatically redirect us to the login screen

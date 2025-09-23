@@ -1,4 +1,3 @@
-
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
 import FutureMatchUp from './FutureMatchUp';

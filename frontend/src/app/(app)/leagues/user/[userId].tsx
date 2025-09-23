@@ -1,14 +1,13 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import GameweekScorer from '../../../../components/basic/GameweekScorer';
 import GameweekShifter from '../../../../components/basic/GameweekShifter';
 import PremText from '../../../../components/basic/PremText';
 import PastGameweekBet from '../../../../components/bet/past/PastGameweekBet';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hooks';
-import { getFriendBets } from '../../../../redux/reducers/betReducer';
 import type { BetState } from '../../../../redux/reducers/betReducer';
+import { getFriendBets } from '../../../../redux/reducers/betReducer';
 import { getFixtures } from '../../../../redux/reducers/fixtureReducer';
 import { globalStyles } from '../../../../styles/styles';
 import { GameweekStatus } from '../../../../types/Gameweek';

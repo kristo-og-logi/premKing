@@ -1,4 +1,3 @@
-
 import { StyleSheet, View } from 'react-native';
 import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';
@@ -49,33 +48,33 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet, isDisabled }: Props) => {
 
   return (
     <View style={styles.container}>
-        <TeamColumn
-          selected={isSelected(FixtureResult.HOME)}
-          teamName={fixture.homeTeam.shortName}
-          logo={{ uri: fixture.homeTeam.logo }}
-          odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
-          side={Side.LEFT}
-          disabled={isDisabled()}
-          onPress={() => handlePress(FixtureResult.HOME)}
-        />
-        <DrawColumn
-          selected={isSelected(FixtureResult.DRAW)}
-          date={dateFormatter.format(new Date(fixture.matchDate))}
-          odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
-          disabled={isDisabled()}
-          isNormal={fixture.isNormal}
-          onPress={() => handlePress(FixtureResult.DRAW)}
-        />
-        <TeamColumn
-          selected={isSelected(FixtureResult.AWAY)}
-          teamName={fixture.awayTeam.shortName}
-          logo={{ uri: fixture.awayTeam.logo }}
-          disabled={isDisabled()}
-          odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
-          side={Side.RIGHT}
-          onPress={() => handlePress(FixtureResult.AWAY)}
-        />
-      </View>
+      <TeamColumn
+        selected={isSelected(FixtureResult.HOME)}
+        teamName={fixture.homeTeam.shortName}
+        logo={{ uri: fixture.homeTeam.logo }}
+        odds={fixture.homeOdds === 0 ? 'x.xx' : fixture.homeOdds.toFixed(2)}
+        side={Side.LEFT}
+        disabled={isDisabled()}
+        onPress={() => handlePress(FixtureResult.HOME)}
+      />
+      <DrawColumn
+        selected={isSelected(FixtureResult.DRAW)}
+        date={dateFormatter.format(new Date(fixture.matchDate))}
+        odds={fixture.drawOdds === 0 ? 'x.xx' : fixture.drawOdds.toFixed(2)}
+        disabled={isDisabled()}
+        isNormal={fixture.isNormal}
+        onPress={() => handlePress(FixtureResult.DRAW)}
+      />
+      <TeamColumn
+        selected={isSelected(FixtureResult.AWAY)}
+        teamName={fixture.awayTeam.shortName}
+        logo={{ uri: fixture.awayTeam.logo }}
+        disabled={isDisabled()}
+        odds={fixture.awayOdds === 0 ? 'x.xx' : fixture.awayOdds.toFixed(2)}
+        side={Side.RIGHT}
+        onPress={() => handlePress(FixtureResult.AWAY)}
+      />
+    </View>
   );
 };
 

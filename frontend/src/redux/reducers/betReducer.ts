@@ -1,5 +1,5 @@
 import { BACKEND_URL } from '@env';
-import { type PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { RejectedActionFromAsyncThunk } from '@reduxjs/toolkit/dist/matchers';
 import type { Bet, FriendBets, Ticket } from '../../types/Bet';
 import { backend } from '../../utils/constants';

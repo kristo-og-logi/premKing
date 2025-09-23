@@ -1,10 +1,9 @@
 import * as AppleAuth from 'expo-apple-authentication';
 import { Image } from 'react-native';
-import PremButton from './basic/PremButton';
-
 import appleImage from '../../assets/apple-white.png';
 import { LoginType, login } from '../redux/reducers/authReducer';
 import type { AppDispatch } from '../redux/store';
+import PremButton from './basic/PremButton';
 
 interface Props {
   dispatch: AppDispatch;

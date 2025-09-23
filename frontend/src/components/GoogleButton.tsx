@@ -1,8 +1,6 @@
-
 import { Image } from 'react-native';
-import PremButton from './basic/PremButton';
-
 import googleImage from '../../assets/google.png';
+import PremButton from './basic/PremButton';
 
 interface Props {
   onPress: () => void;

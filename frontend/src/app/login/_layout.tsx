@@ -8,8 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import premkingLogo from '../../../assets/newpk_banner_nobkg.png';
 import AppleButton from '../../components/AppleButton';
-import GoogleButton from '../../components/GoogleButton';
 import PremButton from '../../components/basic/PremButton';
+import GoogleButton from '../../components/GoogleButton';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { LoginType, login, setUserDataFromStorage } from '../../redux/reducers/authReducer';
 import { globalStyles } from '../../styles/styles';

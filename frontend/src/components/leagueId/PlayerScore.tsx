@@ -1,7 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
-
 import { router } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../redux/hooks';
 import { colors, scoreboardWidths } from '../../styles/styles';
 import type Gameweek from '../../types/Gameweek';

@@ -1,4 +1,3 @@
-
 import { StyleSheet, View } from 'react-native';
 import type { Player } from '../../types/Player';
 import { calculateYourPlace } from '../../utils/leagueUtils';

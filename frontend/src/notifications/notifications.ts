@@ -1,22 +1,19 @@
 import { BACKEND_URL } from '@env';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
-import type { ExpoPushToken, Notification } from 'expo-notifications';
-import {
-  addNotificationResponseReceivedListener,
-  removeNotificationSubscription,
-  unregisterForNotificationsAsync,
-} from 'expo-notifications';
+import type { ExpoPushToken, Notification, Subscription } from 'expo-notifications';
 import {
   AndroidImportance,
   addNotificationReceivedListener,
+  addNotificationResponseReceivedListener,
   getExpoPushTokenAsync,
   getPermissionsAsync,
+  removeNotificationSubscription,
   requestPermissionsAsync,
   setNotificationChannelAsync,
   setNotificationHandler,
+  unregisterForNotificationsAsync,
 } from 'expo-notifications';
-import type { Subscription } from 'expo-notifications';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { colors } from '../styles/styles';

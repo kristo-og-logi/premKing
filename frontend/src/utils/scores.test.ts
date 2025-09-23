@@ -105,9 +105,9 @@ describe('getMyScore', () => {
 
       const gameweek: Gameweek = {
         gameweek: 1,
-        opens: new Date(Date.now()- 60 * 60 * 1000).toISOString(), // date of an hour ago
-        closes: new Date(Date.now()+ 60 * 60 * 1000).toISOString(), // date of in an hour
-        finishes: new Date(Date.now()+ 2 * 60 * 60 * 1000).toISOString(), // date of in two hours
+        opens: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // date of an hour ago
+        closes: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // date of in an hour
+        finishes: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // date of in two hours
         isFinished: false,
         fixtures: [],
         hasFixtures: false,

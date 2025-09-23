@@ -1,16 +1,14 @@
+import { BACKEND_URL, ENVIRONMENT } from '@env';
 import { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';
 import PremText from '../../../components/basic/PremText';
-import { colors, globalStyles } from '../../../styles/styles';
-
+import { usePushNotification } from '../../../notifications/notifications';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { clearUser, deleteAccount } from '../../../redux/reducers/authReducer';
+import { colors, globalStyles } from '../../../styles/styles';
 import { removeTokenFromStorage } from '../../../utils/storage';
-
-import { BACKEND_URL, ENVIRONMENT } from '@env';
-import { usePushNotification } from '../../../notifications/notifications';
 
 const Stats = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
