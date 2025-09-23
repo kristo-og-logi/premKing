@@ -1,5 +1,4 @@
 import { AntDesign } from '@expo/vector-icons';
-import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors } from '../../styles/styles';

@@ -2,7 +2,7 @@ import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import { Redirect } from 'expo-router';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Image, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

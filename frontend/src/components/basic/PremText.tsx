@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Text, type TextStyle } from 'react-native';
 import { colors } from '../../styles/styles';
 

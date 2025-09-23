@@ -1,5 +1,4 @@
 import * as AppleAuth from 'expo-apple-authentication';
-import React from 'react';
 import { Image } from 'react-native';
 import PremButton from './basic/PremButton';
 

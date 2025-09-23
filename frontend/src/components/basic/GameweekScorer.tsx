@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { Ticket } from '../../types/Bet';
@@ -9,7 +8,7 @@ interface Props {
 }
 
 const GameweekScorer = ({ ticket }: Props) => {
-  if (ticket.bets.length == 0) return <></>;
+  if (ticket.bets.length == 0) return;
 
   return (
     <View style={[styles.score]}>

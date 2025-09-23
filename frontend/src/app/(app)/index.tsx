@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { usePushNotification } from '../../notifications/notifications';
 import { useAppSelector } from '../../redux/hooks';
 import { getExpoPushTokenFromStorage } from '../../utils/storage';

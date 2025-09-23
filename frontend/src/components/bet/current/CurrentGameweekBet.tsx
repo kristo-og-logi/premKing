@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { StyleSheet, View } from 'react-native';
 import { useAppSelector } from '../../../redux/hooks';
 import type { Bet, Ticket } from '../../../types/Bet';

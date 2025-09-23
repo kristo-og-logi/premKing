@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import GameweekScorer from '../../../../components/basic/GameweekScorer';
@@ -26,19 +26,22 @@ const findHeaderTitle = (betSlice: BetState) => {
 };
 const UserBet = () => {
   const { userId, gw } = useLocalSearchParams();
-  if (!gw || typeof gw !== 'string' || Number.isNaN(Number(gw))) return <PremText>Gameweek error</PremText>;
 
+  const gwNum = typeof gw === 'string' ? Number(gw) : NaN;
+  const gwError = !Number.isFinite(gwNum);
+
+  // ensure all hooks are unconditional for some reason
   const dispatch = useAppDispatch();
   const authSlice = useAppSelector((state) => state.auth);
   const betSlice = useAppSelector((state) => state.bets);
   const fixtureSlice = useAppSelector((state) => state.fixtures);
   const gameweekSlice = useAppSelector((state) => state.gameweek);
 
-  const [selectedGW, setSelectedGW] = useState<number>(Number(gw));
-  const [timeUntil, _] = useTimeUntil(gameweekSlice.allGameweeks[selectedGW - 1].closes);
+  const [selectedGW, setSelectedGW] = useState<number | null>(Number.isFinite(gwNum) ? gwNum : null);
+  const [timeUntil, _] = useTimeUntil(gameweekSlice.allGameweeks[(selectedGW || 1) - 1].closes);
 
   useEffect(() => {
-    dispatch(getFixtures(selectedGW));
+    dispatch(getFixtures(selectedGW || 0));
   }, [selectedGW]);
 
   useEffect(() => {
@@ -47,6 +50,10 @@ const UserBet = () => {
 
     dispatch(getFriendBets({ userId: userId, gw: 1, token: authSlice.token }));
   }, [userId]);
+
+  if (gwError || selectedGW === null) {
+    return <PremText>Gameweek error </PremText>;
+  }
 
   const renderGameweekBet = () => {
     const gwStatus = getGameweekStatus(gameweekSlice.allGameweeks[selectedGW - 1]);

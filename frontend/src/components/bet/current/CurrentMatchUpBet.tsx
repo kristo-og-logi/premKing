@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { StyleSheet, View } from 'react-native';
 import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';
@@ -48,8 +48,7 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet, isDisabled }: Props) => {
   };
 
   return (
-    <>
-      <View style={styles.container}>
+    <View style={styles.container}>
         <TeamColumn
           selected={isSelected(FixtureResult.HOME)}
           teamName={fixture.homeTeam.shortName}
@@ -77,7 +76,6 @@ const CurrentMatchUpBet = ({ fixture, bet, setBet, isDisabled }: Props) => {
           onPress={() => handlePress(FixtureResult.AWAY)}
         />
       </View>
-    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useAppSelector } from '../../redux/hooks';
 import { dateFormatter } from '../../utils/constants';
 import PremText from './PremText';
@@ -12,7 +12,7 @@ const GameweekTimer = ({ selectedGW }: Props) => {
   const gameweek = gameweekSlice.allGameweeks[selectedGW - 1];
 
   let txt = '';
-  let target = '';
+  let _target = '';
 
   if (!gameweek) txt = '...';
   else {
@@ -22,13 +22,13 @@ const GameweekTimer = ({ selectedGW }: Props) => {
     const finishes = new Date(gameweek.finishes);
 
     if (now < opens) {
-      target = gameweek.opens;
+      _target = gameweek.opens;
       txt = `Opens ${dateFormatter.format(opens)}`;
     } else if (now < closes) {
-      target = gameweek.closes;
+      _target = gameweek.closes;
       txt = `Closes ${dateFormatter.format(closes)}`;
     } else if (now < finishes) {
-      target = gameweek.finishes;
+      _target = gameweek.finishes;
       txt = `Finishes ${dateFormatter.format(finishes)}`;
     } else if (finishes < now) txt = `Finished ${dateFormatter.format(finishes)}`;
   }

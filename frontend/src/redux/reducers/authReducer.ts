@@ -140,7 +140,7 @@ export const login = createAsyncThunk<LoginResponse, LoginParams>(
       await saveTokenInStorage(data);
 
       const tokenPayload = jwtDecode(data.token);
-      const secLeft = tokenPayload.exp - new Date().getTime() / 1000;
+      const secLeft = tokenPayload.exp - Date.now()/ 1000;
 
       // HACK: when the token expires, we want to clear the user metadata,
       // causing the app to automatically redirect us to the login screen

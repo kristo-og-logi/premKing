@@ -1,5 +1,4 @@
 import { FontAwesome } from '@expo/vector-icons';
-import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { router } from 'expo-router';
@@ -50,21 +49,17 @@ const renderPositionChange = (player: Player, gw: number) => {
 };
 
 export const renderChange = (posChange: number, gw: number, opposite = false) => {
+  if (gw === 1 || posChange === 0) return;
+
   return (
     <View style={styles.positionChangeWrapper}>
-      {gw === 1 || posChange === 0 ? (
-        <></>
+      {Math.abs(posChange) !== 1 && !opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
+      {posChange > 0 ? (
+        <FontAwesome name="circle" size={8} color={colors.green} />
       ) : (
-        <>
-          {Math.abs(posChange) !== 1 && !opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
-          {posChange > 0 ? (
-            <FontAwesome name="circle" size={8} color={colors.green} />
-          ) : (
-            <FontAwesome name="circle" size={8} color={colors.red} />
-          )}
-          {Math.abs(posChange) !== 1 && opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
-        </>
+        <FontAwesome name="circle" size={8} color={colors.red} />
       )}
+      {Math.abs(posChange) !== 1 && opposite && <PremText order={4}>{Math.abs(posChange)}</PremText>}
     </View>
   );
 };

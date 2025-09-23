@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { submitBet } from '../../redux/reducers/betReducer';
 import { colors } from '../../styles/styles';

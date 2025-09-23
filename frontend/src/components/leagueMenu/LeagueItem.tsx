@@ -1,5 +1,4 @@
 import { Redirect } from 'expo-router';
-import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAppSelector } from '../../redux/hooks';
 import { colors } from '../../styles/styles';

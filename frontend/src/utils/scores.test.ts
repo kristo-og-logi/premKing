@@ -45,17 +45,17 @@ describe('getMyScore', () => {
     test('getMyScore handles loading with all other variables undefined', () => {
       const isLoading = true;
 
-      // @ts-ignore
+      // @ts-expect-error
       const hasError: boolean = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const score: Score = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const ticket: Ticket = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const gameweek: Gameweek = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const currentGW: number = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const selectedGW: number = undefined;
 
       const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
@@ -74,15 +74,15 @@ describe('getMyScore', () => {
     test('getMyScore handles error with all later variables undefined', () => {
       const isLoading = false;
       const hasError = true;
-      // @ts-ignore
+      // @ts-expect-error
       const score: Score = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const ticket: Ticket = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const gameweek: Gameweek = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const currentGW: number = undefined;
-      // @ts-ignore
+      // @ts-expect-error
       const selectedGW: number = undefined;
 
       const myScore = getMyScore(isLoading, hasError, score, ticket, currentGW, gameweek, selectedGW);
@@ -105,9 +105,9 @@ describe('getMyScore', () => {
 
       const gameweek: Gameweek = {
         gameweek: 1,
-        opens: new Date(new Date().getTime() - 60 * 60 * 1000).toISOString(), // date of an hour ago
-        closes: new Date(new Date().getTime() + 60 * 60 * 1000).toISOString(), // date of in an hour
-        finishes: new Date(new Date().getTime() + 2 * 60 * 60 * 1000).toISOString(), // date of in two hours
+        opens: new Date(Date.now()- 60 * 60 * 1000).toISOString(), // date of an hour ago
+        closes: new Date(Date.now()+ 60 * 60 * 1000).toISOString(), // date of in an hour
+        finishes: new Date(Date.now()+ 2 * 60 * 60 * 1000).toISOString(), // date of in two hours
         isFinished: false,
         fixtures: [],
         hasFixtures: false,

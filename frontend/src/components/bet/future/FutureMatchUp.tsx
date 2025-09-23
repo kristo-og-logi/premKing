@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { StyleSheet, View } from 'react-native';
 import type Fixture from '../../../types/Fixture';
 import { dateFormatter } from '../../../utils/constants';
@@ -11,8 +11,7 @@ interface Props {
 
 const FutureMatchUp = ({ fixture }: Props) => {
   return (
-    <>
-      <View style={styles.container}>
+    <View style={styles.container}>
         <TeamColumn
           selectable={false}
           disabled={true}
@@ -37,7 +36,6 @@ const FutureMatchUp = ({ fixture }: Props) => {
           side={Side.RIGHT}
         />
       </View>
-    </>
   );
 };
 

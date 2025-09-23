@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremModal from '../../../components/basic/PremModal';

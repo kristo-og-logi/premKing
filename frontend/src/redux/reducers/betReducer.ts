@@ -139,7 +139,7 @@ interface FriendBetsRequest {
 }
 export const getFriendBets = createAsyncThunk<FriendBets, FriendBetsRequest>(
   'fixtures/friendBets',
-  async ({ userId, gw, token }: FriendBetsRequest) => {
+  async ({ userId, token }: FriendBetsRequest) => {
     try {
       const url = `${BACKEND_URL}/api/v1/users/${userId}/bets`;
 

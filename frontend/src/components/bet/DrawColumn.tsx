@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { colors } from '../../styles/styles';
 import PremText from '../basic/PremText';

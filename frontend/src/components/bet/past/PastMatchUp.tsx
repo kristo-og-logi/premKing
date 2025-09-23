@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { StyleSheet, View } from 'react-native';
 import type { Bet } from '../../../types/Bet';
 import type Fixture from '../../../types/Fixture';

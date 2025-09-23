@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 
 import GameweekShifter from '../../../../components/basic/GameweekShifter';

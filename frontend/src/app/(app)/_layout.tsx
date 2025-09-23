@@ -1,6 +1,6 @@
 import { Entypo, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Redirect, Tabs } from 'expo-router';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { getAllBets, setSelectedGameweek } from '../../redux/reducers/betReducer';
 import { getAllGameweeks } from '../../redux/reducers/gameweekReducer';

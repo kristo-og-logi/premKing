@@ -77,7 +77,7 @@ export const usePushNotification = (jwtToken: string): NotificationState => {
       ]);
 
       token = expoToken.data;
-    } catch (err) {
+    } catch (_err) {
       // There are a couple of steps we can take to recover,
       // 1. expo servers are down OR we've just enabled notifications (IOS)
       // == check if we have stored the token and use that one

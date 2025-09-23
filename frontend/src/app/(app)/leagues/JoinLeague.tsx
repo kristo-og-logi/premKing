@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PremButton from '../../../components/basic/PremButton';
 import PremText from '../../../components/basic/PremText';
