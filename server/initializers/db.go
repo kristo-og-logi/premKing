@@ -45,7 +45,7 @@ func ConnectDB() {
 		Logger: dbLogger,
 	})
 	if err != nil {
-		slog.Error("Failed to connect to database ", err)
+		slog.Error("Failed to connect to database", "err", err)
 		os.Exit(1)
 	}
 
