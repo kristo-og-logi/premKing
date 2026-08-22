@@ -8,11 +8,15 @@ import (
 )
 
 func Logging(env EnvOptions) {
-	dirname := "./logs"
+	sportmonksAPI := "LOG_DIR"
+	dirname := os.Getenv(sportmonksAPI)
+	if dirname == "" {
+		dirname = "./logs"
+	}
 	fileName := "app.log"
 	fileLocation := fmt.Sprintf("%s/%s", dirname, fileName)
 
-	err := os.Mkdir(dirname, 0755)
+	err := os.MkdirAll(dirname, 0755)
 	if err != nil && !os.IsExist(err) {
 		log.Fatalf("Failed to create/open log file: %s\n", err.Error())
 	}
