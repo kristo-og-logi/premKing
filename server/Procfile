@@ -1,1 +1,1 @@
-web: ./awsServer --environment PROD
+web: ./awsServer --environment PROD >> /var/log/premking/crash.log 2>&1
