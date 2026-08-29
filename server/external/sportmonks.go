@@ -71,7 +71,8 @@ func createUrl(page int) string {
 	// 23/24: 21644
 	// 24/25: 23614
 	// 25/26: 25583
-	seasonID := 25583
+	// 26/27: 28083
+	seasonID := 28083
 
 	params := map[string]string{
 		"filters":  fmt.Sprintf("fixtureSeasons:%v;bookmakers:2;markets:1", seasonID),
