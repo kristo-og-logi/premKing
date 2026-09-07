@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/kristo-og-logi/premKing/server/models"
@@ -36,6 +38,20 @@ func FetchSportmonksFixtures() []models.SportmonksFixture {
 	}
 
 	fmt.Printf("found %d fixtures from API\n", len(fixtures))
+
+	sort.Slice(fixtures, func(i, j int) bool {
+		return fixtures[i].StartingAt < fixtures[j].StartingAt
+	})
+
+	bytes, err := json.Marshal(fixtures)
+	if err != nil {
+		fmt.Printf("error marshalling: %w", err)
+	}
+
+	filename := fmt.Sprintf("sportmonks-%s.json", time.Now().Format("2006-01-02_15-04-05"))
+	slog.Info("wrote new sportmonks data", "filename", filename)
+	os.WriteFile(filename, bytes, 0644)
+
 
 	return fixtures
 }

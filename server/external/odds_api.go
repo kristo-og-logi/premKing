@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -74,6 +75,15 @@ func getOddsResponse(request *http.Request) []OddsApiFixture {
 func FetchOdds() []OddsApiFixture{
 	req := createOddsRequest()
 	resp := getOddsResponse(req)
+
+	bytes, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Printf("error marshalling: %w", err)
+	}
+
+	filename := fmt.Sprintf("odds-%s.json", time.Now().Format("2006-01-02_15-04-05"))
+	slog.Info("wrote new OddsApi data", "filename", filename)
+	os.WriteFile(filename, bytes, 0644)
 
 	return resp
 }
