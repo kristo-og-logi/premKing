@@ -11,7 +11,13 @@ func CRON() {
 	c := cron.New()
 	// every function added to a cronjob runs in a separate goroutine,
 	// no need to do anything here
+
+	// Runs every hour
 	c.AddFunc("0 * * * *", UpdateFixtures)
+
+	// Runs every midnight
+	c.AddFunc("0 0 * * *", CompareSportmonksAndOdds)
+
 	c.Start()
 
 	// specific coroutine sets notifications for each gameweek
