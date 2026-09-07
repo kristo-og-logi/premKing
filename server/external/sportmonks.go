@@ -45,7 +45,7 @@ func FetchSportmonksFixtures() []models.SportmonksFixture {
 
 	bytes, err := json.Marshal(fixtures)
 	if err != nil {
-		fmt.Printf("error marshalling: %w", err)
+		fmt.Errorf("error marshalling: %w", err)
 	}
 
 	filename := fmt.Sprintf("sportmonks-%s.json", time.Now().Format("2006-01-02_15-04-05"))

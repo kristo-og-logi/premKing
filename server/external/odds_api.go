@@ -78,7 +78,7 @@ func FetchOdds() []OddsApiFixture{
 
 	bytes, err := json.Marshal(resp)
 	if err != nil {
-		fmt.Printf("error marshalling: %w", err)
+		fmt.Errorf("error marshalling: %w", err)
 	}
 
 	filename := fmt.Sprintf("odds-%s.json", time.Now().Format("2006-01-02_15-04-05"))

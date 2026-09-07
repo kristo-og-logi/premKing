@@ -90,7 +90,7 @@ func CompareSportmonksAndOdds() {
 			// 2026-09-19 14:00:00
 			sTime, err := time.Parse( "2006-01-02 15:04:05", s.StartingAt)
 			if err != nil {
-				panic(fmt.Sprintf("bad time parse: err", err.Error()))
+				panic(fmt.Sprintf("bad time parse: err: %s", err.Error()))
 			}
 
 			if sTime != o.CommenceTime {
